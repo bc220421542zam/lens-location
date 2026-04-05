@@ -9,6 +9,8 @@
 
 body {
     background: #f5f6fa;
+    padding-top: 40px;
+    
 }
 
 /* MAIN CONTAINER */
@@ -17,46 +19,18 @@ body {
     height: 100vh;
 }
 
-/* LEFT SIDE */
-.left {
-    width: 40%;
-    background: url('/images/camera.jpg') no-repeat center/cover;
-    position: relative;
-}
-
-.overlay {
-    background: rgba(0,0,0,0.4);
-    height: 100%;
-    color: white;
-    padding: 40px;
-}
-
-.overlay h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-.overlay p {
-    font-size: 18px;
-    color: #242871;
-}
-
-/* RIGHT SIDE */
-.right {
-    width: 60%;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 /* NAVBAR */
 .top-nav {
+    position: fixed;   /* move to top */
+    top: 0;
+    left: 0;
+    width: 100%;       /* full width */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 60px;
+    padding: 15px 40px;
     background-color: #EEEFF7;
+    z-index: 1000;     /* keep above image */
 }
 
 .logo {
@@ -80,6 +54,44 @@ body {
     color: #242871;
     margin-right: 10px;
 }
+/* LEFT SIDE */
+.left {
+    width: 40%;
+    height: 100vh;
+    position: relative;
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.15); /* semi-transparent overlay */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* vertical center */
+    align-items: flex-start;     /* horizontal center */
+    text-align: left;
+    padding: 60px 40px;
+    color: white;            /* text visible on overlay */
+}
+
+.overlay h1 {
+    font-size: 42px;
+    font-weight: 700;
+}
+.overlay p {
+    font-size: 22px;
+    margin: 0;
+    color: #ffffff;
+}
+
+/* RIGHT SIDE */
+.right {
+    width: 60%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 
 /* LOGIN CARD */
 .login-card {

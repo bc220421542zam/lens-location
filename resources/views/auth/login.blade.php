@@ -10,19 +10,7 @@
 <body>
 
 <div class="container">
-
-    <!-- LEFT SIDE -->
-    <div class="left">
-        <div class="overlay">
-            <h1>Photographer Marketplace</h1>
-            <p>More Agent Client</p>
-        </div>
-    </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="right">
-
-        <!-- NAVBAR -->
+     <!-- NAVBAR -->
         <div class="top-nav">
             <h2 class="logo">
                 <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="190">
@@ -32,10 +20,22 @@
                 <a href="#" class="btn">Register</a>
             </div>
         </div>
+    <!-- LEFT SIDE -->
+    <div class="left" style="background: url('{{ asset('images/Image-login.png') }}') no-repeat center/cover; height:100vh;">
+        <div class="overlay">
+            <h1>Photographer Marketplace</h1>
+            <p>More Agent Client</p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+
+       
 
         <!-- LOGIN CARD -->
         <div class="login-card">
-            <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="250">
+            <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="250" style="display:block; margin:0 auto;">
             <p>Welcome Back</p>
 
             <form method="POST" action="{{ route('login') }}">
