@@ -45,7 +45,7 @@
 
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" placeholder="000000" required>
+                    <input type="password" name="password" placeholder="......" required>
                 </div>
 
                 <div class="forgot">
