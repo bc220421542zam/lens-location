@@ -9,14 +9,13 @@
 
 body {
     background: #f5f6fa;
-    padding-top: 40px;
-    
 }
 
 /* MAIN CONTAINER */
 .container {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 70px); 
+    margin-top: 70px;
 }
 
 /* NAVBAR */
@@ -31,6 +30,7 @@ body {
     padding: 15px 40px;
     background-color: #EEEFF7;
     z-index: 1000;     /* keep above image */
+    margin-bottom: 20px;
 }
 
 .logo {
@@ -57,30 +57,13 @@ body {
 /* LEFT SIDE */
 .left {
     width: 40%;
-    height: 100vh;
-    position: relative;
-}
-
-.overlay {
-    background: rgba(0, 0, 0, 0.15); /* semi-transparent overlay */
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* vertical center */
-    align-items: flex-start;     /* horizontal center */
-    text-align: left;
-    padding: 60px 40px;
-    color: white;            /* text visible on overlay */
 }
-
-.overlay h1 {
-    font-size: 42px;
-    font-weight: 700;
-}
-.overlay p {
-    font-size: 22px;
-    margin: 0;
-    color: #ffffff;
+.left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* fills left section nicely */
+    display: block;
 }
 
 /* RIGHT SIDE */

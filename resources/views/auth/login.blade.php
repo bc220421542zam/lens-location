@@ -21,11 +21,8 @@
             </div>
         </div>
     <!-- LEFT SIDE -->
-    <div class="left" style="background: url('{{ asset('images/Image-login.png') }}') no-repeat center/cover; height:100vh;">
-        <div class="overlay">
-            <h1>Photographer Marketplace</h1>
-            <p>More Agent Client</p>
-        </div>
+    <div class="left" style="background: url('{{ asset('/images/Left Image.png') }}') no-repeat center/cover; height:100vh;">
+        
     </div>
 
     <!-- RIGHT SIDE -->
