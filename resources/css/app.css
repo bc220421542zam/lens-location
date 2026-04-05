@@ -38,6 +38,7 @@ body {
 
 .overlay p {
     font-size: 18px;
+    color: #242871;
 }
 
 /* RIGHT SIDE */
@@ -54,7 +55,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
+    background-color: #EEEFF7;
 }
 
 .logo {
@@ -70,7 +72,7 @@ body {
 
 .btn {
     background: #242871;
-    color: white;
+    color: #EEEFF7;
 }
 
 .btn-outline {
@@ -81,9 +83,9 @@ body {
 
 /* LOGIN CARD */
 .login-card {
-    width: 350px;
+    width: 500px;
     margin: auto;
-    background: #fff;
+    background: #EEEFF7;
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -96,7 +98,7 @@ body {
 
 .login-card p {
     margin-bottom: 20px;
-    color: #666;
+    color: #2C3399;
 }
 
 /* FORM */
@@ -107,6 +109,7 @@ body {
 
 .form-group label {
     font-size: 14px;
+    color: #242871;
 }
 
 .form-group input {
@@ -120,11 +123,13 @@ body {
 .forgot {
     text-align: right;
     margin-bottom: 15px;
+    
 }
 
 .forgot a {
     font-size: 12px;
     text-decoration: none;
+    color: #242871;
 }
 
 /* BUTTON */
@@ -142,4 +147,5 @@ body {
 .signup {
     margin-top: 10px;
     font-size: 14px;
+    color: #242871;
 }

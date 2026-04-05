@@ -25,7 +25,7 @@
         <!-- NAVBAR -->
         <div class="top-nav">
             <h2 class="logo">
-                <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo">
+                <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="190">
             </h2>
             <div>
                 <a href="#" class="btn-outline">Sign in</a>
@@ -35,7 +35,7 @@
 
         <!-- LOGIN CARD -->
         <div class="login-card">
-            <h2>LensLocation</h2>
+            <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="250">
             <p>Welcome Back</p>
 
             <form method="POST" action="{{ route('login') }}">
@@ -59,7 +59,7 @@
 
                 <p class="signup">
                     Don't have an account?
-                    <a href="{{ route('register') }}">Sign Up</a>
+                    <a href="{{ route('register') }}" class="underline">Sign Up</a>
                 </p>
             </form>
         </div>
