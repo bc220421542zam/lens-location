@@ -1,146 +1,57 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+@layer components {
+ nav {
+        @apply p-4 max-w-screen-lg mx-auto flex items-center justify-between;
+ 
+    }
+.round-btn {
+  @apply w-8 h-8 overflow-auto rounded-full bg-indigo-100
+         border border-indigo-500
+         focus:outline-none focus:ring-1 focus:ring-indigo-500
+         focus:ring-offset-2 focus:ring-offset-indigo-800;
+}
+ 
+.nav-link {
+  @apply active:bg-slate-900 hover:text-indigo-700
+         text-indigo-900 px-3 py-1 rounded-lg;
 }
 
-body {
-    background: #f5f6fa;
+/* Login */
+.nav-link[href*="login"] {
+  @apply border border-indigo-900 text-indigo-900 bg-transparent hover:bg-indigo-50;
 }
 
-/* MAIN CONTAINER */
-.container {
-    display: flex;
-    height: calc(100vh - 70px); 
-    margin-top: 70px;
+/* Register */
+.nav-link[href*="register"] {
+  @apply bg-indigo-900 text-white hover:bg-indigo-700;
 }
-
-/* NAVBAR */
-.top-nav {
-    position: fixed;   /* move to top */
-    top: 0;
-    left: 0;
-    width: 100%;       /* full width */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background-color: #EEEFF7;
-    z-index: 1000;     /* keep above image */
-    margin-bottom: 20px;
+.title {
+  @apply text-3xl mb-4 font-bold;
 }
-
-.logo {
-    color: #242871;
-}
-
-.btn, .btn-outline {
-    padding: 6px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
+ 
 .btn {
-    background: #242871;
-    color: #EEEFF7;
+  @apply bg-indigo-800 active:bg-indigo-900
+         hover:bg-indigo-600 p-2 rounded-md
+         text-white block w-full;
 }
+ 
+.error {
+  @apply text-xs text-red-500 mt-px;
+}
+.input{
+    @apply block w-full p-2 rounded-md ring-1 ring-slate-600
+    focus:ring-indigo-900 focus:ring-2 outline-0 border-0 mt-1;
+    }
 
-.btn-outline {
-    border: 1px solid #242871;
-    color: #242871;
-    margin-right: 10px;
+label{
+  @apply text-sm text-slate-600;
 }
-/* LEFT SIDE */
-.left {
-    width: 40%;
-    height: 100%;
+.card{
+  @apply bg-white p-6 rounded-lg shadow-lg border
+  border-slate-200;
 }
-.left img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;   /* fills left section nicely */
-    display: block;
-}
-
-/* RIGHT SIDE */
-.right {
-    width: 60%;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-
-/* LOGIN CARD */
-.login-card {
-    width: 500px;
-    margin: auto;
-    background: #EEEFF7;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.login-card h2 {
-    color: #242871;
-}
-
-.login-card p {
-    margin-bottom: 20px;
-    color: #2C3399;
-}
-
-/* FORM */
-.form-group {
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    font-size: 14px;
-    color: #242871;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-/* FORGOT */
-.forgot {
-    text-align: right;
-    margin-bottom: 15px;
-    
-}
-
-.forgot a {
-    font-size: 12px;
-    text-decoration: none;
-    color: #242871;
-}
-
-/* BUTTON */
-.login-btn {
-    width: 100%;
-    padding: 10px;
-    background: #242871;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/* SIGNUP */
-.signup {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #242871;
 }

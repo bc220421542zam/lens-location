@@ -1,69 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LensLocation</title>
-
-    @vite('resources/css/app.css')
-</head>
-<body>
-
-<div class="container">
-     <!-- NAVBAR -->
-        <div class="top-nav">
-            <h2 class="logo">
-                <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="190">
-            </h2>
-            <div>
-                <a href="#" class="btn-outline">Sign in</a>
-                <a href="#" class="btn">Register</a>
-            </div>
-        </div>
-    <!-- LEFT SIDE -->
-    <div class="left" style="background: url('{{ asset('/images/Left Image.png') }}') no-repeat center/cover; height:100vh;">
+<x-layout>
+    <h1 class="font-bold">Welcome back</h1>
+ 
+    <div class="mx-auto max-w-screen-sm card flex items-center justify-center bg-white p-8 rounded-lg shadow-lg">
+        <form action="{{ route('login') }}" method="POST" class="space-y-4 w-full max-w-md">
+            @csrf
         
+            <!-- Email Input -->
+            <div>
+                <label for="email" class="block text-gray-700 mb-1">Email</label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    {{ $errors->has('email') ? 'border-red-500 ring-red-500' : 'border-gray-300' }}">
+                @error('email')
+                    <p class="error">{{ $message }}</p>
+                @enderror
+            </div>
+ 
+            <!-- Password Input -->
+            <div>
+                <label for="password" class="block text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" name="password"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    {{ $errors->has('password') ? 'border-red-500 ring-red-500' : 'border-gray-300' }}">
+                @error('password')
+                    <p class="error">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="mb-4">
+                <input type="checkbox" name="remember" id="remember">
+                <label for="remember">Remember me</label>
+            </div>
+
+             @error('failed')
+                    <p class="error">{{ $message }}</p>
+            @enderror
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-slate-700 text-white py-2 px-4 rounded-md hover:bg-slate-600 transition-colors font-semibold">
+                Login</button>
+        </form>
     </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="right">
-
-       
-
-        <!-- LOGIN CARD -->
-        <div class="login-card">
-            <img src="{{ asset('images/Logo.png') }}" alt="LensLocation logo" width="250" style="display:block; margin:0 auto;">
-            <p>Welcome Back</p>
-
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="email....." required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="......" required>
-                </div>
-
-                <div class="forgot">
-                    <a href="#">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="login-btn">Login</button>
-
-                <p class="signup">
-                    Don't have an account?
-                    <a href="{{ route('register') }}" class="underline">Sign Up</a>
-                </p>
-            </form>
-        </div>
-
-    </div>
-
-</div>
-
-</body>
-</html>
+</x-layout>

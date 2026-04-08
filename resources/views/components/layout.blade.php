@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ env('APP_NAME')}}</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-fff-100 text-slate-900">
+    <header class="bg-slate-200 shadow-lg">
+        <nav>
+            <img src="/images/Logo.png" alt="Logo" class="nav-link">
+        @guest
+            <div class="flex items-center gap-4">
+                <a href="#" class="nav-link">Home</a>
+                <a href="{{route('login')}}" class="nav-link">Login</a>
+                <a href="{{ route('register')}}" class="nav-link">Register</a>
+            </div>
+        @endguest
+        </nav>
+    </header>    
+</body>
+</html>
