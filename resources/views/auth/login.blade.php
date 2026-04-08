@@ -40,6 +40,8 @@
             <button type="submit"
                 class="w-full bg-indigo-900 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition-colors font-semibold">
                 Login</button>
+             <label for="msg"><p class="mb-2 text-indigo-900 sm"> Don't have an account? <a href="_blank" class="underline"> Sign Up </a></p></label> 
+             
         </form>
     </div>
 </x-layout>
