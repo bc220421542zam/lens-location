@@ -29,26 +29,25 @@
 .nav-link[href*="register"] {
   @apply bg-indigo-900 text-white hover:bg-indigo-700;
 }
-.title {
-  @apply text-3xl mb-4 font-bold;
-}
  
 .btn {
   @apply bg-indigo-800 active:bg-indigo-900
          hover:bg-indigo-600 p-2 rounded-md
          text-white block w-full;
 }
- 
+ .title {
+  @apply text-3xl mb-4 font-bold;
+}
 .error {
   @apply text-xs text-red-500 mt-px;
 }
 .input{
-    @apply block w-full p-2 rounded-md ring-1 ring-slate-600
+    @apply block w-full p-2 rounded-md ring-1 ring-indigo-600
     focus:ring-indigo-900 focus:ring-2 outline-0 border-0 mt-1;
     }
 
 label{
-  @apply text-sm text-slate-600;
+  @apply text-sm text-indigo-900;
 }
 .card{
   @apply bg-white p-6 rounded-lg shadow-lg border

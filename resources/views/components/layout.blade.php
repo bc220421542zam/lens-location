@@ -20,6 +20,9 @@
             </div>
         @endguest
         </nav>
-    </header>    
+    </header>
+    <main class="py-8 px-4 mx-auto max-w-screen-lg">
+        {{$slot}}
+    </main>    
 </body>
 </html>
