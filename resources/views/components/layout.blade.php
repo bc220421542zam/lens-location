@@ -14,14 +14,18 @@
             <img src="/images/Logo.png" alt="Logo" class="nav-link">
         @guest
             <div class="flex items-center gap-4">
-                <a href="#" class="nav-link">Home</a>
-                <a href="{{route('login')}}" class="nav-link">Login</a>
-                <a href="{{ route('register')}}" class="nav-link">Register</a>
+                <a href="{{ url('/') }}" class="nav-link">Home</a>
+                <a href="{{ route('login') }}" class="nav-link">Login</a>
+
+                {{-- Show Register button only if NOT on the registration page --}}
+                @if (!Request::is('register'))
+                    <a href="{{ route('register') }}" class="nav-link">Register</a>
+                @endif
             </div>
         @endguest
         </nav>
     </header>
-    <main class="py-8 px-4 mx-auto max-w-screen-lg">
+    <main class="w-full">
         {{$slot}}
     </main>    
 </body>

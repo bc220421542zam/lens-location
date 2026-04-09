@@ -1,9 +1,9 @@
 <x-layout>
-        
-    <img src="/images/Logo.png" alt="logo" class="mx-auto">
-    <h1 class="font-bold text-indigo-900 text-center">Welcome back</h1>
-    <div class="mx-auto max-w-screen-sm card flex items-center justify-center bg-slate-100 p-8 rounded-lg shadow-lg mt-8">
-        <form action="{{ route('login') }}" method="POST" class="space-y-4 w-full max-w-md">
+<div class="container">
+    <div class="left">   
+            <h1 class="font-bold text-indigo-900 text-center">Welcome back</h1>
+        <div class="mx-auto max-w-screen-sm card flex items-center justify-center bg-slate-100 p-8 rounded-lg shadow-lg mt-8">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4 w-full max-w-md">
             @csrf
             <!-- Email Input -->
             <div>
@@ -40,8 +40,13 @@
             <button type="submit"
                 class="w-full bg-indigo-900 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition-colors font-semibold">
                 Login</button>
-             <label for="msg"><p class="mb-2 text-indigo-900 sm"> Don't have an account? <a href="_blank" class="underline"> Sign Up </a></p></label> 
-             
-        </form>
-    </div>
+             <label for="msg"><p class="mb-2 text-indigo-900 sm"> Don't have an account? 
+                <a href="{{ route('register') }}" target="_blank" class="underline"> Sign Up </a></p></label> 
+            </form>
+        </div>
+</div>
+        <div class="right">
+                <!-- Image -->
+            <img src="/images/right-side-image.jpg" alt="image">
+        </div>
 </x-layout>

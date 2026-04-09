@@ -41,16 +41,34 @@
 .error {
   @apply text-xs text-red-500 mt-px;
 }
-.input{
-    @apply block w-full p-2 rounded-md ring-1 ring-indigo-600
-    focus:ring-indigo-900 focus:ring-2 outline-0 border-0 mt-1;
-    }
+.label {
+  @apply text-indigo-900 text-sm mb-1 block;
+}
 
-label{
-  @apply text-sm text-indigo-900;
+.input {
+  @apply w-full px-4 py-2 rounded-lg bg-white shadow-md
+  focus:outline-none focus:ring-2 focus:ring-indigo-700;
 }
 .card{
-  @apply bg-white p-6 rounded-lg shadow-lg border
+  @apply p-6 w-full rounded-lg shadow-lg border
   border-slate-200;
+}
+.container {
+    @apply flex flex-col md:flex-row w-full w-screen;
+    min-height: calc(100vh - 72px); /* header height remove */
+}
+
+/* LEFT SIDE */
+.left {
+    @apply w-full w-screen md:w-1/2 flex flex-col justify-center items-center bg-slate-100 p-6;
+}
+
+/* RIGHT SIDE */
+.right {
+    @apply w-full w-screen md:w-1/2;
+}
+
+.right img {
+    @apply w-full h-full object-cover;
 }
 }
