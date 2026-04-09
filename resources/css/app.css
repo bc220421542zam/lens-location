@@ -20,16 +20,16 @@
          text-indigo-900 px-3 py-1 rounded-lg;
 }
 
-/* Login */
+/* Default Login button */
 .nav-link[href*="login"] {
   @apply border border-indigo-900 text-indigo-900 bg-transparent hover:bg-indigo-50;
 }
 
-/* Register */
+/* Register button */
 .nav-link[href*="register"] {
   @apply bg-indigo-900 text-white hover:bg-indigo-700;
 }
- 
+
 .btn {
   @apply bg-indigo-800 active:bg-indigo-900
          hover:bg-indigo-600 p-2 rounded-md

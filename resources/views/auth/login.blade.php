@@ -27,7 +27,7 @@
                 @enderror
             </div>
             
-            <div class="mb-4">
+            <div class="mb-4 text-indigo-900">
                 <input type="checkbox" name="remember" id="remember">
                 <label for="remember">Remember me</label>
             </div>
