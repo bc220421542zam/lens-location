@@ -4,8 +4,8 @@
             <!-- Role Dropdown -->
 <div class=" grid grid-cols-2 gap-2 text-indigo-900">
     <h1 class="font-bold text-indigo-900 text-left"> Sign Up as... </h1>
-    <select id="role" name="role">
-        <label for="role" class="block mb-1"><option value="select">User Role</option></label>
+    <select id="role" name="role" form="registerForm">
+        <label for="role" class="block mb-1"><option value="">User Role</option></label>
         <option value="photographer" {{ old('role') == 'photographer' ? 'selected' : '' }}>Photographer</option>
         <option value="location_owner" {{ old('role') == 'location_owner' ? 'selected' : '' }}>Location Owner</option>
         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
@@ -17,7 +17,7 @@
 </div>
 
         <div class="mx-auto max-w-screen-sm card flex items-center justify-center bg-slate-100 p-8 rounded-lg shadow-lg mt-8">
-            <form action="{{ route('login') }}" method="POST" class="space-y-4 w-full max-w-md">
+            <form id="registerForm" action="{{ route('register') }}" method="POST" class="space-y-4 w-full max-w-md">
             @csrf
             <!-- First + Last Name -->
             <div class="grid grid-cols-2 gap-6 mb-4">
