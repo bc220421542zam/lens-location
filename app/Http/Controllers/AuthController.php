@@ -9,28 +9,35 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    // Register Method
     public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'role' => 'required|in:photographer,location_owner,admin',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required',
-            'password' => 'required|min:6|confirmed',
-        ]);
+{
+    $validated = $request->validate([
+        'role' => 'required|in:photographer,location_owner,admin',
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'phone' => 'required',
+        'password' => 'required|min:6|confirmed',
+    ]);
 
-        User::create([
-            'role' => $validated['role'],
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'password' => Hash::make($validated['password']),
-        ]);
+    // ✅ user create karo
+    $user = User::create([
+        'role' => $validated['role'],
+        'first_name' => $validated['first_name'],
+        'last_name' => $validated['last_name'],
+        'email' => $validated['email'],
+        'phone' => $validated['phone'],
+        'password' => Hash::make($validated['password']),
+    ]);
 
-        return redirect()->route('login');
-    }
+    //  login first
+    Auth::login($user);
+    $request->session()->regenerate();
+
+    // redirect last
+    return redirect()->route('dashboard');
+}
 
     //  login method
     public function login(Request $request)
@@ -42,7 +49,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect('/');
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
@@ -56,6 +63,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

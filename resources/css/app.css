@@ -5,8 +5,7 @@
 
 @layer components {
  nav {
-        @apply p-4 max-w-screen-lg mx-auto flex items-center justify-between;
- 
+        @apply flex items-center justify-between;
     }
 .round-btn {
   @apply w-8 h-8 overflow-auto rounded-full bg-indigo-100
@@ -70,5 +69,13 @@
 
 .right img {
     @apply w-full h-full object-cover;
+}
+.shade  {
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.10);
+}
+.icon {
+  font-size: 20px;
+  color: #242871;
+  margin-right: 3px;
 }
 }

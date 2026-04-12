@@ -1,16 +1,17 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
 
 // Default route 
 Route::get('/', function () {
     return redirect('/login');
 });
 
-// Home & Logout 
+// dashboard & Logout 
 Route::middleware('auth')->group(function(){
     
-    Route::get('/home', [DashboardController::class, 'index'])
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
     
     Route::post('/logout', [AuthController::class, 'logout'])
