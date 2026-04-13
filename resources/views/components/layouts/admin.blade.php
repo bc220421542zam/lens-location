@@ -62,14 +62,14 @@
         Dashboard
     </a>
 
-    <a href="#"
+    <a href="{{ route('admin.users')}}"
         class="flex items-center gap-3 py-2 px-3 rounded-lg transition
         {{ request()->routeIs('admin.users') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
         <i class="fa-solid fa-users w-5 text-center"></i>
         Users
     </a>
 
-    <a href="#"
+    <a href="{{ route('admin.listings') }}"
         class="flex items-center gap-3 py-2 px-3 rounded-lg transition
         {{ request()->routeIs('admin.listings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
         <i class="fa-solid fa-location-dot w-5 text-center"></i>
