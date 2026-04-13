@@ -21,7 +21,7 @@ class AuthController extends Controller
         'password' => 'required|min:6|confirmed',
     ]);
 
-    // ✅ user create karo
+    //Create User
     $user = User::create([
         'role' => $validated['role'],
         'first_name' => $validated['first_name'],

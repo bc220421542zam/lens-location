@@ -7,7 +7,7 @@
     <div class="shade bg-[#EEEFF7] p-5 rounded-2xl">
         <div class="flex justify-between items-start">
             <h3 class="text-sm text-indigo-900 mb-3">Total Users</h3>
-            <i class="fa-solid fa-users text-xl text-indigo-900 shrink-0 ml-2"></i>
+            <i class="fa-solid fa-users text-m text-indigo-900 shrink-0 ml-2"></i>
         </div>
         <p class="text-2xl font-bold text-indigo-900">0</p>
     </div>
@@ -15,7 +15,7 @@
     <div class="shade bg-[#EEEFF7] p-5 rounded-2xl">
         <div class="flex justify-between items-start">
             <h3 class="text-sm text-indigo-900 mb-3">Total Listings</h3>
-            <i class="fa-solid fa-location-dot text-xl text-indigo-900 shrink-0 ml-2"></i>
+            <i class="fa-solid fa-location-dot text-m text-indigo-900 shrink-0 ml-2"></i>
         </div>
         <p class="text-2xl font-bold text-indigo-900">0</p>
     </div>
@@ -23,7 +23,7 @@
     <div class="shade bg-[#EEEFF7] p-5 rounded-2xl">
         <div class="flex justify-between items-start">
             <h3 class="text-sm text-indigo-900 mb-3">Total Bookings</h3>
-            <i class="fa-solid fa-calendar-days text-xl text-indigo-900 shrink-0 ml-2"></i>
+            <i class="fa-solid fa-calendar-days text-m text-indigo-900 shrink-0 ml-2"></i>
         </div>
         <p class="text-2xl font-bold text-indigo-900">0</p>
     </div>
