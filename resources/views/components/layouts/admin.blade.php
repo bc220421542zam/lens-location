@@ -45,7 +45,6 @@
 
             </div>
         </div>
-
     </div>
 </nav>
 
@@ -74,6 +73,13 @@
         {{ request()->routeIs('admin.listings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
         <i class="fa-solid fa-location-dot w-5 text-center"></i>
         Listings
+    </a>
+
+    <a href="{{ route('admin.profile') }}"
+        class="flex items-center gap-3 py-2 px-3 rounded-lg transition
+        {{ request()->routeIs('admin.profile') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
+        <i class="fa-solid fa-user w-5 text-center"></i>
+        Profile
     </a>
 
 </aside>

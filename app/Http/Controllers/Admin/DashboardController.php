@@ -26,4 +26,10 @@ class DashboardController extends Controller
         $listings = Location::with('owner')->paginate(10);
         return view('admin.listings', compact('listings'));
     }
+
+    //user profile
+    public function profile()
+    {
+        return view('admin.profile');
+    }
 }
