@@ -17,7 +17,7 @@
                 <tr class="border-b border-indigo-400 text-indigo-900">
                     <th class="py-2">Title</th>
                     <th>Owner</th>
-                    <th>price/hr</th>
+                    <th>Price/hr</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
