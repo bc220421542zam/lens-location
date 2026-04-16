@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', [DashboardController::class, 'users'])->name('admin.users');
     Route::get('/admin/listings', [DashboardController::class, 'listings'])->name('admin.listings');
     Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
+    Route::post('/admin/profile' , [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
