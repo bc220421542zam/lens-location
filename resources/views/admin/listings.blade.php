@@ -2,7 +2,7 @@
     <p class="title text-indigo-900">Listing Management</p>
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
-
+        {{--Table for listings--}}
         <div class="flex justify-between items-center mb-4">
             <h2 class="font-bold text-indigo-900 text-lg">All Listings</h2>
             <div class="relative flex items-center">

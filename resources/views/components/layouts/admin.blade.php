@@ -54,7 +54,7 @@
     {{-- SIDEBAR --}}
 <aside class="w-64 shrink-0 bg-indigo-900 text-white flex flex-col p-4 gap-1">
 
-    <a href="{{ route('dashboard') }}"
+    <a href="{{ route('admin.dashboard') }}"
         class="flex items-center gap-3 py-2 px-3 rounded-lg transition
         {{ request()->routeIs('dashboard') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
         <i class="fa-solid fa-house w-5 text-center"></i>

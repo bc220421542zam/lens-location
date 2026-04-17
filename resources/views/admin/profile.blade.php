@@ -70,7 +70,7 @@
                         class="bg-indigo-700 hover:bg-indigo-900 text-white px-6 py-2 rounded-lg text-sm">
                         Update
                     </button>
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('admin.dashboard') }}"
                         class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg text-sm">
                         Cancel
                     </a>

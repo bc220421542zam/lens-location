@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function register(Request $request)
 {
     $validated = $request->validate([
-        'role' => 'required|in:photographer,location_owner,admin',
+        'role' => 'required|in:admin,owner,photographer',
         'first_name' => 'required|string|max:255',
         'last_name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
@@ -29,6 +29,7 @@ class AuthController extends Controller
         'email' => $validated['email'],
         'phone' => $validated['phone'],
         'password' => Hash::make($validated['password']),
+        
     ]);
 
     //  login first
@@ -36,7 +37,15 @@ class AuthController extends Controller
     $request->session()->regenerate();
 
     // redirect last
-    return redirect()->route('dashboard');
+    if ($user->role === 'admin') 
+        {
+            return redirect()->route('admin.dashboard'); // Admin dashboard
+        } elseif ($user->role === 'owner') 
+        {
+            return redirect()->route('owner.dashboard'); // Owner dashboard
+        } else {
+            return redirect()->route('photographer.dashboard'); // Photographer dashboard
+        }
 }
 
     //  login method
@@ -49,12 +58,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard');
-        }
+            $user = Auth::user();
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+    //  Role-based redirect
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->role === 'owner') {
+        return redirect()->route('owner.dashboard');
+    } else {
+        return redirect()->route('photographer.dashboard');
+    }
+}
+     return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
     }
 
     //  logout
