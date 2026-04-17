@@ -16,6 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
     Route::post('/admin/profile' , [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
 
+    
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 });
