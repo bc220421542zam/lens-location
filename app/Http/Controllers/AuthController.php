@@ -42,7 +42,7 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard'); // Admin dashboard
         } elseif ($user->role === 'owner') 
         {
-            return redirect()->route('owner.dashboard'); // Owner dashboard
+            return redirect()->route('owner.listings'); // Owner dashboard
         } else {
             return redirect()->route('photographer.dashboard'); // Photographer dashboard
         }
@@ -64,7 +64,7 @@ class AuthController extends Controller
     if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
     } elseif ($user->role === 'owner') {
-        return redirect()->route('owner.dashboard');
+        return redirect()->route('owner.listings');
     } else {
         return redirect()->route('photographer.dashboard');
     }

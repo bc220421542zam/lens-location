@@ -7,7 +7,7 @@
     <select id="role" name="role" form="registerForm">
         <label for="role" class="block mb-1"><option value="">User Role</option></label>
         <option value="photographer" {{ old('role') == 'photographer' ? 'selected' : '' }}>Photographer</option>
-        <option value="location_owner" {{ old('role') == 'location_owner' ? 'selected' : '' }}>Location Owner</option>
+        <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Location Owner</option>
         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
     </select>
 

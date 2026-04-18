@@ -1,3 +1,4 @@
-<x-layout>
-    <h1>listing owner</h1>
-</x-layout>
+<x-layouts.owner>
+    <p class="title text-indigo-900">My Listings</p>
+
+</x-layouts.owner>
