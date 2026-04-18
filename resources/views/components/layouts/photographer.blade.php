@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Dashboard</title>
+    <title>photographer Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -50,19 +50,19 @@
 
         {{-- Sidebar --}}
         <aside class="w-64 shrink-0 bg-indigo-900 text-white flex flex-col p-4 gap-1">
-            <a href="{{ route('owner.listings') }}" 
+            <a href="{{ route('photographer.bookings') }}" 
                 class="flex items-center gap-3 py-2 px-3 rounded-lg transition 
-                {{ request()->routeIs('owner.listings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
-                <i class="fa-solid fa-location-dot w-5 text-center"></i>My Listings</a>
+                {{ request()->routeIs('photographer.bookings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
+                <i class="fa-solid fa-location-dot w-5 text-center"></i>My Bookings</a>
                 
-            <a href="{{ route('owner.bookings') }}" 
+            <a href="{{ route('photographer.listings') }}" 
                 class="flex items-center gap-3 py-2 px-3 rounded-lg transition 
-                {{ request()->routeIs('owner.bookings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
-                <i class="fa-solid fa-calendar w-5 text-center"></i>Bookings</a>
+                {{ request()->routeIs('photographer.listings') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
+                <i class="fa-solid fa-calendar w-5 text-center"></i>Search Listings</a>
                 
-            <a href="{{ route('owner.profile') }}"
+            <a href="{{ route('photographer.profile') }}"
                 class="flex items-center gap-3 py-2 px-3 rounded-lg transition
-                {{ request()->routeIs('owner.profile') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
+                {{ request()->routeIs('photographer.profile') ? 'bg-[#2C3399] text-white' : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
                 <i class="fa-solid fa-user w-5 text-center"></i>Profile</a>
         </aside>
 
