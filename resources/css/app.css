@@ -4,16 +4,14 @@
 @tailwind utilities;
 
 @layer components {
- nav {
-        @apply flex items-center justify-between;
-    }
+ nav {  @apply flex items-center justify-between; }
 .round-btn {
   @apply w-8 h-8 overflow-auto rounded-full bg-indigo-100
          border border-indigo-500
          focus:outline-none focus:ring-1 focus:ring-indigo-500
          focus:ring-offset-2 focus:ring-offset-indigo-800;
 }
- 
+
 .nav-link {
   @apply active:bg-slate-900 hover:text-indigo-700
          text-indigo-900 px-3 py-1 rounded-lg;
@@ -34,15 +32,9 @@
          hover:bg-indigo-600 p-2 rounded-md
          text-white block w-full;
 }
- .title {
-  @apply text-3xl mb-4 font-bold;
-}
-.error {
-  @apply text-xs text-red-500 mt-px;
-}
-.label {
-  @apply text-indigo-900 text-sm mb-1 block;
-}
+.title { @apply text-3xl mb-4 font-bold; }
+.error { @apply text-xs text-red-500 mt-px; }
+.label { @apply text-indigo-900 text-sm mb-1 block; }
 
 .input {
   @apply w-full px-4 py-2 rounded-lg bg-white shadow-md
@@ -57,25 +49,22 @@
     min-height: calc(100vh - 72px); /* header height remove */
 }
 
-/* LEFT SIDE */
-.left {
-    @apply w-full w-screen md:w-1/2 flex flex-col justify-center items-center bg-slate-100 p-6;
-}
+/* LEFT & right SIDE of login register*/
+.left { @apply w-full w-screen md:w-1/2 flex flex-col justify-center items-center bg-slate-100 p-6; }
+.right { @apply w-full w-screen md:w-1/2; }
+.right img { @apply w-full h-full object-cover; }
 
-/* RIGHT SIDE */
-.right {
-    @apply w-full w-screen md:w-1/2;
-}
+.shade { @apply shadow-[4px_4px_10px_rgba(0,0,0,0.10)] }
+.icon { @apply text-[20px] text-[#242871] mr-1; }
 
-.right img {
-    @apply w-full h-full object-cover;
-}
-.shade  {
-  box-shadow: 4px 4px 10px rgba(0,0,0,0.10);
-}
-.icon {
-  font-size: 20px;
-  color: #242871;
-  margin-right: 4px;
-}
+.page        { @apply p-2 max-w-5xl mx-auto; }
+.top-bar     { @apply flex justify-between items-center mb-6; }
+ 
+.badge       { @apply absolute top-2 right-2 text-xs font-semibold px-3 py-1 rounded-full; }
+.badge-active { @apply bg-green-100 text-green-700; }
+.badge-draft  { @apply bg-yellow-100 text-yellow-700; }
+ 
+.action-btn         { @apply flex-1 text-sm py-1.5 rounded-md border border-indigo-200 bg-gray-50 text-blue-800 hover:bg-blue-100; }
+.action-btn.danger  { @apply border-red-200 bg-red-50 text-red-600 hover:bg-red-100; }
+.action-btn.publish { @apply border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100; }
 }
