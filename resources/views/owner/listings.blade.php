@@ -13,16 +13,16 @@
 
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card bg-[#EEEFF7]">
+        <div class="card">
             <p class="label">Total Listings</p>
             <p class="text-2xl font-semibold text-indigo-900 mt-1">4</p>
         </div>
-        <div class="card bg-[#EEEFF7]">
+        <div class="card">
             <p class="label">Active</p>
             <p class="text-2xl font-semibold text-indigo-900 mt-1">3</p>
             <p class="text-xs text-green-600 mt-1">↑ 1 this month</p>
         </div>
-        <div class="card bg-[#EEEFF7]">
+        <div class="card">
             <p class="label">Total Bookings</p>
             <p class="text-2xl font-semibold text-indigo-900 mt-1 ">28</p>
         </div>
@@ -31,7 +31,7 @@
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <div class="card bg-[#EEEFF7] p-0 overflow-hidden">
+        <div class="card p-0 overflow-hidden">
             <div class="relative h-40 bg-gray-100">
                 <img src="/images/card1.jpg" alt="Heritage Courtyard" class="w-full h-full object-cover">
                 <span class="badge badge-active">Active</span>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="card bg-[#EEEFF7] p-0 overflow-hidden">
+        <div class="card p-0 overflow-hidden">
             <div class="relative h-40 bg-gray-100">
                 <img src="/images/card2.jpg" alt="Garden Studio" class="w-full h-full object-cover">
                 <span class="badge badge-active">Active</span>
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="card bg-[#EEEFF7] p-0 overflow-hidden">
+        <div class="card p-0 overflow-hidden">
             <div class="relative h-40 bg-gray-100">
                 <img src="/images/card3.jpg" alt="Rooftop Terrace" class="w-full h-full object-cover">
                 <span class="badge badge-active">Active</span>
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-        <div class="card bg-[#EEEFF7] p-0 overflow-hidden">
+        <div class="card p-0 overflow-hidden">
             <div class="relative h-40 bg-gray-50 flex items-center justify-center">
                 <span class="text-5xl">...</span>
                 <span class="badge badge-draft">Draft</span>
