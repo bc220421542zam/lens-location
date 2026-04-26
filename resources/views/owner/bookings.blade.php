@@ -82,10 +82,10 @@
         {{-- BOOKING ROW - CONFIRMED --}}
         <div class="card flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center font-semibold text-green-700 shrink-0">
-                MF
+                AZ
             </div>
             <div class="flex-1">
-                <p class="font-semibold text-gray-900">Mohammad Farooq</p>
+                <p class="font-semibold text-gray-900">Ali Zaman</p>
                 <p class="text-sm text-gray-500">Rooftop Terrace &middot; 4 hrs &middot; Brand shoot</p>
             </div>
             <div class="text-right shrink-0">
