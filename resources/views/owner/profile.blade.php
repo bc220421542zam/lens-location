@@ -8,6 +8,9 @@
             <p class="text-sm text-gray-500">Manage profile</p>
         </div>
     </div>
+    <div>
+        
+    </div>
     {{-- FILTER TABS --}}
     <div class="flex gap-2 mb-4">
         <button class="action-btn">Profile</button>
