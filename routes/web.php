@@ -17,6 +17,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/listings', [DashboardController::class, 'listings'])->name('admin.listings');
     Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
     
+    Route::get('/admin/users/{id}', [DashboardController::class, 'userDetail'])->name('admin.users.detail');
+    Route::get('/admin/users', [DashboardController::class, 'users'])->name('admin.users');
+    Route::delete('/admin/users/{id}', [DashboardController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/admin/users/{id}/toggle', [DashboardController::class, 'toggleStatus'])->name('admin.users.toggle');
+
     Route::post('/admin/profile', [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

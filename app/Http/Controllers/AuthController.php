@@ -60,6 +60,14 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
+    //check if user is blocked
+        if ($user->status === 'blocked') {
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Your account has been blocked. Please contact admin.'
+            ]);
+        }
+
     //  Role-based redirect
     if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
@@ -68,7 +76,7 @@ class AuthController extends Controller
     } else {
         return redirect()->route('photographer.dashboard');
     }
-}
+    }
      return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
     ]);
