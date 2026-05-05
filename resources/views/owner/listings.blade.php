@@ -8,7 +8,8 @@
             <h1 class="title text-indigo-900">My Listings</h1>
             <p class="text-sm text-gray-500">Manage your photography locations</p>
         </div>
-        <button class="btn w-auto px-4">+ Add Location</button>
+        <a href="{{ route('owner.locations.create') }}" class="btn w-auto px-4">
+    + Add Location</a>
     </div>
 
     {{-- STATS --}}

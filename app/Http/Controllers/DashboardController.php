@@ -103,4 +103,18 @@ class DashboardController extends Controller
         $user->save();
         return back()->with('success' , 'Profile update successfully.');
     }
+    public function toggleListing($id)
+    {
+        $listing = Location::findOrFail($id);
+        $listing->status = $listing->status === 'approved' ? 'pending' : 'approved';
+        $listing->save();
+        return back()->with('success', 'Listing status updated.');
+    }
+
+    public function deleteListing($id)
+    {
+        $listing = Location::findOrFail($id);
+        $listing->delete();
+        return back()->with('success', 'Listing deleted successfully.');
+    }
 }

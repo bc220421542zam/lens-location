@@ -14,6 +14,7 @@ class Location extends Model
         'city',
         'category',
         'price_per_hour',
+        'image',
         'status',
     ];
 
@@ -21,5 +22,10 @@ class Location extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    
+     public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

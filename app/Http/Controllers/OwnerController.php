@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Location;
 use Illuminate\Http\Request;
 
 class OwnerController extends Controller
@@ -9,7 +9,18 @@ class OwnerController extends Controller
 
     public function listings()
     {
-        return view('owner.listings');
+        $locations = Location::where('user_id', auth()->id())
+                        ->latest()
+                        ->get();
+
+        $stats = [
+            'total'    => $locations->count(),
+            'active'   => $locations->where('status', 'approved')->count(),
+            'pending'  => $locations->where('status', 'pending')->count(),
+            'bookings' => 0, // update when bookings table is ready
+        ];
+
+        return view('owner.listings', compact('locations', 'stats'));
     }
 
     public function bookings()
