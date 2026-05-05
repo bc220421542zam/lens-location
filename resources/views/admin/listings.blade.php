@@ -49,11 +49,13 @@
                         </button>
 
                         {{-- TOGGLE --}}
-                        <form method="POST" action="{{ route('admin.listings.toggle', $listing->id) }}">
+                        <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST" style="display:inline;">
                             @csrf
-                            <button type="submit" class="{{ $listing->status === 'approved' ? 'text-green-800' : 'text-green-800' }} hover:opacity-75">
-                                <i class="fa-solid {{ $listing->status === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }}"
-                                    style="font-size:18px"></i>
+                            <button type="submit" title="{{ $listing->status === 'approved' ? 'Pending' : 'Approve' }}">
+                                <i class="icon fa-solid
+                                    {{ $listing->status === 'approved' ? 'fa-toggle-on text-green-800' : 'fa-toggle-off text-green-800' }}"
+                                    style="font-size: 18px">
+                                </i>
                             </button>
                         </form>
 
@@ -87,10 +89,8 @@
         class="fixed inset-0 z-50 flex items-center justify-center"
         style="display:none">
 
-        {{-- Overlay --}}
         <div class="absolute inset-0 bg-black opacity-50" @click="showModal = false"></div>
 
-        {{-- Modal --}}
         <div class="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-md z-10">
 
             {{-- Close --}}

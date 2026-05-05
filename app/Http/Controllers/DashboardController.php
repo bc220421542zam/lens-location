@@ -7,26 +7,30 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Location;
 
-
 class DashboardController extends Controller
 {
-    //Dashboard window
+    // Dashboard
     public function index()
     {
-        return view('admin.dashboard');
+        $stats = [
+            'users'    => User::count(),
+            'listings' => Location::count(),
+            'bookings' => 0,
+        ];
+
+        $recentListings = Location::with('owner')
+                            ->latest()
+                            ->take(10)
+                            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentListings'));
     }
-    //Dashboard pop-up detail page
-    public function userDetail($id)
-    {
-        $user = User::findOrFail($id);
-        return response()->json($user); // returns user data as JSON for the popup
-    }
-    // Users window — UPDATED with search and filters
+
+    // Users page
     public function users(Request $request)
     {
         $query = User::query();
 
-        // Search by name or email
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('first_name', 'like', '%' . $request->search . '%')
@@ -35,29 +39,28 @@ class DashboardController extends Controller
             });
         }
 
-        // Filter by role
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        if ($request->filled('role'))   { $query->where('role',   $request->role); }
+        if ($request->filled('status')) { $query->where('status', $request->status); }
 
         $users = $query->paginate(4)->withQueryString();
         return view('admin.users', compact('users'));
     }
 
-    // DELETE user
-    public function deleteUser($id)
+    // User detail (JSON for popup)
+    public function userDetail($id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
+        return response()->json($user);
+    }
+
+    // Delete user
+    public function deleteUser($id)
+    {
+        User::findOrFail($id)->delete();
         return back()->with('success', 'User deleted successfully.');
     }
 
-    // TOGGLE user status active/blocked
+    // Toggle user status
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);
@@ -66,43 +69,14 @@ class DashboardController extends Controller
         return back()->with('success', 'User status updated.');
     }
 
-    //listings Window
-     public function listings()
+    // Listings page
+    public function listings()
     {
         $listings = Location::with('owner')->paginate(10);
         return view('admin.listings', compact('listings'));
     }
 
-    //user profile
-    public function profile()
-    {
-        $user = auth()->user();
-        return view('admin.profile', compact('user'));
-    }
-    //Update Profile
-    public function updateProfile(Request $request)
-    {
-        $user = auth()->user();
-        
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        $user->first_name = $request->first_name;
-        $user->last_name  = $request->last_name;
-        $user->phone = $request->phone;
-         
-        if ($request->hasFile('profile_picture')) 
-        {
-            $path = $request->file('profile_picture')->store('profiles', 'public');
-            $user->profile_picture = $path;
-        }
-        $user->save();
-        return back()->with('success' , 'Profile update successfully.');
-    }
+    // Toggle listing status ← KEEP ONLY THIS ONE
     public function toggleListing($id)
     {
         $listing = Location::findOrFail($id);
@@ -111,10 +85,49 @@ class DashboardController extends Controller
         return back()->with('success', 'Listing status updated.');
     }
 
+    // Delete listing
     public function deleteListing($id)
     {
-        $listing = Location::findOrFail($id);
-        $listing->delete();
+        Location::findOrFail($id)->delete();
         return back()->with('success', 'Listing deleted successfully.');
+    }
+
+    // Show single listing
+    public function showListing($id)
+    {
+        $listing = Location::with('owner')->findOrFail($id);
+        return view('admin.listings.show', compact('listing'));
+    }
+
+    // Profile page
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('admin.profile', compact('user'));
+    }
+
+    // Update profile
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'first_name'      => 'required|string|max:255',
+            'last_name'       => 'required|string|max:255',
+            'phone'           => 'nullable|string|max:20',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $user->first_name = $request->first_name;
+        $user->last_name  = $request->last_name;
+        $user->phone      = $request->phone;
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $user->profile_picture = $path;
+        }
+
+        $user->save();
+        return back()->with('success', 'Profile updated successfully.');
     }
 }

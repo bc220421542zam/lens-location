@@ -24,7 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/users/{id}/toggle', [DashboardController::class, 'toggleStatus'])->name('admin.users.toggle');
 
     Route::post('/admin/listings/{id}/toggle', [DashboardController::class, 'toggleListing'])->name('admin.listings.toggle');
-    Route::delete('/admin/listings/{id}',      [DashboardController::class, 'deleteListing'])->name('admin.listings.delete');
+    Route::delete('/admin/listings/{id}', [DashboardController::class, 'deleteListing'])->name('admin.listings.delete');
+    Route::get('/admin/listings/{id}', [DashboardController::class, 'showListing'])->name('admin.listings.show');
 
     Route::post('/admin/profile', [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
