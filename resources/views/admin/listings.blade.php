@@ -12,29 +12,35 @@
     <p class="title text-indigo-900">Listings Management</p>
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
-
-        {{-- your search bar and table here --}}
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-indigo-900 text-lg">All Listings</h2>
+            <div class="relative flex items-center">
+                <i class="fa-solid fa-magnifying-glass absolute right-3 text-indigo-800 text-sm"></i>
+                <input type="text" placeholder="Search..."
+                    class="border border-indigo-900 pl-4 pr-1 py-1 rounded-xl shade outline-none">
+            </div>
+        </div>
 
         <table class="w-full text-left">
             <thead>
                 <tr class="border-b border-indigo-400 text-indigo-900">
-                    <th class="py-2">Title</th>
-                    <th>Owner</th>
-                    <th>Price/hr</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th class="py-2 pl-2">Title</th>
+                    <th class="pl-3" >Owner</th>
+                    <th class="pl-3">Price/hr</th>
+                    <th class="pl-3">Status</th>
+                    <th class="pl-3">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($listings as $listing)
                 <tr class="border-b border-indigo-400">
-                    <td class="py-2 text-indigo-900">{{ $listing->title }}</td>
-                    <td class="text-indigo-900">{{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? '' }}</td>
-                    <td class="text-indigo-900">Rs. {{ $listing->price_per_hour }}</td>
-                    <td class="{{ $listing->status === 'approved' ? 'text-green-800' : ($listing->status === 'rejected' ? 'text-red-500' : 'text-yellow-600') }}">
+                    <td class="pl-2 py-2 text-indigo-900">{{ $listing->title }}</td>
+                    <td class="pl-2 text-indigo-900">{{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? '' }}</td>
+                    <td class="pl-2 text-indigo-900">Rs. {{ $listing->price_per_hour }}</td>
+                    <td class="pl-2 {{ $listing->status === 'approved' ? 'text-green-800' : ($listing->status === 'rejected' ? 'text-red-500' : 'text-yellow-600') }}">
                         {{ ucfirst($listing->status) }}
                     </td>
-                    <td class="flex items-center gap-3 py-2">
+                    <td class="flex items-center gap-3 py-2 pl-2">
 
                         {{-- VIEW --}}
                         <button @click="openListing({{ $listing->toJson() }})"
@@ -76,6 +82,7 @@
     </div>
 
     {{-- DETAIL POPUP MODAL --}}
+
     <div x-show="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center"
         style="display:none">
@@ -88,7 +95,7 @@
 
             {{-- Close --}}
             <button @click="showModal = false"
-                class="absolute top-3 right-4 text-indigo-400 hover:text-indigo-900 text-xl">
+                class="absolute top-3 right-4 text-indigo-800 hover:text-indigo-900 text-xl">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
@@ -98,37 +105,37 @@
                 <div class="space-y-3">
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">Title</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedListing.title"></span>
+                        <span class="text-indigo-900 text-sm">Title</span>
+                        <span class="text-indigo-900 text-sm font-sm" x-text="selectedListing.title"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">Description</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedListing.description"></span>
+                        <span class="text-indigo-900 text-sm pr-8">Description</span>
+                        <span class="text-indigo-900 text-sm font-sm" x-text="selectedListing.description"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">City</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedListing.city"></span>
+                        <span class="text-indigo-900 text-sm">City</span>
+                        <span class="text-indigo-900 text-sm font-sm" x-text="selectedListing.city"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">Address</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedListing.address"></span>
+                        <span class="text-indigo-900 text-sm">Address</span>
+                        <span class="text-indigo-900 text-sm font-sm" x-text="selectedListing.address"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">Category</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedListing.category"></span>
+                        <span class="text-indigo-900 text-sm">Category</span>
+                        <span class="text-indigo-900 text-sm font-sm" x-text="selectedListing.category"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-400 text-sm">Price/hr</span>
-                        <span class="text-indigo-900 text-sm font-medium">Rs. <span x-text="selectedListing.price_per_hour"></span></span>
+                        <span class="text-indigo-900 text-sm">Price/hr</span>
+                        <span class="text-indigo-900 text-sm font-sm">Rs. <span x-text="selectedListing.price_per_hour"></span></span>
                     </div>
 
                     <div class="flex justify-between pb-2">
-                        <span class="text-indigo-400 text-sm">Status</span>
+                        <span class="text-indigo-900 text-sm">Status</span>
                         <span class="text-sm font-medium"
                             :class="{
                                 'text-green-500' : selectedListing.status === 'approved',

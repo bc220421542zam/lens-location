@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Location;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OwnerController extends Controller
 {
@@ -17,6 +18,7 @@ class OwnerController extends Controller
             'total'    => $locations->count(),
             'active'   => $locations->where('status', 'approved')->count(),
             'pending'  => $locations->where('status', 'pending')->count(),
+            //'pending'  => $locations->where('status', 'rejected')->count(),
             'bookings' => 0, // update when bookings table is ready
         ];
 

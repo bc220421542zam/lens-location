@@ -24,23 +24,23 @@
         <table class="w-full text-left">
             <thead>
                 <tr class="border-b border-indigo-400 text-indigo-900">
-                    <th class="py-2">Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th class="py-2 px-2">Name</th>
+                    <th class="px-3">Email</th>
+                    <th class="px-3">Role</th>
+                    <th class="px-3">Status</th>
+                    <th class="px-3">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($users as $user)
                 <tr class="border-b border-indigo-400">
-                    <td class="py-2 text-indigo-900">{{ $user->first_name }} {{ $user->last_name }}</td>
-                    <td class="text-indigo-900">{{ $user->email }}</td>
-                    <td class="text-indigo-900">{{ $user->role ?? 'N/A' }}</td>
-                    <td class="{{ ($user->status ?? '') === 'active' ? 'text-green-700' : 'text-red-600' }}">
-                        {{ $user->status ?? 'N/A' }}
+                    <td class="py-2 pl-2 text-indigo-900">{{ $user->first_name }} {{ $user->last_name }}</td>
+                    <td class="pl-2 text-indigo-900">{{ $user->email }}</td>
+                    <td class="pl-2 text-indigo-900">{{ $user->role ?? 'N/A' }}</td>
+                    <td class="pl-2 {{ ($user->status ?? '') === 'active' ? 'text-green-700' : 'text-red-600' }}">
+                         {{ ucfirst($user->status) ?? N/A }}
                     </td>
-                    <td class="flex items-center gap-3 py-2">
+                    <td class="flex items-center gap-3 py-2 pl-2">
 
                         {{-- VIEW --}}
                         <button @click="openUser({{ $user->toJson() }})"

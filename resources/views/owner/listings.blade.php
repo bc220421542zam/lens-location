@@ -9,89 +9,109 @@
             <p class="text-sm text-gray-500">Manage your photography locations</p>
         </div>
         <a href="{{ route('owner.locations.create') }}" class="btn w-auto px-4">
-    + Add Location</a>
+            + Add Location
+        </a>
     </div>
+
+    {{-- SUCCESS MESSAGE --}}
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
 
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="card">
             <p class="label">Total Listings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">4</p>
+            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
         </div>
         <div class="card">
-            <p class="label">Active</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">3</p>
-            <p class="text-xs text-green-600 mt-1">↑ 1 this month</p>
+            <p class="label">Approved</p>
+            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['active'] }}</p>
+        </div>
+        <div class="card">
+            <p class="label">Pending</p>
+            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['pending'] }}</p>
         </div>
         <div class="card">
             <p class="label">Total Bookings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1 ">28</p>
+            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['bookings'] }}</p>
         </div>
     </div>
 
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+        @forelse($locations as $location)
         <div class="card p-0 overflow-hidden">
+
+            {{-- IMAGE --}}
             <div class="relative h-40 bg-gray-100">
-                <img src="/images/card1.jpg" alt="Heritage Courtyard" class="w-full h-full object-cover">
-                <span class="badge badge-active">Active</span>
+                @if($location->image)
+                    <img src="{{ Storage::url($location->image) }}"
+                         alt="{{ $location->title }}"
+                         class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                        <span class="text-5xl text-gray-300">📷</span>
+                    </div>
+                @endif
+
+                {{-- STATUS BADGE --}}
+                @if($location->status === 'approved')
+                    <span class="badge badge-active">Approved</span>
+                @elseif($location->status === 'pending')
+                    <span class="badge badge-draft">Pending</span>
+                @elseif($location->status === 'rejected')
+                    <span class="badge" style="background:#fee2e2;color:#dc2626;">Rejected</span>
+                @endif
             </div>
+
+            {{-- INFO --}}
             <div class="p-4">
-                <h3 class="font-semibold text-indigo-900">Heritage Courtyard</h3>
-                <p class="text-sm text-gray-500 mt-1">Old City, Lahore &middot; PKR 4,500/hr &middot; 12 bookings</p>
+                <h3 class="font-semibold text-indigo-900">{{ $location->title }}</h3>
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ $location->city }}
+                    &middot;
+                    PKR {{ number_format($location->price_per_hour) }}/hr
+                    &middot;
+                    {{ ucfirst($location->category) }}
+                </p>
             </div>
-            <div class="flex gap-2 px-4 pb-4">
-                <button class="action-btn">Edit</button>
-                <button class="action-btn danger">Delete</button>
+
+            {{-- ACTION BUTTONS --}}
+        <div class="flex gap-2 px-4 pb-4">
+
+                {{-- Edit --}}
+                <a href="{{ route('owner.locations.edit', $location->id) }}"
+                   class="action-btn text-center">Edit</a>
+
+                {{-- Delete --}}
+                <form action="{{ route('owner.locations.destroy', $location->id) }}"
+                      method="POST"
+                      class="flex-1"
+                      onsubmit="return confirm('Are you sure you want to delete this listing?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="action-btn danger w-full">Delete</button>
+                </form>
+
             </div>
         </div>
 
-        <div class="card p-0 overflow-hidden">
-            <div class="relative h-40 bg-gray-100">
-                <img src="/images/card2.jpg" alt="Garden Studio" class="w-full h-full object-cover">
-                <span class="badge badge-active">Active</span>
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-indigo-900">Garden Studio</h3>
-                <p class="text-sm text-gray-500 mt-1">DHA Phase 5, Lahore &middot; PKR 3,000/hr &middot; 9 bookings</p>
-            </div>
-            <div class="flex gap-2 px-4 pb-4">
-                <button class="action-btn">Edit</button>
-                <button class="action-btn danger">Delete</button>
-            </div>
+        @empty
+        {{-- EMPTY STATE --}}
+        <div class="col-span-2 text-center py-20 text-gray-400">
+            <p class="text-6xl mb-4">📷</p>
+            <p class="text-lg font-medium text-indigo-900">No listings yet</p>
+            <p class="text-sm mt-1">Click "+ Add Location" to create your first listing</p>
+            <a href="{{ route('owner.locations.create') }}"
+               class="btn w-auto px-6 mt-4 inline-block">
+                + Add Location
+            </a>
         </div>
-
-        <div class="card p-0 overflow-hidden">
-            <div class="relative h-40 bg-gray-100">
-                <img src="/images/card3.jpg" alt="Rooftop Terrace" class="w-full h-full object-cover">
-                <span class="badge badge-active">Active</span>
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-indigo-900">Rooftop Terrace</h3>
-                <p class="text-sm text-gray-500 mt-1">Gulberg III, Lahore &middot; PKR 5,500/hr &middot; 7 bookings</p>
-            </div>
-            <div class="flex gap-2 px-4 pb-4">
-                <button class="action-btn">Edit</button>
-                <button class="action-btn danger">Delete</button>
-            </div>
-        </div>
-
-        <div class="card p-0 overflow-hidden">
-            <div class="relative h-40 bg-gray-50 flex items-center justify-center">
-                <span class="text-5xl">...</span>
-                <span class="badge badge-draft">Draft</span>
-            </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-indigo-900">Indoor Greenhouse</h3>
-                <p class="text-sm text-gray-500 mt-1">Johar Town, Lahore &middot; PKR 2,800/hr &middot; 0 bookings</p>
-            </div>
-            <div class="flex gap-2 px-4 pb-4">
-                <button class="action-btn">Edit</button>
-                <button class="action-btn publish">Publish</button>
-                <button class="action-btn danger">Delete</button>
-            </div>
-        </div>
+        @endforelse
 
     </div>
 </div>
