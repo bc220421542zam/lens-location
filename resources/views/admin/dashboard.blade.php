@@ -62,9 +62,9 @@
                     <td class="py-2 text-indigo-900">{{ $listing->title }}</td>
 
                     {{-- Owner --}}
-                    <td class="text-indigo-900">{{ $listing->owner->name ?? 'N/A' }}</td>
+                    <td class="text-indigo-900">{{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? 'N/A' }}</td>
 
-                    {{-- Status --}}
+                    {{-- Status --}} 
                     <td>
                         @if($listing->status === 'approved')
                             <span class="text-green-600">Approved</span>

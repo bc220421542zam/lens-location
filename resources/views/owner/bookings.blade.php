@@ -1,6 +1,6 @@
 <x-layouts.owner>
-<div class="page">
- 
+<div class="page" x-data="{ tab: '{{ request('status', 'all') }}' }">
+
     {{-- TOP BAR --}}
     <div class="top-bar">
         <div>
@@ -8,110 +8,121 @@
             <p class="text-sm text-gray-500">Manage incoming booking requests</p>
         </div>
     </div>
+
+    {{-- SUCCESS MESSAGE --}}
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-200 text-green-700 rounded-lg text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="card">
             <p class="label">Total Bookings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">28</p>
+            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
         </div>
         <div class="card">
             <p class="label">Pending</p>
-            <p class="text-2xl font-semibold text-yellow-600 mt-1">5</p>
+            <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
         </div>
         <div class="card">
             <p class="label">Confirmed</p>
-            <p class="text-2xl font-semibold text-green-600 mt-1">18</p>
+            <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['confirmed'] }}</p>
         </div>
         <div class="card">
             <p class="label">Completed</p>
-            <p class="text-2xl font-semibold text-indigo-800 mt-1">5</p>
+            <p class="text-2xl font-semibold text-indigo-800 mt-1">{{ $stats['completed'] }}</p>
         </div>
     </div>
+
     {{-- FILTER TABS --}}
     <div class="flex gap-2 mb-4">
-        <button class="action-btn">All</button>
-        <button class="action-btn">Pending</button>
-        <button class="action-btn">Confirmed</button>
-        <button class="action-btn">Completed</button>
-        <button class="action-btn danger">Cancelled</button>
+        <a href="{{ route('owner.bookings') }}"
+           class="action-btn {{ !request('status') ? 'bg-indigo-900 text-white' : '' }}">All</a>
+        <a href="{{ route('owner.bookings', ['status' => 'pending']) }}"
+           class="action-btn {{ request('status') == 'pending' ? 'bg-indigo-900 text-white' : '' }}">Pending</a>
+        <a href="{{ route('owner.bookings', ['status' => 'confirmed']) }}"
+           class="action-btn {{ request('status') == 'confirmed' ? 'bg-indigo-900 text-white' : '' }}">Confirmed</a>
+        <a href="{{ route('owner.bookings', ['status' => 'completed']) }}"
+           class="action-btn {{ request('status') == 'completed' ? 'bg-indigo-900 text-white' : '' }}">Completed</a>
+        <a href="{{ route('owner.bookings', ['status' => 'cancelled']) }}"
+           class="action-btn danger {{ request('status') == 'cancelled' ? 'bg-red-700 text-white' : '' }}">Cancelled</a>
     </div>
 
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
- 
-        {{-- BOOKING ROW - PENDING --}}
-        <div class="card flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center font-semibold text-indigo-700 shrink-0">
-                AK
-            </div>
-            <div class="flex-1">
-                <p class="font-semibold text-gray-900">Ahmed Khan</p>
-                <p class="text-sm text-gray-500">Heritage Courtyard &middot; 3 hrs &middot; Wedding shoot</p>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-sm text-gray-400">Apr 19, 2026 &middot; 10:00 AM</p>
-                <p class="font-semibold text-gray-900">PKR 13,500</p>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">Pending</span>
-            </div>
-            <div class="flex flex-col gap-1 shrink-0">
-                <button class="action-btn publish">Accept</button>
-                <button class="action-btn danger">Reject</button>
-            </div>
-        </div>
- 
-        {{-- BOOKING ROW - PENDING --}}
-        <div class="card flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center font-semibold text-purple-700 shrink-0">
-                SR
-            </div>
-            <div class="flex-1">
-                <p class="font-semibold text-gray-900">Sara Riaz</p>
-                <p class="text-sm text-gray-500">Garden Studio &middot; 2 hrs &middot; Portrait session</p>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-sm text-gray-400">Apr 20, 2026 &middot; 2:00 PM</p>
-                <p class="font-semibold text-gray-900">PKR 6,000</p>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">Pending</span>
-            </div>
-            <div class="flex flex-col gap-1 shrink-0">
-                <button class="action-btn publish">Accept</button>
-                <button class="action-btn danger">Reject</button>
-            </div>
-        </div>
- 
-        {{-- BOOKING ROW - CONFIRMED --}}
-        <div class="card flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center font-semibold text-green-700 shrink-0">
-                AZ
-            </div>
-            <div class="flex-1">
-                <p class="font-semibold text-gray-900">Ali Zaman</p>
-                <p class="text-sm text-gray-500">Rooftop Terrace &middot; 4 hrs &middot; Brand shoot</p>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-sm text-gray-400">Apr 22, 2026 &middot; 6:00 PM</p>
-                <p class="font-semibold text-gray-900">PKR 22,000</p>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Confirmed</span>
-            </div>
-        </div>
- 
-        {{-- BOOKING ROW - COMPLETED --}}
-        <div class="card flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 shrink-0">
-                ZB
-            </div>
-            <div class="flex-1">
-                <p class="font-semibold text-gray-900">Zara Butt</p>
-                <p class="text-sm text-gray-500">Heritage Courtyard &middot; 2 hrs &middot; Graduation photos</p>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-sm text-gray-400">Apr 15, 2026 &middot; 11:00 AM</p>
-                <p class="font-semibold text-gray-900">PKR 9,000</p>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700">Completed</span>
-            </div>
-        </div>
- 
-    </div>
 
+        @forelse($bookings as $booking)
+        <div class="card flex items-center gap-4">
+
+            {{-- AVATAR --}}
+            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 shrink-0">
+                {{ strtoupper(substr($booking->photographer->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr($booking->photographer->last_name ?? '', 0, 1)) }}
+            </div>
+
+            {{-- INFO --}}
+            <div class="flex-1">
+                <p class="font-semibold text-gray-900">
+                    {{ $booking->photographer->first_name ?? 'Unknown' }}
+                    {{ $booking->photographer->last_name ?? '' }}
+                </p>
+                <p class="text-sm text-gray-500">
+                    {{ $booking->location->title ?? 'N/A' }}
+                    &middot; {{ $booking->hours }} hrs
+                    @if($booking->shoot_type) &middot; {{ $booking->shoot_type }} @endif
+                </p>
+            </div>
+
+            {{-- DATE & PRICE --}}
+            <div class="text-right shrink-0">
+                <p class="text-sm text-gray-400">
+                    {{ $booking->booking_date->format('M d, Y') }}
+                    &middot;
+                    {{ $booking->booking_date->format('g:i A') }}
+                </p>
+                <p class="font-semibold text-gray-900">
+                    PKR {{ number_format($booking->total_price) }}
+                </p>
+
+                {{-- STATUS BADGE --}}
+                @if($booking->status === 'pending')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+                @elseif($booking->status === 'confirmed')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Confirmed</span>
+                @elseif($booking->status === 'completed')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700">Completed</span>
+                @elseif($booking->status === 'cancelled')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-600">Cancelled</span>
+                @endif
+            </div>
+
+            {{-- ACTIONS (only for pending) --}}
+            @if($booking->status === 'pending')
+            <div class="flex flex-col gap-1 shrink-0">
+                <form action="{{ route('owner.bookings.accept', $booking->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="action-btn publish w-full">Accept</button>
+                </form>
+                <form action="{{ route('owner.bookings.reject', $booking->id) }}" method="POST"
+                      onsubmit="return confirm('Reject this booking?')">
+                    @csrf
+                    <button type="submit" class="action-btn danger w-full">Reject</button>
+                </form>
+            </div>
+            @endif
+
+        </div>
+        @empty
+        <div class="card text-center py-10 text-gray-400">
+            <i class="fa-solid fa-calendar"></i>
+            <p class="font-medium">No bookings found</p>
+            <p class="text-sm mt-1">
+                {{ request('status') ? 'No ' . request('status') . ' bookings.' : 'You have no bookings yet.' }}
+            </p>
+        </div>
+        @endforelse
+
+    </div>
 </div>
 </x-layouts.owner>

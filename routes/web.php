@@ -33,15 +33,17 @@ Route::middleware(['auth'])->group(function () {
 
 // Owner Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/owner/listings',         [OwnerController::class, 'listings'])->name('owner.listings');
-    Route::get('/owner/bookings',         [OwnerController::class, 'bookings'])->name('owner.bookings');
-    Route::get('/owner/profile',          [OwnerController::class, 'profile'])->name('owner.profile');
+    Route::get('/owner/listings', [OwnerController::class, 'listings'])->name('owner.listings');
+    Route::get('/owner/bookings', [OwnerController::class, 'bookings'])->name('owner.bookings');
+    Route::get('/owner/profile',  [OwnerController::class, 'profile'])->name('owner.profile');
+    Route::post('/owner/profile/update', [OwnerController::class, 'updateProfile'])->name('owner.profile.update');
     
-   Route::get('/owner/locations/create',    [LocationController::class, 'create'])->name('owner.locations.create');
-    Route::post('/owner/locations',          [LocationController::class, 'store'])->name('owner.locations.store');
+    Route::get('/owner/locations/create', [LocationController::class, 'create'])->name('owner.locations.create');
+    Route::post('/owner/locations', [LocationController::class, 'store'])->name('owner.locations.store');
     Route::get('/owner/locations/{id}/edit', [LocationController::class, 'edit'])->name('owner.locations.edit');
-    Route::put('/owner/locations/{id}',      [LocationController::class, 'update'])->name('owner.locations.update');
-    Route::delete('/owner/locations/{id}',   [LocationController::class, 'destroy'])->name('owner.locations.destroy');
+    Route::put('/owner/locations/{id}', [LocationController::class, 'update'])->name('owner.locations.update');
+    Route::delete('/owner/locations/{id}', [LocationController::class, 'destroy'])->name('owner.locations.destroy');
+    
 });
 
 // photographer Routes

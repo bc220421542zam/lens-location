@@ -15,7 +15,7 @@
 
     {{-- SUCCESS MESSAGE --}}
     @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
+        <div class="mb-4 p-3 bg-green-200 text-green-700 rounded-lg text-sm">
             {{ session('success') }}
         </div>
     @endif
@@ -54,7 +54,7 @@
                          class="w-full h-full object-cover">
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-gray-50">
-                        <span class="text-5xl text-gray-300">📷</span>
+                        <span class="text-5xl text-gray-300"><i class="fa-solid fa-camera"></i></span>
                     </div>
                 @endif
 
@@ -103,13 +103,9 @@
         @empty
         {{-- EMPTY STATE --}}
         <div class="col-span-2 text-center py-20 text-gray-400">
-            <p class="text-6xl mb-4">📷</p>
+            <i class="icon fa-solid fa-camera"></i>
             <p class="text-lg font-medium text-indigo-900">No listings yet</p>
             <p class="text-sm mt-1">Click "+ Add Location" to create your first listing</p>
-            <a href="{{ route('owner.locations.create') }}"
-               class="btn w-auto px-6 mt-4 inline-block">
-                + Add Location
-            </a>
         </div>
         @endforelse
 
