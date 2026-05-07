@@ -9,28 +9,47 @@
         </div>
     </div>
 
-    {{-- SUCCESS MESSAGE --}}
-    @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div class="flex gap-6">
+    {{-- RESPONSIVE WRAPPER --}}
+    <div class="flex flex-col lg:flex-row gap-6">
 
         {{-- LEFT COLUMN --}}
-        <div class="flex flex-col gap-4 w-56 shrink-0">
+        <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
 
-            {{-- AVATAR CARD --}}
-            <div class="card flex flex-col items-center py-6">
-                <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-user text-2xl text-indigo-400"></i>
+            {{-- PHOTO UPLOAD — separate form with its own route --}}
+            <form action="{{ route('owner.profile.photo') }}" method="POST" 
+                enctype="multipart/form-data">
+                @csrf
+                <input type="file" id="profile_pic_trigger" name="profile_picture"
+                    class="hidden" accept="image/*" onchange="this.form.submit()">
+
+                <div class="card flex flex-col items-center py-6">
+
+                    <div class="relative w-20 h-20 mb-3">
+                        @if(auth()->user()->profile_picture)
+                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
+                                alt="Profile"
+                                class="w-20 h-20 rounded-full object-cover border-2 border-indigo-200">
+                        @else
+                            <div class="w-20 h-20 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center">
+                                <i class="fa-solid fa-user text-3xl text-indigo-400"></i>
+                            </div>
+                        @endif
+
+                        {{-- Camera overlay --}}
+                        <label for="profile_pic_trigger"
+                            class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#2C3399] transition">
+                            <i class="fa-solid fa-camera text-white" style="font-size:10px"></i>
+                        </label>
+                    </div>
+
+                    <p class="font-semibold text-indigo-900 text-center">
+                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1 text-center">
+                        {{ auth()->user()->email }}
+                    </p>
                 </div>
-                <p class="font-semibold text-indigo-900">
-                    {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-                </p>
-                <p class="text-xs text-gray-400 mt-1">{{ auth()->user()->email }}</p>
-            </div>
+            </form>
 
             {{-- BUSINESS STATUS CARD --}}
             <div class="card">
@@ -60,23 +79,23 @@
         </div>
 
         {{-- RIGHT COLUMN --}}
-        <div class="flex-1">
+        <div class="flex-1 min-w-0">
 
             {{-- TABS --}}
-            <div class="flex gap-2 mb-4">
+            <div class="flex gap-2 mb-4 flex-wrap">
                 <button @click="tab = 'profile'"
                     :class="tab === 'profile' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-5 py-1.5 rounded-lg text-sm transition">
+                    class="px-10 py-2 rounded-lg text-sm transition">
                     Profile
                 </button>
                 <button @click="tab = 'payment'"
                     :class="tab === 'payment' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-5 py-1.5 rounded-lg text-sm transition">
+                    class="px-10 py-2 rounded-lg text-sm transition">
                     Payment
                 </button>
                 <button @click="tab = 'settings'"
                     :class="tab === 'settings' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-5 py-1.5 rounded-lg text-sm transition">
+                    class="px-10 py-2 rounded-lg text-sm transition">
                     Settings
                 </button>
             </div>
@@ -91,13 +110,13 @@
 
                         <div>
                             <label class="text-xs text-gray-500 mb-1 block">Name</label>
-                            <div class="flex gap-3">
+                            <div class="flex flex-col sm:flex-row gap-3">
                                 <input type="text" name="first_name"
-                                    value="{{ auth()->user()->first_name }}"
+                                    value="{{ old('first_name', auth()->user()->first_name) }}"
                                     placeholder="First name"
                                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 @error('first_name') border-red-400 @enderror">
                                 <input type="text" name="last_name"
-                                    value="{{ auth()->user()->last_name }}"
+                                    value="{{ old('last_name', auth()->user()->last_name) }}"
                                     placeholder="Last name"
                                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                             </div>
@@ -109,9 +128,9 @@
                         <div>
                             <label class="text-xs text-gray-500 mb-1 block">Business Name</label>
                             <input type="text" name="business_name"
-                                value="{{ auth()->user()->business_name ?? '' }}"
+                                value="{{ old('business_name', auth()->user()->business_name ?? '') }}"
                                 placeholder="Your business name"
-                                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                         </div>
 
                         <div>
@@ -125,22 +144,22 @@
                         <div>
                             <label class="text-xs text-gray-500 mb-1 block">Phone</label>
                             <input type="text" name="phone"
-                                value="{{ auth()->user()->phone ?? '' }}"
+                                value="{{ old('phone', auth()->user()->phone ?? '') }}"
                                 placeholder="Your phone number"
                                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                         </div>
 
                     </div>
 
-                    <div class="flex gap-3 mt-6 justify-end">
-                        <button type="submit"
-                            class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
-                            Update
-                        </button>
+                    <div class="flex flex-wrap gap-3 mt-6 justify-end">
                         <a href="{{ route('owner.listings') }}"
                             class="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                             Cancel
                         </a>
+                        <button type="submit"
+                            class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            Update
+                        </button>
                     </div>
                 </form>
             </div>
@@ -149,123 +168,135 @@
             <div x-show="tab === 'payment'" class="card space-y-6">
                 <h3 class="font-semibold text-indigo-900">Payment Information</h3>
 
-                {{-- Bank Details --}}
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Bank Account</p>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="text-xs text-gray-500 mb-1 block">Account Holder Name</label>
-                            <input type="text" placeholder="Full name on account"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                        <div class="flex gap-3">
-                            <div class="flex-1">
-                                <label class="text-xs text-gray-500 mb-1 block">Bank Name</label>
-                                <input type="text" placeholder="e.g. HBL, Meezan"
+                <form action="{{ route('owner.profile.payment') }}" method="POST">
+                    @csrf
+
+                    {{-- Bank Account --}}
+                    <div>
+                        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Bank Account</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Account Holder Name</label>
+                                <input type="text" name="account_holder"
+                                    value="{{ old('account_holder', $payment->account_holder ?? '') }}"
+                                    placeholder="Full name on account"
                                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                             </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500 mb-1 block">Bank Name</label>
+                                    <input type="text" name="bank_name"
+                                        value="{{ old('bank_name', $payment->bank_name ?? '') }}"
+                                        placeholder="e.g. HBL, Meezan"
+                                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500 mb-1 block">Account Number</label>
+                                    <input type="text" name="account_number"
+                                        value="{{ old('account_number', $payment->account_number ?? '') }}"
+                                        placeholder="IBAN or account number"
+                                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-100 my-4">
+
+                    {{-- Mobile Wallet --}}
+                    <div>
+                        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Mobile Wallet</p>
+                        <div class="flex flex-col sm:flex-row gap-3">
                             <div class="flex-1">
-                                <label class="text-xs text-gray-500 mb-1 block">Account Number</label>
-                                <input type="text" placeholder="IBAN or account number"
+                                <label class="text-xs text-gray-500 mb-1 block">Wallet Type</label>
+                                <select name="wallet_type"
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                    <option value="">Select wallet</option>
+                                    <option {{ old('wallet_type', $payment->wallet_type ?? '') == 'JazzCash'  ? 'selected' : '' }}>JazzCash</option>
+                                    <option {{ old('wallet_type', $payment->wallet_type ?? '') == 'EasyPaisa' ? 'selected' : '' }}>EasyPaisa</option>
+                                    <option {{ old('wallet_type', $payment->wallet_type ?? '') == 'NayaPay'   ? 'selected' : '' }}>NayaPay</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-xs text-gray-500 mb-1 block">Wallet Number</label>
+                                <input type="text" name="wallet_number"
+                                    value="{{ old('wallet_number', $payment->wallet_number ?? '') }}"
+                                    placeholder="03xx-xxxxxxx"
                                     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-gray-100">
-
-                {{-- Mobile Wallet --}}
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">Mobile Wallet</p>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-xs text-gray-500 mb-1 block">Wallet Type</label>
-                            <select class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                                <option value="">Select wallet</option>
-                                <option>JazzCash</option>
-                                <option>EasyPaisa</option>
-                                <option>NayaPay</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs text-gray-500 mb-1 block">Wallet Number</label>
-                            <input type="text" placeholder="03xx-xxxxxxx"
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
+                    <div class="flex justify-end mt-6">
+                        <button type="submit"
+                            class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            Save Payment Info
+                        </button>
                     </div>
-                </div>
 
-                <div class="flex justify-end">
-                    <button class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
-                        Save Payment Info
-                    </button>
-                </div>
+                </form>
             </div>
-            {{-- SETTINGS TAB  --}}
+
+            {{-- SETTINGS TAB --}}
             <div x-show="tab === 'settings'" class="space-y-4"
-                 x-data="{
+                x-data="{
                     notifications: true,
                     emailAlerts: true,
                     smsAlerts: false,
                     twoFactor: false,
                     profileVisible: true
-                 }">
+                }">
 
                 {{-- NOTIFICATIONS --}}
                 <div class="card">
                     <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Notifications</p>
                     <div class="space-y-4">
-
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="text-sm font-medium text-indigo-900">Push Notifications</p>
                                 <p class="text-xs text-gray-400">Receive booking alerts in app</p>
                             </div>
                             <button @click="notifications = !notifications"
                                 :class="notifications ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200">
+                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
                                 <span :class="notifications ? 'translate-x-5' : 'translate-x-1'"
                                     class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
                                 </span>
                             </button>
                         </div>
-
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="text-sm font-medium text-indigo-900">Email Alerts</p>
                                 <p class="text-xs text-gray-400">Get booking confirmations via email</p>
                             </div>
                             <button @click="emailAlerts = !emailAlerts"
                                 :class="emailAlerts ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200">
+                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
                                 <span :class="emailAlerts ? 'translate-x-5' : 'translate-x-1'"
                                     class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
                                 </span>
                             </button>
                         </div>
-
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="text-sm font-medium text-indigo-900">SMS Alerts</p>
                                 <p class="text-xs text-gray-400">Receive SMS for new bookings</p>
                             </div>
                             <button @click="smsAlerts = !smsAlerts"
                                 :class="smsAlerts ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200">
+                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
                                 <span :class="smsAlerts ? 'translate-x-5' : 'translate-x-1'"
                                     class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
                                 </span>
                             </button>
                         </div>
-
                     </div>
                 </div>
 
                 {{-- PREFERENCES --}}
                 <div class="card">
                     <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Preferences</p>
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="text-xs text-gray-500 mb-1 block">Theme</label>
                             <select class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
@@ -292,53 +323,141 @@
                         </div>
                     </div>
                 </div>
+                {{-- Change Password --}}
+            <div class="card bg-[#EEEFF7]">
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Change Password</p>
+                <p class="text-xs text-gray-400 mb-4">Update your password to keep your account secure</p>
+
+                <form action="{{ route('owner.profile.password') }}" method="POST">
+                    @csrf
+
+                    {{-- 3 fields in a row on md+, stacked on small --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+                        {{-- Current Password --}}
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Current Password</label>
+                            <div class="relative text-gray-400">
+                                <input type="password" name="current_password" id="s_current_pw"
+                                    placeholder="Current password"
+                                    class="w-full border rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
+                                    {{ $errors->has('current_password') ? 'border-red-400' : 'border-gray-200' }}">
+                                <button type="button" onclick="togglePw('s_current_pw','s_eye1')"
+                                    class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
+                                    <i id="s_eye1" class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                            @error('current_password')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- New Password --}}
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">New Password</label>
+                            <div class="relative text-gray-400">
+                                <input type="password" name="new_password" id="s_new_pw"
+                                    placeholder="New password"
+                                    oninput="checkStrength(this.value)"
+                                    class="w-full border rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
+                                    {{ $errors->has('new_password') ? 'border-red-400' : 'border-gray-200' }}">
+                                <button type="button" onclick="togglePw('s_new_pw','s_eye2')"
+                                    class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
+                                    <i id="s_eye2" class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                            <p id="s_strength_text" class="text-xs mt-1 text-gray-400">Enter a password</p>
+                            @error('new_password')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Confirm Password --}}
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Confirm New Password</label>
+                            <div class="relative text-gray-400">
+                                <input type="password" name="new_password_confirmation" id="s_confirm_pw"
+                                    placeholder="Confirm new password"
+                                    oninput="checkMatch()"
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <button type="button" onclick="togglePw('s_confirm_pw','s_eye3')"
+                                    class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
+                                    <i id="s_eye3" class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                            <p id="s_match_text" class="text-xs mt-1" style="color:transparent">Passwords match</p>
+                        </div>
+
+                    </div>
+
+                    {{-- Password rules --}}
+                    <div class="bg-indigo-50 rounded-lg p-3 mb-4">
+                        <p class="text-xs font-medium text-indigo-900 mb-2">Password must contain:</p>
+                        <div class="grid grid-cols-2 gap-1">
+                            <p id="s_rule_length"  class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-circle text-[6px]"></i> At least 8 characters</p>
+                            <p id="s_rule_upper"   class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-circle text-[6px]"></i> One uppercase letter</p>
+                            <p id="s_rule_number"  class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-circle text-[6px]"></i> One number</p>
+                            <p id="s_rule_special" class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-circle text-[6px]"></i> One special character</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <button type="reset"
+                            class="px-5 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
+                            Clear
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            Update Password
+                        </button>
+                    </div>
+
+                </form>
+            </div>
 
                 {{-- SECURITY --}}
                 <div class="card">
                     <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Security</p>
                     <div class="space-y-4">
-
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="text-sm font-medium text-indigo-900">Two-Factor Verification</p>
                                 <p class="text-xs text-gray-400">Add extra security to your account</p>
                             </div>
                             <button @click="twoFactor = !twoFactor"
                                 :class="twoFactor ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200">
+                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
                                 <span :class="twoFactor ? 'translate-x-5' : 'translate-x-1'"
                                     class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
                                 </span>
                             </button>
                         </div>
-
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-4">
                             <div>
                                 <p class="text-sm font-medium text-indigo-900">Public Profile Visibility</p>
                                 <p class="text-xs text-gray-400">Allow photographers to see your profile</p>
                             </div>
                             <button @click="profileVisible = !profileVisible"
                                 :class="profileVisible ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200">
+                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
                                 <span :class="profileVisible ? 'translate-x-5' : 'translate-x-1'"
                                     class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
                                 </span>
                             </button>
                         </div>
-
                     </div>
                 </div>
 
                 {{-- DANGER ZONE --}}
                 <div class="card border border-red-100">
                     <p class="text-xs font-semibold text-red-400 uppercase tracking-wide mb-4">Danger Zone</p>
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <p class="text-sm font-medium text-red-600">Delete Account</p>
                             <p class="text-xs text-gray-400">Permanently delete your account and all data</p>
                         </div>
                         <button onclick="return confirm('Are you sure? This cannot be undone.')"
-                            class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition">
+                            class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition shrink-0">
                             Delete Account
                         </button>
                     </div>

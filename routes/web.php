@@ -44,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/owner/locations/{id}', [LocationController::class, 'update'])->name('owner.locations.update');
     Route::delete('/owner/locations/{id}', [LocationController::class, 'destroy'])->name('owner.locations.destroy');
     
+    Route::post('/owner/profile/photo', [OwnerController::class, 'updatePhoto'])->name('owner.profile.photo');
+    Route::post('/owner/profile/payment', [OwnerController::class, 'updatePayment'])->name('owner.profile.payment');
+    Route::post('/owner/profile/password', [OwnerController::class, 'updatePassword'])->name('owner.profile.password');
 });
 
 // photographer Routes
