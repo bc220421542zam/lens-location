@@ -63,8 +63,6 @@
                     <span class="badge badge-active">Approved</span>
                 @elseif($location->status === 'pending')
                     <span class="badge badge-draft">Pending</span>
-                @elseif($location->status === 'rejected')
-                    <span class="badge" style="background:#fee2e2;color:#dc2626;">Rejected</span>
                 @endif
             </div>
 

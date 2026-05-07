@@ -9,13 +9,12 @@
         </div>
     </div>
 
-    {{-- RESPONSIVE WRAPPER --}}
     <div class="flex flex-col lg:flex-row gap-6">
 
         {{-- LEFT COLUMN --}}
         <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
 
-            {{-- PHOTO UPLOAD — separate form with its own route --}}
+            {{-- PHOTO UPLOAD --}}
             <form action="{{ route('owner.profile.photo') }}" method="POST" 
                 enctype="multipart/form-data">
                 @csrf
