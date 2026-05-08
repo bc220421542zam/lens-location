@@ -11,18 +11,14 @@
 
 <body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0">
 
- <x-nav />
-
-    {{-- BOTTOM SECTION: sidebar + content --}}
+    <x-nav />
+    {{-- sidebar --}}
     <div class="flex flex-1 overflow-hidden">
-
     <x-sidebar-admin /> 
-
         {{-- MAIN CONTENT --}}
         <main class="flex-1 overflow-y-auto p-8">
             {{ $slot }}
         </main>
-
     </div>
 
 </body>
