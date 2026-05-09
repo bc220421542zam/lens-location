@@ -332,39 +332,6 @@
         />
     </div>
 
-                {{-- SECURITY --}}
-                <div class="card">
-                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Security</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">Two-Factor Verification</p>
-                                <p class="text-xs text-gray-400">Add extra security to your account</p>
-                            </div>
-                            <button @click="twoFactor = !twoFactor"
-                                :class="twoFactor ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="twoFactor ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
-                                </span>
-                            </button>
-                        </div>
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">Public Profile Visibility</p>
-                                <p class="text-xs text-gray-400">Allow photographers to see your profile</p>
-                            </div>
-                            <button @click="profileVisible = !profileVisible"
-                                :class="profileVisible ? 'bg-indigo-900' : 'bg-gray-200'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="profileVisible ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block">
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 {{-- DANGER ZONE --}}
                 <div class="card border border-red-100">
                     <p class="text-xs font-semibold text-red-400 uppercase tracking-wide mb-4">Danger Zone</p>
