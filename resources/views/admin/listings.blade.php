@@ -40,8 +40,8 @@
                             {{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? '' }}
                         </td>
                         <td class="pl-2 text-sm text-indigo-900">Rs. {{ $listing->price_per_hour }}</td>
-                        <td class="pl-2 text-sm {{ $listing->status === 'approved' ? 'text-green-800' : ($listing->status === 'rejected' ? 'text-red-500' : 'text-yellow-600') }}">
-                            {{ ucfirst($listing->status) }}
+                        <td class="pl-2 text-sm {{ $listing->status->value === 'approved' ? 'text-green-800' : ($listing->status->value === 'rejected' ? 'text-red-500' : 'text-yellow-600') }}">
+                            {{ ucfirst($listing->status->value) }}
                         </td>
                         <td class="flex items-center gap-3 py-2 pl-2">
 
@@ -51,8 +51,8 @@
 
                             <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" title="{{ $listing->status === 'approved' ? 'Pending' : 'Approve' }}">
-                                    <i class="fa-solid {{ $listing->status === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-green-800 text-lg"></i>
+                                <button type="submit" title="{{ $listing->status->value === 'approved' ? 'Pending' : 'Approve' }}">
+                                    <i class="fa-solid {{ $listing->status->value === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-green-800 text-lg"></i>
                                 </button>
                             </form>
 

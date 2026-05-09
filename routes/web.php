@@ -1,68 +1,75 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\OwnerController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\PhotographerController;
+use App\Http\Controllers\Owner;
+use App\Http\Controllers\Photographer;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect('/login');
-});
+Route::redirect('/', '/login');
 
-// Admin Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/users', [DashboardController::class, 'users'])->name('admin.users');
-    Route::get('/admin/listings', [DashboardController::class, 'listings'])->name('admin.listings');
-    Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
-
-    Route::post('/admin/profile',          [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
-    Route::post('/admin/profile/photo',    [DashboardController::class, 'updatePhoto'])->name('admin.profile.photo');
-    Route::post('/admin/profile/password', [DashboardController::class, 'updatePassword'])->name('admin.profile.password');
-
-    Route::get('/admin/users/{id}', [DashboardController::class, 'userDetail'])->name('admin.users.detail');
-    Route::delete('/admin/users/{id}', [DashboardController::class, 'deleteUser'])->name('admin.users.delete');
-    Route::post('/admin/users/{id}/toggle', [DashboardController::class, 'toggleStatus'])->name('admin.users.toggle');
-
-    Route::post('/admin/listings/{id}/toggle', [DashboardController::class, 'toggleListing'])->name('admin.listings.toggle');
-    Route::delete('/admin/listings/{id}', [DashboardController::class, 'deleteListing'])->name('admin.listings.delete');
-    Route::get('/admin/listings/{id}', [DashboardController::class, 'showListing'])->name('admin.listings.show');
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
-
-// Owner Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/owner/listings', [OwnerController::class, 'listings'])->name('owner.listings');
-    Route::get('/owner/bookings', [OwnerController::class, 'bookings'])->name('owner.bookings');
-    Route::get('/owner/profile',  [OwnerController::class, 'profile'])->name('owner.profile');
-    Route::post('/owner/profile/update', [OwnerController::class, 'updateProfile'])->name('owner.profile.update');
-    
-    Route::get('/owner/locations/create', [LocationController::class, 'create'])->name('owner.locations.create');
-    Route::post('/owner/locations', [LocationController::class, 'store'])->name('owner.locations.store');
-    Route::get('/owner/locations/{id}/edit', [LocationController::class, 'edit'])->name('owner.locations.edit');
-    Route::put('/owner/locations/{id}', [LocationController::class, 'update'])->name('owner.locations.update');
-    Route::delete('/owner/locations/{id}', [LocationController::class, 'destroy'])->name('owner.locations.destroy');
-    
-    Route::post('/owner/profile/photo', [OwnerController::class, 'updatePhoto'])->name('owner.profile.photo');
-    Route::post('/owner/profile/payment', [OwnerController::class, 'updatePayment'])->name('owner.profile.payment');
-    Route::post('/owner/profile/password', [OwnerController::class, 'updatePassword'])->name('owner.profile.password');
-});
-
-// photographer Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/photographer/dashboard', [PhotographerController::class, 'dashboard'])->name('photographer.dashboard');
-    Route::get('/photographer/bookings', [PhotographerController::class, 'bookings'])->name('photographer.bookings');
-    Route::get('/photographer/listings', [PhotographerController::class, 'listings'])->name('photographer.listings');
-    Route::get('/photographer/profile', [PhotographerController::class, 'profile'])->name('photographer.profile');
-});
-
-// Guest Routes
 Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // ── Admin ────────────────────────────────────────────────────────────
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        // Users
+        Route::get('/users',                [Admin\UserController::class, 'index'])->name('users');
+        Route::get('/users/{user}',         [Admin\UserController::class, 'show'])->name('users.detail');
+        Route::delete('/users/{user}',      [Admin\UserController::class, 'destroy'])->name('users.delete');
+        Route::post('/users/{user}/toggle', [Admin\UserController::class, 'toggleStatus'])->name('users.toggle');
+
+        // Listings
+        Route::get('/listings',                   [Admin\ListingController::class, 'index'])->name('listings');
+        Route::get('/listings/{listing}',         [Admin\ListingController::class, 'show'])->name('listings.show');
+        Route::post('/listings/{listing}/toggle', [Admin\ListingController::class, 'toggleApproval'])->name('listings.toggle');
+        Route::delete('/listings/{listing}',      [Admin\ListingController::class, 'destroy'])->name('listings.delete');
+
+        // Profile
+        Route::get('/profile',           [Admin\ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile',          [Admin\ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/photo',    [Admin\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
+    });
+
+    // ── Owner ────────────────────────────────────────────────────────────
+    Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
+        Route::get('/listings', [Owner\ListingController::class, 'index'])->name('listings');
+
+        // Bookings
+        Route::get('/bookings',                  [Owner\BookingController::class, 'index'])->name('bookings');
+        Route::post('/bookings/{booking}/accept', [Owner\BookingController::class, 'accept'])->name('bookings.accept');
+        Route::post('/bookings/{booking}/reject', [Owner\BookingController::class, 'reject'])->name('bookings.reject');
+
+        // Locations (the listings owners create)
+        Route::get('/locations/create',         [Owner\LocationController::class, 'create'])->name('locations.create');
+        Route::post('/locations',               [Owner\LocationController::class, 'store'])->name('locations.store');
+        Route::get('/locations/{location}/edit', [Owner\LocationController::class, 'edit'])->name('locations.edit');
+        Route::put('/locations/{location}',      [Owner\LocationController::class, 'update'])->name('locations.update');
+        Route::delete('/locations/{location}',   [Owner\LocationController::class, 'destroy'])->name('locations.destroy');
+
+        // Profile
+        Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile/update',        [Owner\ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/photo',         [Owner\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
+        Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
+    });
+
+    // ── Photographer ─────────────────────────────────────────────────────
+    Route::middleware('role:photographer')->prefix('photographer')->name('photographer.')->group(function () {
+        Route::get('/dashboard', [Photographer\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/bookings',  [Photographer\DashboardController::class, 'bookings'])->name('bookings');
+        Route::get('/listings',  [Photographer\DashboardController::class, 'listings'])->name('listings');
+        Route::get('/profile',   [Photographer\DashboardController::class, 'profile'])->name('profile');
+    });
 });

@@ -64,11 +64,11 @@
                         </td>
 
                         <td>
-                            @if($listing->status === 'approved')
+                            @if($listing->status->value === 'approved')
                                 <span class="text-green-600 text-sm">Approved</span>
-                            @elseif($listing->status === 'pending')
+                            @elseif($listing->status->value === 'pending')
                                 <span class="text-yellow-500 text-sm">Pending</span>
-                            @elseif($listing->status === 'rejected')
+                            @elseif($listing->status->value === 'rejected')
                                 <span class="text-red-500 text-sm">Rejected</span>
                             @endif
                         </td>
@@ -76,8 +76,8 @@
                         <td class="flex items-center gap-3 py-2">
                             <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" title="{{ $listing->status === 'approved' ? 'Reject' : 'Approve' }}">
-                                    <i class="fa-solid {{ $listing->status === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-green-800 text-lg"></i>
+                                <button type="submit" title="{{ $listing->status->value === 'approved' ? 'Reject' : 'Approve' }}">
+                                    <i class="fa-solid {{ $listing->status->value === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-green-800 text-lg"></i>
                                 </button>
                             </form>
                             <a href="{{ route('admin.listings.show', $listing->id) }}">

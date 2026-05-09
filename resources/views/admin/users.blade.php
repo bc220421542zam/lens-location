@@ -37,9 +37,9 @@
                     <tr class="border-b border-indigo-400">
                         <td class="py-2 pl-2 text-sm text-indigo-900">{{ $user->first_name }} {{ $user->last_name }}</td>
                         <td class="pl-2 text-sm text-indigo-900">{{ $user->email }}</td>
-                        <td class="pl-2 text-sm text-indigo-900">{{ $user->role ?? 'N/A' }}</td>
-                        <td class="pl-2 text-sm {{ ($user->status ?? '') === 'active' ? 'text-green-700' : 'text-red-600' }}">
-                            {{ ucfirst($user->status ?? 'N/A') }}
+                        <td class="pl-2 text-sm text-indigo-900">{{ $user->role?->value ?? 'N/A' }}</td>
+                        <td class="pl-2 text-sm {{ $user->status?->value === 'active' ? 'text-green-700' : 'text-red-600' }}">
+                            {{ ucfirst($user->status?->value ?? 'N/A') }}
                         </td>
                         <td class="flex items-center gap-3 py-2 pl-2">
 
@@ -50,7 +50,7 @@
                             <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
                                 @csrf
                                 <button type="submit" class="text-green-800 hover:opacity-75">
-                                    <i class="fa-solid {{ $user->status === 'active' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-lg"></i>
+                                    <i class="fa-solid {{ $user->status->value === 'active' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-lg"></i>
                                 </button>
                             </form>
 
