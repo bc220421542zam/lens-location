@@ -17,9 +17,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', [DashboardController::class, 'users'])->name('admin.users');
     Route::get('/admin/listings', [DashboardController::class, 'listings'])->name('admin.listings');
     Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
-    
+
+    Route::post('/admin/profile',          [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
+    Route::post('/admin/profile/photo',    [DashboardController::class, 'updatePhoto'])->name('admin.profile.photo');
+    Route::post('/admin/profile/password', [DashboardController::class, 'updatePassword'])->name('admin.profile.password');
+
     Route::get('/admin/users/{id}', [DashboardController::class, 'userDetail'])->name('admin.users.detail');
-    Route::get('/admin/users', [DashboardController::class, 'users'])->name('admin.users');
     Route::delete('/admin/users/{id}', [DashboardController::class, 'deleteUser'])->name('admin.users.delete');
     Route::post('/admin/users/{id}/toggle', [DashboardController::class, 'toggleStatus'])->name('admin.users.toggle');
 
@@ -27,7 +30,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/listings/{id}', [DashboardController::class, 'deleteListing'])->name('admin.listings.delete');
     Route::get('/admin/listings/{id}', [DashboardController::class, 'showListing'])->name('admin.listings.show');
 
-    Route::post('/admin/profile', [DashboardController::class, 'updateProfile'])->name('admin.profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

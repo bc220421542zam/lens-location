@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Location;
 
 class DashboardController extends Controller
@@ -76,7 +78,7 @@ class DashboardController extends Controller
         return view('admin.listings', compact('listings'));
     }
 
-    // Toggle listing status ← KEEP ONLY THIS ONE
+    // Toggle listing status
     public function toggleListing($id)
     {
         $listing = Location::findOrFail($id);
@@ -99,11 +101,28 @@ class DashboardController extends Controller
         return view('admin.listings.show', compact('listing'));
     }
 
-    // Profile page
+    // Admin profile
     public function profile()
     {
+        return view('admin.profile');
+    }
+
+    // Update photo
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
         $user = auth()->user();
-        return view('admin.profile', compact('user'));
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $user->profile_picture = $path;
+            $user->save();
+        }
+
+        return back()->with('success', 'Profile photo updated.');
     }
 
     // Update profile
@@ -112,22 +131,57 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'first_name'      => 'required|string|max:255',
-            'last_name'       => 'required|string|max:255',
-            'phone'           => 'nullable|string|max:20',
-            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'phone'      => 'nullable|string|max:20',
         ]);
 
         $user->first_name = $request->first_name;
         $user->last_name  = $request->last_name;
         $user->phone      = $request->phone;
+        $user->save();
 
-        if ($request->hasFile('profile_picture')) {
-            $path = $request->file('profile_picture')->store('profiles', 'public');
-            $user->profile_picture = $path;
+        return redirect()->route('admin.profile')
+            ->with('success', 'Profile updated successfully.')
+            ->with('tab', 'personal');
+    }
+
+    // Update password
+    public function updatePassword(Request $request)
+    {
+        // Manual validator so we can attach ->with('tab','password') on failure
+        $validator = Validator::make($request->all(), [
+            'current_password'          => 'required',
+            'new_password'              => 'required|min:8|confirmed',
+            'new_password_confirmation' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('tab', 'password');
         }
 
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->with('tab', 'password');
+        }
+
+        if (Hash::check($request->new_password, $user->password)) {
+            return back()
+                ->withErrors(['new_password' => 'New password must be different from current.'])
+                ->with('tab', 'password');
+        }
+
+        $user->password = Hash::make($request->new_password);
         $user->save();
-        return back()->with('success', 'Profile updated successfully.');
+
+        return redirect()->route('admin.profile')
+            ->with('success', 'Password updated successfully.')
+            ->with('tab', 'password');
     }
 }

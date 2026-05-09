@@ -18,6 +18,11 @@ class User extends Authenticatable
         'phone',
         'password',
         'profile_picture',
+        'notif_new_booking',
+        'notif_new_user',
+        'notif_new_listing',
+        'notif_dispute',
+        'notif_review',
     ];
 
     protected $hidden = [
@@ -28,10 +33,16 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'  => 'datetime',
+            'password'           => 'hashed',
+            'notif_new_booking'  => 'boolean',
+            'notif_new_user'     => 'boolean',
+            'notif_new_listing'  => 'boolean',
+            'notif_dispute'      => 'boolean',
+            'notif_review'       => 'boolean',
         ];
     }
+
     public function locations()
     {
         return $this->hasMany(Location::class);

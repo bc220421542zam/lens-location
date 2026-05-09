@@ -9,14 +9,16 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0">
+<body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0"
+    x-data="{ sidebarOpen: false }">
 
     <x-nav />
-    {{-- sidebar --}}
+
     <div class="flex flex-1 overflow-hidden">
-    <x-sidebar-admin /> 
+        <x-sidebar-admin />
+
         {{-- MAIN CONTENT --}}
-        <main class="flex-1 overflow-y-auto p-8">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
             {{ $slot }}
         </main>
     </div>
