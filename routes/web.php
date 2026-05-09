@@ -29,10 +29,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/{user}/toggle', [Admin\UserController::class, 'toggleStatus'])->name('users.toggle');
 
         // Listings
-        Route::get('/listings',                   [Admin\ListingController::class, 'index'])->name('listings');
-        Route::get('/listings/{listing}',         [Admin\ListingController::class, 'show'])->name('listings.show');
-        Route::post('/listings/{listing}/toggle', [Admin\ListingController::class, 'toggleApproval'])->name('listings.toggle');
-        Route::delete('/listings/{listing}',      [Admin\ListingController::class, 'destroy'])->name('listings.delete');
+        Route::get('/listings',                    [Admin\ListingController::class, 'index'])->name('listings');
+        Route::get('/listings/{listing}',          [Admin\ListingController::class, 'show'])->name('listings.show');
+        Route::post('/listings/{listing}/toggle',  [Admin\ListingController::class, 'toggleApproval'])->name('listings.toggle');
+        Route::post('/listings/{listing}/approve', [Admin\ListingController::class, 'approve'])->name('listings.approve');
+        Route::post('/listings/{listing}/reject',  [Admin\ListingController::class, 'reject'])->name('listings.reject');
+        Route::delete('/listings/{listing}',       [Admin\ListingController::class, 'destroy'])->name('listings.delete');
 
         // Profile
         Route::get('/profile',           [Admin\ProfileController::class, 'show'])->name('profile');
@@ -68,8 +70,21 @@ Route::middleware('auth')->group(function () {
     // ── Photographer ─────────────────────────────────────────────────────
     Route::middleware('role:photographer')->prefix('photographer')->name('photographer.')->group(function () {
         Route::get('/dashboard', [Photographer\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/bookings',  [Photographer\DashboardController::class, 'bookings'])->name('bookings');
-        Route::get('/listings',  [Photographer\DashboardController::class, 'listings'])->name('listings');
-        Route::get('/profile',   [Photographer\DashboardController::class, 'profile'])->name('profile');
+
+        // Browse approved listings
+        Route::get('/listings',                  [Photographer\BrowseController::class, 'index'])->name('listings');
+        Route::get('/listings/{location}',       [Photographer\BrowseController::class, 'show'])->name('listings.show');
+        Route::get('/listings/{location}/book',  [Photographer\BookingController::class, 'create'])->name('listings.book');
+        Route::post('/listings/{location}/book', [Photographer\BookingController::class, 'store'])->name('listings.book.store');
+
+        // My bookings
+        Route::get('/bookings',                   [Photographer\BookingController::class, 'index'])->name('bookings');
+        Route::post('/bookings/{booking}/cancel', [Photographer\BookingController::class, 'cancel'])->name('bookings.cancel');
+
+        // Profile
+        Route::get('/profile',           [Photographer\ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile',          [Photographer\ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/photo',    [Photographer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::post('/profile/password', [Photographer\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 });

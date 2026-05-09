@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ListingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
 use Illuminate\Http\RedirectResponse;
@@ -31,6 +32,22 @@ class ListingController extends Controller
         $listing->save();
 
         return back()->with('success', 'Listing status updated.');
+    }
+
+    public function approve(Location $listing): RedirectResponse
+    {
+        $listing->status = ListingStatus::Approved;
+        $listing->save();
+
+        return back()->with('success', 'Listing approved.');
+    }
+
+    public function reject(Location $listing): RedirectResponse
+    {
+        $listing->status = ListingStatus::Rejected;
+        $listing->save();
+
+        return back()->with('success', 'Listing rejected.');
     }
 
     public function destroy(Location $listing): RedirectResponse

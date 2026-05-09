@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->status === UserStatus::Blocked;
     }
 
+    public function getNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
     public function hasRole(Role $role): bool
     {
         return $this->role === $role;
