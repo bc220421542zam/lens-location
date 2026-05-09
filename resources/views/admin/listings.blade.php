@@ -1,12 +1,5 @@
 <x-layouts.admin>
-<div x-data="{
-    showModal: false,
-    selectedListing: null,
-    openListing(listing) {
-        this.selectedListing = listing;
-        this.showModal = true;
-    }
-}">
+<div>
 
     <p class="title text-indigo-900">Listings Management</p>
 
@@ -79,9 +72,11 @@
                         </td>
                         <td class="flex items-center gap-3 py-2 pl-2">
 
-                            <button @click="openListing({{ $listing->toJson() }})" class="text-indigo-900 hover:text-indigo-700">
+                            <a href="{{ route('admin.listings.show', $listing->id) }}"
+                               class="text-indigo-900 hover:text-indigo-700"
+                               title="View details">
                                 <i class="fa-regular fa-eye text-sm"></i>
-                            </button>
+                            </a>
 
                             <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST">
                                 @csrf
@@ -112,80 +107,6 @@
 
         <div class="mt-4">{{ $listings->links() }}</div>
 
-    </div>
-
-    {{-- MODAL --}}
-    <div x-show="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center px-4"
-        style="display:none">
-
-        <div class="absolute inset-0 bg-black opacity-50" @click="showModal = false"></div>
-
-        <div class="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-md z-10 max-h-[90vh] overflow-y-auto">
-
-            <button @click="showModal = false"
-                class="absolute top-3 right-4 text-indigo-800 hover:text-indigo-900 text-xl">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <h2 class="text-lg font-bold text-indigo-900 mb-4">Listing Detail</h2>
-
-            <template x-if="selectedListing">
-                <div class="space-y-3">
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Title</span>
-                        <span class="text-indigo-900 text-sm text-right ml-4" x-text="selectedListing.title"></span>
-                    </div>
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm shrink-0 pr-4">Description</span>
-                        <span class="text-indigo-900 text-sm text-right" x-text="selectedListing.description"></span>
-                    </div>
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">City</span>
-                        <span class="text-indigo-900 text-sm" x-text="selectedListing.city"></span>
-                    </div>
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Address</span>
-                        <span class="text-indigo-900 text-sm text-right ml-4" x-text="selectedListing.address"></span>
-                    </div>
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Category</span>
-                        <span class="text-indigo-900 text-sm" x-text="selectedListing.category"></span>
-                    </div>
-
-                    <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Price/hr</span>
-                        <span class="text-indigo-900 text-sm">Rs. <span x-text="selectedListing.price_per_hour"></span></span>
-                    </div>
-
-                    <div class="flex justify-between pb-2">
-                        <span class="text-indigo-900 text-sm">Status</span>
-                        <span class="text-sm font-medium"
-                            :class="{
-                                'text-green-500' : selectedListing.status === 'approved',
-                                'text-yellow-500': selectedListing.status === 'pending',
-                                'text-red-400'   : selectedListing.status === 'rejected'
-                            }"
-                            x-text="selectedListing.status">
-                        </span>
-                    </div>
-
-                </div>
-            </template>
-
-            <div class="mt-5 text-right">
-                <button @click="showModal = false"
-                    class="bg-indigo-900 text-white px-5 py-2 rounded-lg text-sm hover:bg-[#2C3399]">
-                    Close
-                </button>
-            </div>
-
-        </div>
     </div>
 
 </div>
