@@ -86,19 +86,19 @@
                 </p>
 
                 {{-- STATUS BADGE --}}
-                @if($booking->status === 'pending')
+                @if($booking->status->value === 'pending')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">Pending</span>
-                @elseif($booking->status === 'confirmed')
+                @elseif($booking->status->value === 'confirmed')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Confirmed</span>
-                @elseif($booking->status === 'completed')
+                @elseif($booking->status->value === 'completed')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700">Completed</span>
-                @elseif($booking->status === 'cancelled')
+                @elseif($booking->status->value === 'cancelled')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-600">Cancelled</span>
                 @endif
             </div>
 
             {{-- ACTIONS (only for pending) --}}
-            @if($booking->status === 'pending')
+            @if($booking->status->value === 'pending')
             <div class="flex flex-col gap-1 shrink-0">
                 <form action="{{ route('owner.bookings.accept', $booking->id) }}" method="POST">
                     @csrf

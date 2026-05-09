@@ -61,9 +61,9 @@
                 @endif
 
                 {{-- STATUS BADGE --}}
-                @if($location->status === 'approved')
+                @if($location->status->value === 'approved')
                     <span class="badge badge-active">Approved</span>
-                @elseif($location->status === 'pending')
+                @elseif($location->status->value === 'pending')
                     <span class="badge badge-draft">Pending</span>
                 @endif
             </div>

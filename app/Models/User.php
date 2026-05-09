@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
+use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -14,10 +18,12 @@ class User extends Authenticatable
         'role',
         'first_name',
         'last_name',
+        'business_name',
         'email',
         'phone',
         'password',
         'profile_picture',
+        'status',
         'notif_new_booking',
         'notif_new_user',
         'notif_new_listing',
@@ -35,6 +41,8 @@ class User extends Authenticatable
         return [
             'email_verified_at'  => 'datetime',
             'password'           => 'hashed',
+            'role'               => Role::class,
+            'status'             => UserStatus::class,
             'notif_new_booking'  => 'boolean',
             'notif_new_user'     => 'boolean',
             'notif_new_listing'  => 'boolean',
@@ -43,8 +51,28 @@ class User extends Authenticatable
         ];
     }
 
-    public function locations()
+    public function isBlocked(): bool
+    {
+        return $this->status === UserStatus::Blocked;
+    }
+
+    public function getNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function hasRole(Role $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function locations(): HasMany
     {
         return $this->hasMany(Location::class);
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
     }
 }

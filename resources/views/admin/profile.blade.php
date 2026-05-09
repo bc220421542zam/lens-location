@@ -173,7 +173,7 @@
                     <h3 class="font-semibold text-indigo-900 mb-1">Change Password</h3>
                     <p class="text-xs text-gray-400 mb-5">Choose a strong password to keep your account secure</p>
 
-                    <x-change-password />
+                    <x-change-password route="admin.profile.password" />
                 </div>
             </div>
 

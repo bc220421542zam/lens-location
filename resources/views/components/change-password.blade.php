@@ -1,9 +1,11 @@
+@props(['route' => 'owner.profile.password'])
+
 {{-- Change Password --}}
     <div class="card bg-[#EEEFF7]">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Change Password</p>
         <p class="text-xs text-gray-400 mb-4">Update your password to keep your account secure</p>
 
-        <form action="{{ route('owner.profile.password') }}" method="POST">
+        <form action="{{ route($route) }}" method="POST">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
 
