@@ -2,16 +2,20 @@
 
 <div class="page">
 
-    {{-- TOP BAR --}}
-    <div class="top-bar flex-wrap gap-3">
-        <div>
-            <h1 class="title text-indigo-900">My Listings</h1>
-            <p class="text-sm text-gray-500">Manage your photography locations</p>
-        </div>
-        <a href="{{ route('owner.locations.create') }}" class="btn w-full sm:w-auto px-4 text-center">
+  {{-- TOP BAR --}}
+<x-topbar 
+    title="My Listings"
+    description="Manage your photography locations"
+>
+
+    <x-slot:actions>
+        <a href="{{ route('owner.locations.create') }}"
+           class="btn w-full sm:w-auto px-4 text-center">
             + Add Location
         </a>
-    </div>
+    </x-slot:actions>
+
+</x-topbar>
 
     {{-- SUCCESS MESSAGE --}}
     @if(session('success'))
@@ -35,7 +39,7 @@
             <p class="text-xl md:text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
         </div>
         <div class="card">
-            <p class="label text-xs md:text-sm text-indigo-600">Total Bookings</p>
+            <p class="label text-xs md:text-sm text-indigo-60w0">Total Bookings</p>
             <p class="text-xl md:text-2xl font-semibold text-indigo-600 mt-1">{{ $stats['bookings'] }}</p>
         </div>
     </div>

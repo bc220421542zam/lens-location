@@ -1,91 +1,153 @@
 <x-layouts.photographer>
-@php $activeTab = session('tab', 'personal'); @endphp
-<div class="page" x-data="{ tab: '{{ $activeTab }}' }">
+<div class="page" x-data="{ tab: 'profile' }">
 
-    <h1 class="title text-indigo-900">Profile</h1>
-
-    @if (session('success'))
-        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>
-    @endif
-
-    {{-- PHOTO --}}
-    <div class="card mb-4 flex items-center gap-4">
-        <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-100 shrink-0">
-            @if (auth()->user()->profile_picture)
-                <img src="{{ asset('storage/'.auth()->user()->profile_picture) }}"
-                     alt="" class="w-full h-full object-cover">
-            @else
-                <div class="w-full h-full flex items-center justify-center bg-indigo-100">
-                    <i class="fa-solid fa-user text-2xl text-indigo-500"></i>
-                </div>
-            @endif
+    {{-- TOP BAR --}}
+    <div class="top-bar mb-6">
+        <div>
+            <h1 class="title text-indigo-900">Profile</h1>
+            <p class="text-sm text-gray-500">Manage your profile</p>
         </div>
-        <div class="flex-1">
-            <p class="font-semibold text-indigo-900">{{ auth()->user()->name }}</p>
-            <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
-            <form method="POST" action="{{ route('photographer.profile.photo') }}"
-                  enctype="multipart/form-data" class="mt-2 flex items-center gap-2">
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+
+        {{-- LEFT COLUMN --}}
+        <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
+
+            {{-- PHOTO UPLOAD --}}
+            <form action="{{ route('owner.profile.photo') }}" method="POST" 
+                enctype="multipart/form-data">
                 @csrf
-                <input type="file" name="profile_picture" accept="image/*"
-                       class="text-xs" required>
-                <button type="submit" class="action-btn publish">Update</button>
-                @error('profile_picture') <p class="error">{{ $message }}</p> @enderror
+                <input type="file" id="profile_pic_trigger" name="profile_picture"
+                    class="hidden" accept="image/*" onchange="this.form.submit()">
+
+                <div class="card flex flex-col items-center py-6">
+
+                    <div class="relative w-20 h-20 mb-3">
+                        @if(auth()->user()->profile_picture)
+                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
+                                alt="Profile"
+                                class="w-20 h-20 rounded-full object-cover border-2 border-indigo-200">
+                        @else
+                            <div class="w-20 h-20 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center">
+                                <i class="fa-solid fa-user text-3xl text-indigo-400"></i>
+                            </div>
+                        @endif
+
+                        {{-- Camera overlay --}}
+                        <label for="profile_pic_trigger"
+                            class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#2C3399] transition">
+                            <i class="fa-solid fa-camera text-white" style="font-size:10px"></i>
+                        </label>
+                    </div>
+
+                    <p class="font-semibold text-indigo-900 text-center">
+                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1 text-center">
+                        {{ auth()->user()->email }}
+                    </p>
+                </div>
             </form>
+
+            {{-- Account Details --}}
+            <x-account-details/>
+
+        </div>
+
+        {{-- RIGHT COLUMN --}}
+        <div class="flex-1 min-w-0">
+
+            {{-- TABS --}}
+            <div class="flex gap-2 mb-4 flex-wrap">
+                <button @click="tab = 'profile'"
+                    :class="tab === 'profile' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
+                    class="px-10 py-2 rounded-lg text-sm transition">
+                    Profile
+                </button>
+                <button @click="tab = 'settings'"
+                    :class="tab === 'settings' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
+                    class="px-10 py-2 rounded-lg text-sm transition">
+                    Settings
+                </button>
+            </div>
+
+            {{-- PROFILE TAB --}}
+            <div x-show="tab === 'profile'" class="card">
+                <h3 class="font-semibold text-indigo-900 mb-4">Profile Information</h3>
+
+                <form action="{{ route('owner.profile.update') }}" method="POST">
+                    @csrf
+                    <div class="space-y-4">
+
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Name</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" name="first_name"
+                                    value="{{ old('first_name', auth()->user()->first_name) }}"
+                                    placeholder="First name"
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 @error('first_name') border-red-400 @enderror">
+                                <input type="text" name="last_name"
+                                    value="{{ old('last_name', auth()->user()->last_name) }}"
+                                    placeholder="Last name"
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            </div>
+                            @error('first_name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Email</label>
+                            <input type="email"
+                                value="{{ auth()->user()->email }}"
+                                disabled
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Phone</label>
+                            <input type="text" name="phone"
+                                value="{{ old('phone', auth()->user()->phone ?? '') }}"
+                                placeholder="Your phone number"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 mt-6 justify-end">
+                        <a href="{{ route('owner.listings') }}"
+                            class="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- SETTINGS TAB --}}
+            <div x-show="tab === 'settings'" class="space-y-4"
+                x-data="{
+                    notifications: true,
+                    emailAlerts: true,
+                    smsAlerts: false,
+                    twoFactor: false,
+                    profileVisible: true
+                }">
+
+        {{-- NOTIFICATIONS --}}
+        <x-notifications/>
+        {{--change password--}}
+        <x-change-password/>
+        {{-- DANGER ZONE --}}
+        <x-danger-zone/>
+
+            </div>
         </div>
     </div>
-
-    {{-- TABS --}}
-    <div class="flex gap-2 mb-4">
-        <button @click="tab = 'personal'"
-                :class="tab === 'personal' ? 'bg-indigo-900 text-white' : ''"
-                class="action-btn">Personal Info</button>
-        <button @click="tab = 'password'"
-                :class="tab === 'password' ? 'bg-indigo-900 text-white' : ''"
-                class="action-btn">Password</button>
-    </div>
-
-    {{-- PERSONAL --}}
-    <div x-show="tab === 'personal'">
-        <form method="POST" action="{{ route('photographer.profile.update') }}" class="card flex flex-col gap-4">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="label">First Name</label>
-                    <input type="text" name="first_name"
-                           value="{{ old('first_name', auth()->user()->first_name) }}"
-                           class="input @error('first_name') border-red-400 @enderror">
-                    @error('first_name') <p class="error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Last Name</label>
-                    <input type="text" name="last_name"
-                           value="{{ old('last_name', auth()->user()->last_name) }}"
-                           class="input @error('last_name') border-red-400 @enderror">
-                    @error('last_name') <p class="error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Phone</label>
-                    <input type="text" name="phone"
-                           value="{{ old('phone', auth()->user()->phone) }}"
-                           class="input @error('phone') border-red-400 @enderror">
-                    @error('phone') <p class="error">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="label">Email</label>
-                    <input type="email" value="{{ auth()->user()->email }}" disabled
-                           class="input bg-gray-100">
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <button type="submit" class="btn w-auto px-6">Save Changes</button>
-            </div>
-        </form>
-    </div>
-
-    {{-- PASSWORD --}}
-    <div x-show="tab === 'password'">
-        <x-change-password route="photographer.profile.password" />
-    </div>
-
 </div>
+
 </x-layouts.photographer>

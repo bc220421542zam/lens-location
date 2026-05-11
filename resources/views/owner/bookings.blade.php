@@ -2,12 +2,11 @@
 <div class="page" x-data="{ tab: '{{ request('status', 'all') }}' }">
 
     {{-- TOP BAR --}}
-    <div class="top-bar">
-        <div>
-            <h1 class="title text-indigo-900">Bookings</h1>
-            <p class="text-sm text-gray-500">Manage incoming booking requests</p>
-        </div>
-    </div>
+    <x-topbar 
+    title="Bookings"
+    description="Manage incoming booking requests"
+>
+</x-topbar>
 
     {{-- SUCCESS MESSAGE --}}
     @if(session('success'))

@@ -173,18 +173,10 @@
     </form>
 </div>
 
-<script>
-function previewImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('image-preview').src = e.target.result;
-        document.getElementById('preview-wrap').classList.remove('hidden');
-        document.getElementById('upload-placeholder').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-}
-</script>
+<input
+    type="file"
+    id="imageInput"
+    name="image"
+    accept=".png,.jpg,.jpeg,.webp"
+    hidden>
 </x-layouts.owner>

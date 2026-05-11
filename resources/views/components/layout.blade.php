@@ -7,7 +7,7 @@
     <title>{{ config('app.name')}}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 text-slate-900">
+<body class="{{ session('theme') == 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black' }} bg-gray-100 text-slate-900">
     <header class="bg-slate-200 shadow-lg">
         <nav class="flex justify-between items-center p-4">
             <img src="/images/Logo.png" alt="Logo" class="h-10">

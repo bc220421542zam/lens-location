@@ -1,30 +1,27 @@
 <x-layouts.admin>
-@php $activeTab = session('tab', 'personal'); @endphp
-<div x-data="{ tab: '{{ $activeTab }}' }">
+<div class="page" x-data="{ tab: 'profile' }">
 
-    <p class="title text-indigo-900">Profile</p>
-
-    {{-- Success message --}}
-    @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
-            {{ session('success') }}
+    {{-- TOP BAR --}}
+    <div class="top-bar mb-6">
+        <div>
+            <h1 class="title text-indigo-900">Profile</h1>
+            <p class="text-sm text-gray-500">Manage your profile</p>
         </div>
-    @endif
+    </div>
 
-    {{-- MAIN LAYOUT --}}
     <div class="flex flex-col lg:flex-row gap-6">
 
         {{-- LEFT COLUMN --}}
         <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
 
             {{-- PHOTO UPLOAD --}}
-            <form action="{{ route('admin.profile.photo') }}" method="POST"
+            <form action="{{ route('owner.profile.photo') }}" method="POST" 
                 enctype="multipart/form-data">
                 @csrf
-                <input type="file" id="admin_pic_trigger" name="profile_picture"
+                <input type="file" id="profile_pic_trigger" name="profile_picture"
                     class="hidden" accept="image/*" onchange="this.form.submit()">
 
-                <div class="shade bg-[#EEEFF7] rounded-2xl p-5 flex flex-col items-center">
+                <div class="card flex flex-col items-center py-6">
 
                     <div class="relative w-20 h-20 mb-3">
                         @if(auth()->user()->profile_picture)
@@ -37,314 +34,122 @@
                             </div>
                         @endif
 
-                        <label for="admin_pic_trigger"
+                        {{-- Camera overlay --}}
+                        <label for="profile_pic_trigger"
                             class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#2C3399] transition">
                             <i class="fa-solid fa-camera text-white" style="font-size:10px"></i>
                         </label>
                     </div>
 
-                    <p class="font-semibold text-indigo-900 text-center text-sm">
+                    <p class="font-semibold text-indigo-900 text-center">
                         {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
                     </p>
                     <p class="text-xs text-gray-400 mt-1 text-center">
                         {{ auth()->user()->email }}
                     </p>
-                    <span class="mt-2 text-xs bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
-                        Admin
-                    </span>
                 </div>
             </form>
 
-            {{-- NAV MENU --}}
-            <div class="shade bg-[#EEEFF7] rounded-2xl p-3 flex flex-col gap-1">
-
-                <button @click="tab = 'personal'"
-                    :class="tab === 'personal' ? 'bg-[#2C3399] text-white' : 'text-indigo-800 hover:bg-indigo-100'"
-                    class="flex items-center gap-3 py-2 px-3 rounded-lg text-sm transition text-left">
-                    <i class="fa-solid fa-user w-4 text-center"></i>
-                    Personal Info
-                </button>
-
-                <button @click="tab = 'password'"
-                    :class="tab === 'password' ? 'bg-[#2C3399] text-white' : 'text-indigo-800 hover:bg-indigo-100'"
-                    class="flex items-center gap-3 py-2 px-3 rounded-lg text-sm transition text-left">
-                    <i class="fa-solid fa-lock w-4 text-center"></i>
-                    Change Password
-                </button>
-
-                <button @click="tab = 'notifications'"
-                    :class="tab === 'notifications' ? 'bg-[#2C3399] text-white' : 'text-indigo-800 hover:bg-indigo-100'"
-                    class="flex items-center gap-3 py-2 px-3 rounded-lg text-sm transition text-left">
-                    <i class="fa-regular fa-bell w-4 text-center"></i>
-                    Notifications
-                </button>
-
-            </div>
-
-            {{-- ACCOUNT DETAILS --}}
-            <div class="shade bg-[#EEEFF7] rounded-2xl p-4">
-                <p class="text-xs font-semibold text-indigo-900 uppercase tracking-wide mb-3">Account Details</p>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">Status</span>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Active</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">Member since</span>
-                        <span class="text-xs text-indigo-900 font-medium">
-                            {{ auth()->user()->created_at->format('d M Y') }}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            {{-- Account Details --}}
+            <x-account-details/>
 
         </div>
 
         {{-- RIGHT COLUMN --}}
         <div class="flex-1 min-w-0">
 
-            {{-- PERSONAL INFO TAB --}}
-            <div x-show="tab === 'personal'">
-                <div class="shade bg-[#EEEFF7] p-6 rounded-2xl">
-                    <h3 class="font-semibold text-indigo-900 mb-1">Personal Information</h3>
-                    <p class="text-xs text-gray-400 mb-5">Update your personal details</p>
+            {{-- TABS --}}
+            <div class="flex gap-2 mb-4 flex-wrap">
+                <button @click="tab = 'profile'"
+                    :class="tab === 'profile' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
+                    class="px-10 py-2 rounded-lg text-sm transition">
+                    Profile
+                </button>
+                <button @click="tab = 'settings'"
+                    :class="tab === 'settings' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
+                    class="px-10 py-2 rounded-lg text-sm transition">
+                    Settings
+                </button>
+            </div>
 
-                    <form method="POST" action="{{ route('admin.profile.update') }}">
-                        @csrf
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            {{-- PROFILE TAB --}}
+            <div x-show="tab === 'profile'" class="card">
+                <h3 class="font-semibold text-indigo-900 mb-4">Profile Information</h3>
 
-                            <div>
-                                <label class="label">First Name</label>
+                <form action="{{ route('owner.profile.update') }}" method="POST">
+                    @csrf
+                    <div class="space-y-4">
+
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Name</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
                                 <input type="text" name="first_name"
                                     value="{{ old('first_name', auth()->user()->first_name) }}"
                                     placeholder="First name"
-                                    class="input @error('first_name') border-red-500 @enderror">
-                                @error('first_name')
-                                    <p class="error">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="label">Last Name</label>
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 @error('first_name') border-red-400 @enderror">
                                 <input type="text" name="last_name"
                                     value="{{ old('last_name', auth()->user()->last_name) }}"
                                     placeholder="Last name"
-                                    class="input">
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                             </div>
-
-                            <div>
-                                <label class="label">Email</label>
-                                <input type="email"
-                                    value="{{ auth()->user()->email }}"
-                                    disabled
-                                    class="input bg-gray-100 text-gray-400 cursor-not-allowed">
-                            </div>
-
-                            <div>
-                                <label class="label">Phone</label>
-                                <input type="text" name="phone"
-                                    value="{{ old('phone', auth()->user()->phone) }}"
-                                    placeholder="+92 300 0000000"
-                                    class="input @error('phone') border-red-500 @enderror">
-                                @error('phone')
-                                    <p class="error">{{ $message }}</p>
-                                @enderror
-                            </div>
-
+                            @error('first_name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <div class="flex gap-3 justify-end">
-                            <a href="{{ route('admin.dashboard') }}"
-                                class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg text-sm">
-                                Cancel
-                            </a>
-                            <button type="submit"
-                                class="bg-indigo-900 hover:bg-[#2C3399] text-white px-6 py-2 rounded-lg text-sm">
-                                Update Profile
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {{-- CHANGE PASSWORD TAB --}}
-            <div x-show="tab === 'password'">
-                <div class="shade bg-[#EEEFF7] p-6 rounded-2xl">
-                    <h3 class="font-semibold text-indigo-900 mb-1">Change Password</h3>
-                    <p class="text-xs text-gray-400 mb-5">Choose a strong password to keep your account secure</p>
-
-                    <x-change-password route="admin.profile.password" />
-                </div>
-            </div>
-
-            {{-- NOTIFICATIONS TAB --}}
-            <div x-show="tab === 'notifications'"
-                x-data="{
-                    newBooking: true,
-                    newUser: true,
-                    newListing: true,
-                    dispute: false,
-                    review: false,
-                    saved: false
-                }">
-                <div class="shade bg-[#EEEFF7] p-6 rounded-2xl">
-                    <h3 class="font-semibold text-indigo-900 mb-1">Notification Preferences</h3>
-                    <p class="text-xs text-gray-400 mb-5">Choose what you want to be notified about</p>
-
-                    {{-- Success message --}}
-                    <div x-show="saved" x-transition
-                        class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
-                        Notification preferences saved.
-                    </div>
-
-                    <div class="space-y-4">
-
-                        <div class="flex items-center justify-between gap-4 pb-3 border-b border-indigo-200">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">New Booking Alerts</p>
-                                <p class="text-xs text-gray-400">Notify when a new booking is made</p>
-                            </div>
-                            <button @click="newBooking = !newBooking"
-                                :class="newBooking ? 'bg-indigo-900' : 'bg-gray-300'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="newBooking ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block"></span>
-                            </button>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Email</label>
+                            <input type="email"
+                                value="{{ auth()->user()->email }}"
+                                disabled
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
                         </div>
 
-                        <div class="flex items-center justify-between gap-4 pb-3 border-b border-indigo-200">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">New User Registration</p>
-                                <p class="text-xs text-gray-400">Notify when a new user registers</p>
-                            </div>
-                            <button @click="newUser = !newUser"
-                                :class="newUser ? 'bg-indigo-900' : 'bg-gray-300'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="newUser ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block"></span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between gap-4 pb-3 border-b border-indigo-200">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">New Listing Submitted</p>
-                                <p class="text-xs text-gray-400">Notify when owner submits a listing</p>
-                            </div>
-                            <button @click="newListing = !newListing"
-                                :class="newListing ? 'bg-indigo-900' : 'bg-gray-300'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="newListing ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block"></span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between gap-4 pb-3 border-b border-indigo-200">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">Dispute Raised</p>
-                                <p class="text-xs text-gray-400">Notify when a dispute is reported</p>
-                            </div>
-                            <button @click="dispute = !dispute"
-                                :class="dispute ? 'bg-indigo-900' : 'bg-gray-300'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="dispute ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block"></span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-indigo-900">Review Posted</p>
-                                <p class="text-xs text-gray-400">Notify when a new review is submitted</p>
-                            </div>
-                            <button @click="review = !review"
-                                :class="review ? 'bg-indigo-900' : 'bg-gray-300'"
-                                class="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0">
-                                <span :class="review ? 'translate-x-5' : 'translate-x-1'"
-                                    class="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 block"></span>
-                            </button>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Phone</label>
+                            <input type="text" name="phone"
+                                value="{{ old('phone', auth()->user()->phone ?? '') }}"
+                                placeholder="Your phone number"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
                         </div>
 
                     </div>
 
-                    <div class="flex justify-end mt-6">
-                        <button @click="saved = true; setTimeout(() => saved = false, 3000)"
-                            class="bg-indigo-900 hover:bg-[#2C3399] text-white px-6 py-2 rounded-lg text-sm">
-                            Save Preferences
+                    <div class="flex flex-wrap gap-3 mt-6 justify-end">
+                        <a href="{{ route('owner.listings') }}"
+                            class="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="px-6 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            Update
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
 
-            {{-- ACTIVITY LOG TAB --}}
-            <div x-show="tab === 'activity'">
-                <div class="shade bg-[#EEEFF7] p-6 rounded-2xl">
-                    <h3 class="font-semibold text-indigo-900 mb-1">Recent Activity</h3>
-                    <p class="text-xs text-gray-400 mb-5">Your recent actions on the platform</p>
+            {{-- SETTINGS TAB --}}
+            <div x-show="tab === 'settings'" class="space-y-4"
+                x-data="{
+                    notifications: true,
+                    emailAlerts: true,
+                    smsAlerts: false,
+                    twoFactor: false,
+                    profileVisible: true
+                }">
 
-                    <div class="space-y-1">
+        {{-- NOTIFICATIONS --}}
+        <x-notifications/>
+        {{--change password--}}
+        <x-change-password/>
+        {{-- DANGER ZONE --}}
+        <x-danger-zone/>
 
-                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-indigo-50 transition">
-                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-user text-indigo-600 text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-indigo-900">Profile updated</p>
-                                <p class="text-xs text-gray-400">Personal information was changed</p>
-                            </div>
-                            <span class="text-xs text-gray-400 shrink-0">Today</span>
-                        </div>
-
-                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-indigo-50 transition">
-                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-check text-green-600 text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-indigo-900">Listing approved</p>
-                                <p class="text-xs text-gray-400">Studio Downtown was approved</p>
-                            </div>
-                            <span class="text-xs text-gray-400 shrink-0">Today</span>
-                        </div>
-
-                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-indigo-50 transition">
-                            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-ban text-red-500 text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-indigo-900">User blocked</p>
-                                <p class="text-xs text-gray-400">abc@gmail.com was blocked</p>
-                            </div>
-                            <span class="text-xs text-gray-400 shrink-0">Yesterday</span>
-                        </div>
-
-                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-indigo-50 transition">
-                            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-lock text-yellow-600 text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-indigo-900">Password changed</p>
-                                <p class="text-xs text-gray-400">Account password was updated</p>
-                            </div>
-                            <span class="text-xs text-gray-400 shrink-0">3 days ago</span>
-                        </div>
-
-                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-indigo-50 transition">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-right-to-bracket text-blue-600 text-xs"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-indigo-900">Logged in</p>
-                                <p class="text-xs text-gray-400">Login from Lahore, Pakistan</p>
-                            </div>
-                            <span class="text-xs text-gray-400 shrink-0">3 days ago</span>
-                        </div>
-
-                    </div>
-                </div>
             </div>
-
         </div>
     </div>
 </div>
+
 
 {{-- JAVASCRIPT --}}
 <script>

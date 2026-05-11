@@ -5,21 +5,33 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Owner;
 use App\Http\Controllers\Photographer;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 Route::redirect('/', '/login');
 
-Route::middleware('guest')->group(function () {
+    Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::middleware('auth')->group(function () {
+    Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // ── Admin ────────────────────────────────────────────────────────────
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/theme/{mode}', function ($mode) {
+    Session::put('theme', $mode);
+    return back();
+    })->name('theme.set');
+
+
+    Route::get('/language/{lang}', function ($lang) {
+        Session::put('language', $lang);
+        return back();
+    })->name('lang.set');
+
+        // Admin 
+        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
         // Users
@@ -43,8 +55,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 
-    // ── Owner ────────────────────────────────────────────────────────────
-    Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
+        // Owner 
+        Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
         Route::get('/listings', [Owner\ListingController::class, 'index'])->name('listings');
 
         // Bookings
@@ -67,8 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 
-    // ── Photographer ─────────────────────────────────────────────────────
-    Route::middleware('role:photographer')->prefix('photographer')->name('photographer.')->group(function () {
+        // Photographer 
+        Route::middleware('role:photographer')->prefix('photographer')->name('photographer.')->group(function () {
         Route::get('/dashboard', [Photographer\DashboardController::class, 'index'])->name('dashboard');
 
         // Browse approved listings

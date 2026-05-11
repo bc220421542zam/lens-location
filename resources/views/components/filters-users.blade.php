@@ -24,7 +24,7 @@
                 </select>
 
                 <button type="submit"
-                        class="bg-indigo-900 text-white text-sm px-4 py-1 rounded-xl hover:bg-[#2C3399] shadow-2xl shadow-indigo-600/60 hover:scale-105 transition-all duration-300"
+                        class="bg-indigo-900 text-white text-sm px-4 py-1 rounded-xl hover:bg-[#2C3399] shadow-2xl shadow-indigo-600/60 hover:scale-105 transition-all duration-300">
                     Filter
                 </button>
 

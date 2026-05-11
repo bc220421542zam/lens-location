@@ -13,6 +13,8 @@
     </div>
 
     <div class="flex items-center gap-3 md:gap-5">
+        {{--preferences--}}
+        <x-preferences/>
 
         <i class="fa-regular fa-bell text-base md:text-lg text-indigo-900"></i>
 
