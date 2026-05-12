@@ -7,14 +7,16 @@
         this.showModal = true;
     }
 }">
-
-    <p class="title text-indigo-900">User Management</p>
+    <x-topbar 
+        title="Users Management"
+        description="Manage all registered users">
+    </x-topbar>
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
 
         <div class="flex flex-col gap-3 mb-4">
             <h2 class="font-bold text-indigo-900 text-lg">All Users</h2>
-            <x-filters-users/>
+            <x-adminComponents.filters-users/>
         </div>
 
         <div class="overflow-x-auto">

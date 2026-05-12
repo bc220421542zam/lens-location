@@ -4,11 +4,7 @@
     {{-- HEADER --}}
     <div class="top-bar mb-4">
         <div>
-            <nav class="flex items-center text-sm text-indigo-600 mb-1 space-x-1 justify-start">
-            <a href="{{ route('owner.listings') }}"
-            class="hover:text-indigo-800">Listings</a>
-        <span>/</span><span>Add Listings</span>
-    </nav>
+        <x-nav/>
     <h1 class="title text-indigo-900">Add New Location</h1>
     <p class="text-sm text-gray-400">Fill the details below to submit your location</p>
         </div>

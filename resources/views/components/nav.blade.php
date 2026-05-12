@@ -13,10 +13,20 @@
     </div>
 
     <div class="flex items-center gap-3 md:gap-5">
-        {{--preferences--}}
-        <x-preferences/>
-
-        <i class="fa-regular fa-bell text-base md:text-lg text-indigo-900"></i>
+        
+    {{--preferences--}}
+        <x-profileComponents.preferences/>
+    {{--Profile Photo--}}
+        @if(auth()->user()->profile_photo)
+    <img
+        src="{{ Storage::url(auth()->user()->profile_photo) }}"
+        alt="Profile"
+        class="w-8 h-8 rounded-full object-cover border border-indigo-200">
+    @else
+        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+            <i class="fa-regular fa-user text-indigo-900"></i>
+        </div>
+    @endif
 
         {{-- PROFILE DROPDOWN --}}
         <div class="relative" x-data="{ open: false }">

@@ -4,9 +4,8 @@
     {{-- TOP BAR --}}
     <x-topbar 
     title="Bookings"
-    description="Manage incoming booking requests"
->
-</x-topbar>
+    description="Manage incoming booking requests">
+    </x-topbar>
 
     {{-- SUCCESS MESSAGE --}}
     @if(session('success'))

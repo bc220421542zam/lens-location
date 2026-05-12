@@ -2,12 +2,10 @@
 <div class="page" x-data="{ tab: 'profile' }">
 
     {{-- TOP BAR --}}
-    <div class="top-bar mb-6">
-        <div>
-            <h1 class="title text-indigo-900">Profile</h1>
-            <p class="text-sm text-gray-500">Manage your profile</p>
-        </div>
-    </div>
+    <x-topbar 
+        title="Profile"
+        description="Manage your profile, {{ auth()->user()->first_name }}">
+    </x-topbar>
 
     <div class="flex flex-col lg:flex-row gap-6">
 
@@ -51,7 +49,7 @@
             </form>
 
             {{-- Account Details --}}
-            <x-account-details/>
+            <x-profileComponents.account-details/>
 
         </div>
 
@@ -139,11 +137,11 @@
                 }">
 
         {{-- NOTIFICATIONS --}}
-        <x-notifications/>
+        <x-profileComponents.notifications/>
         {{--change password--}}
-        <x-change-password/>
+        <x-profileComponents.change-password/>
         {{-- DANGER ZONE --}}
-        <x-danger-zone/>
+        <x-profileComponents.danger-zone/>
 
             </div>
         </div>

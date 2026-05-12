@@ -167,11 +167,11 @@
                 }">
 
         {{-- NOTIFICATIONS --}}
-        <x-notifications/>       
+        <x-profileComponents.notifications/>       
         {{--change password--}}
-        <x-change-password/>
+        <x-profileComponents.change-password/>
         {{--Danger Zone --}}
-        <x-danger-zone/>
+        <x-profileComponents.danger-zone/>
 
             </div>
         </div>

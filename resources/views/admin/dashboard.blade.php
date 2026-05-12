@@ -1,5 +1,8 @@
 <x-layouts.admin>
-    <p class="title text-indigo-900">Dashboard</p>
+    <topbar 
+        title="Dashboard"
+        description="welcome back, {{ auth()->user()->first_name }}">
+    </topbar>
 
     {{-- CARDS --}}
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">

@@ -2,13 +2,16 @@
 <div class="page">
 
     {{-- TOP BAR --}}
-    <div class="top-bar">
-        <div>
-            <h1 class="title text-indigo-900">My Bookings</h1>
-            <p class="text-sm text-gray-500">Manage your booking requests</p>
-        </div>
-        <a href="{{ route('photographer.listings') }}" class="btn w-auto px-4">Find Location</a>
-    </div>
+    <x-topbar 
+        title="My Bookings"
+        description="Manage your booking requests">
+        <x-slot:actions>
+        <a href="{{ route('photographer.listings') }}"
+           class="btn w-full sm:w-auto px-4 text-center">
+            Find Location
+        </a>
+    </x-slot:actions>
+    </x-topbar>
 
     @if (session('success'))
         <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>

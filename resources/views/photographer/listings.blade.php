@@ -2,12 +2,10 @@
 <div class="page">
 
     {{-- TOP BAR --}}
-    <div class="top-bar">
-        <div>
-            <h1 class="title text-indigo-900">Search Listings</h1>
-            <p class="text-sm text-gray-500">Find a place for your next shoot</p>
-        </div>
-    </div>
+    <x-topbar 
+        title="Search Listings"
+        description="Find a place for your next shoot">
+    </x-topbar>
 
     @if (session('success'))
         <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>

@@ -2,14 +2,16 @@
 <div class="page">
 
     {{-- TOP BAR --}}
-    <div class="top-bar">
-        <div>
-            <h1 class="title text-indigo-900">Dashboard</h1>
-            <p class="text-sm text-gray-500">Welcome back, {{ auth()->user()->first_name }}</p>
-        </div>
-        <a href="{{ route('photographer.listings') }}" class="btn w-auto px-4">Find Location</a>
-    </div>
-
+    <x-topbar 
+        title="Dashboard"
+        description="welcome back, {{ auth()->user()->first_name }}">
+        <x-slot:actions>
+        <a href="{{ route('photographer.listings') }}"
+           class="btn w-full sm:w-auto px-4 text-center">
+            Find Location
+        </a>
+    </x-slot:actions>
+    </x-topbar>
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="card">

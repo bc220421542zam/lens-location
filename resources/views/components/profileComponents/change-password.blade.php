@@ -65,7 +65,7 @@
 
                     </div>
 
-                    <x-password-rules/>
+                    <x-profileComponents.password-rules/>
 
                     <div class="flex justify-end gap-3">
                         <button type="reset"

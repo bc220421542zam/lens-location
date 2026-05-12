@@ -5,16 +5,13 @@
   {{-- TOP BAR --}}
 <x-topbar 
     title="My Listings"
-    description="Manage your photography locations"
->
-
+    description="Manage your photography locations">
     <x-slot:actions>
         <a href="{{ route('owner.locations.create') }}"
            class="btn w-full sm:w-auto px-4 text-center">
             + Add Location
         </a>
     </x-slot:actions>
-
 </x-topbar>
 
     {{-- SUCCESS MESSAGE --}}

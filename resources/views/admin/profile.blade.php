@@ -51,7 +51,7 @@
             </form>
 
             {{-- Account Details --}}
-            <x-account-details/>
+            <x-profileComponents.account-details/>
 
         </div>
 
@@ -139,11 +139,11 @@
                 }">
 
         {{-- NOTIFICATIONS --}}
-        <x-notifications/>
+        <x-profileComponents.notifications/>
         {{--change password--}}
-        <x-change-password/>
+        <x-profileComponents.change-password/>
         {{-- DANGER ZONE --}}
-        <x-danger-zone/>
+        <x-profileComponents.danger-zone/>
 
             </div>
         </div>

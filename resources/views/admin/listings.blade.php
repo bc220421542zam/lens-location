@@ -1,13 +1,16 @@
 <x-layouts.admin>
 <div>
 
-    <p class="title text-indigo-900">Listings Management</p>
+    <topbar 
+        title="Listings Management"
+        description="Manage all location listings">
+    </topbar>
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
 
         <div class="flex flex-col gap-3 mb-4">
             <h2 class="font-bold text-indigo-900 text-lg">All Listings</h2>
-        <x-filters-listings :categories="$categories" />
+        <x-adminComponents.filters-listings :categories="$categories" />
         </div>
 
         <div class="overflow-x-auto">
@@ -15,6 +18,8 @@
                 <thead>
                     <tr class="border-b border-indigo-400 text-indigo-900">
                         <th class="py-2 pl-2 text-sm">Title</th>
+                        <th class="pl-2 text-sm">City</th>
+                        <th class="pl-2 text-sm">Category</th>
                         <th class="pl-2 text-sm">Owner</th>
                         <th class="pl-2 text-sm">Price/hr</th>
                         <th class="pl-2 text-sm">Status</th>
@@ -25,6 +30,8 @@
                     @forelse($listings as $listing)
                     <tr class="border-b border-indigo-400">
                         <td class="pl-2 py-2 text-sm text-indigo-900">{{ $listing->title }}</td>
+                        <td class="pl-2 py-2 text-sm text-indigo-900">{{ $listing->city ?? 'N/A' }}</td>
+                        <td class="pl-2 py-2 text-sm text-indigo-900">{{ $listing->category ?? 'N/A' }}</td>
                         <td class="pl-2 text-sm text-indigo-900">
                             {{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? '' }}
                         </td>
