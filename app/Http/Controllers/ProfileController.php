@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Profile\UpdatePasswordRequest;
 use App\Http\Requests\Profile\UpdatePhotoRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
-use App\Support\ProfilePhotoStorage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,12 +27,20 @@ abstract class ProfileController extends Controller
     public function updatePhoto(UpdatePhotoRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $user->profile_picture = ProfilePhotoStorage::replace($user, $request->file('profile_picture'));
+
+        // Delete old photo if exists
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
+        // Store new photo on public disk
+        $path = $request->file('profile_picture')->store('profile-photos', 'public');
+        $user->profile_picture = $path;
         $user->save();
 
         return back()->with('success', 'Profile photo updated.');
     }
-
+    //Update Password
     public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
         $user = $request->user();

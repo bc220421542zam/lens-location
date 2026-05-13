@@ -1,14 +1,17 @@
 <x-layouts.admin>
 <div>
 
-    <topbar 
-        title="Listings Management"
-        description="Manage all location listings">
-    </topbar>
+    <x-topbar 
+        title="Listings"
+        description="Manage all listings">
+    </x-topbar>
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
+        <x-success class="mb-4" />
+    <x-error class="mb-4" />
 
         <div class="flex flex-col gap-3 mb-4">
+        
             <h2 class="font-bold text-indigo-900 text-lg">All Listings</h2>
         <x-adminComponents.filters-listings :categories="$categories" />
         </div>

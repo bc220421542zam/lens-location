@@ -5,7 +5,7 @@
     <div class="top-bar mb-6">
         <div>
             <h1 class="title text-indigo-900">Profile</h1>
-            <p class="text-sm text-gray-500">Manage your profile</p>
+            <p class="text-sm text-gray-500">Manage your profile  {{ auth()->user()->first_name }} </p>
         </div>
     </div>
 

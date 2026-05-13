@@ -14,6 +14,9 @@
 
     <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
 
+    <x-success class="mb-4" />
+    <x-error class="mb-4" />
+
         <div class="flex flex-col gap-3 mb-4">
             <h2 class="font-bold text-indigo-900 text-lg">All Users</h2>
             <x-adminComponents.filters-users/>
@@ -41,16 +44,55 @@
                         </td>
                         <td class="flex items-center gap-3 py-2 pl-2">
 
-                            <button @click="openUser({{ $user->toJson() }})" class="text-indigo-900 hover:text-indigo-700">
+                            <button @click="openUser({{ $user->toJson() }})" 
+                            class="text-indigo-900 hover:text-indigo-700 p-1.5 w-10 rounded-xl py-1 bg-indigo-50 hover:bg-gray-200 transition shadow-sm hover:shadow">
                                 <i class="fa-regular fa-eye text-sm"></i>
                             </button>
 
-                            <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
-                                @csrf
-                                <button type="submit" class="text-green-800 hover:opacity-75">
-                                    <i class="fa-solid {{ $user->status->value === 'active' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-lg"></i>
-                                </button>
-                            </form>
+        {{-- ACTIVATE / DEACTIVATE TOGGLE --}}
+            @if(auth()->id() !== $user->id)
+                <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
+                    @csrf
+
+                    <button type="submit"
+                            title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
+                            class="p-1.5 w-10 rounded-xl bg-indigo-50 hover:bg-gray-200 transition shadow-sm hover:shadow">
+
+                        @if($user->status->value === 'active')
+                            {{-- ACTIVE --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
+                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
+                                <circle cx="26" cy="10" r="7" fill="white"/>
+                            </svg>
+                        @else
+                            {{-- INACTIVE --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
+                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
+                                <circle cx="10" cy="10" r="7" fill="white"/>
+                            </svg>
+                        @endif
+
+                    </button>
+                </form>
+            @else
+                {{-- CURRENT LOGGED-IN USER --}}
+                <span title="This is your account"
+                    class="p-1.5 w-10 rounded-xl bg-indigo-50 inline-flex items-center justify-center">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        class="w-5 h-5 text-indigo-500">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                    </svg>
+
+                </span>
+            @endif
 
                             <form method="POST" action="{{ route('admin.users.delete', $user->id) }}"
                                 onsubmit="return confirm('Delete this user?')">
