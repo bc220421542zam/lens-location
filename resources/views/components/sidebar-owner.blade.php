@@ -10,6 +10,22 @@
     {{-- Desktop (lg): full sidebar with labels --}}
     lg:w-64 lg:p-4
 ">
+    {{-- Owner Dashboard --}}
+    <a href="{{ route('owner.dashboard') }}"
+        class="flex items-center justify-center gap-0 py-2 px-2 rounded-lg transition
+            md:flex-col md:gap-1 md:py-3
+            lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:py-2
+            {{ request()->routeIs('owner.dashboard')
+                ? 'bg-[#2C3399] text-white'
+                : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
+        <i class="fa-solid fa-home w-5 text-center text-lg md:text-base"></i>
+        <span class="text-[10px] leading-tight md:block lg:text-sm lg:text-base">
+            <span class="block md:hidden lg:hidden">Dashboard</span>
+            <span class="hidden md:block lg:hidden text-[9px]">Dashboard</span>
+            <span class="hidden lg:inline">Owner Dashboard</span>
+        </span>
+    </a>
+
 
     {{-- My Listings --}}
     <a href="{{ route('owner.listings') }}"

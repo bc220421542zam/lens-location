@@ -57,7 +57,8 @@ Route::redirect('/', '/login');
 
         // Owner 
         Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
-        Route::get('/listings', [Owner\ListingController::class, 'index'])->name('listings');
+        Route::get('/dashboard', [Owner\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/listings',  [Owner\ListingController::class, 'index'])->name('listings');
 
         // Bookings
         Route::get('/bookings',                  [Owner\BookingController::class, 'index'])->name('bookings');

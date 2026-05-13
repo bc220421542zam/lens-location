@@ -21,26 +21,6 @@
         </div>
     @endif
 
-    {{-- STATS --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-        <div class="card">
-            <p class="label text-xs md:text-sm">Total Listings</p>
-            <p class="text-xl md:text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
-        </div>
-        <div class="card">
-            <p class="label text-xs md:text-sm text-green-600">Approved</p>
-            <p class="text-xl md:text-2xl font-semibold text-green-600 mt-1">{{ $stats['active'] }}</p>
-        </div>
-        <div class="card">
-            <p class="label text-xs md:text-sm text-yellow-600">Pending</p>
-            <p class="text-xl md:text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
-        </div>
-        <div class="card">
-            <p class="label text-xs md:text-sm text-indigo-60w0">Total Bookings</p>
-            <p class="text-xl md:text-2xl font-semibold text-indigo-600 mt-1">{{ $stats['bookings'] }}</p>
-        </div>
-    </div>
-
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
 
