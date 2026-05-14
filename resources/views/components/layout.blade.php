@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="icon" href="/images/Lenslocation Logo.png"/>
 </head>
 <body class="{{ session('theme') == 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-slate-900' }}">
 
