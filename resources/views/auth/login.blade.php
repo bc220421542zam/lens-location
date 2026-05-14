@@ -1,9 +1,7 @@
 <x-layout>
 <div class="min-h-screen bg-slate-50 relative overflow-hidden">
-
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
-
         {{-- CARD --}}
         <div class="w-full max-w-sm sm:max-w-md md:max-w-4xl
                     rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden">
@@ -50,6 +48,14 @@
 
                         <h1 class="text-xl sm:text-2xl text-center font-bold text-indigo-900 mb-1">Welcome back</h1>
                         <p class="text-sm text-gray-500 text-center mb-5 sm:mb-8">Sign in to your account to continue</p>
+
+                        {{-- Login with Google --}}
+                        <a href="{{ route('auth.google') }}"
+                           class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 mb-4
+                                bg-gray-200 hover:bg-gray-100 transition-colors duration-200">
+                            <img src="{{ asset('images/search.png') }}" alt="Google" class="h-5">
+                            <span class="text-sm text-gray-700">log in with Google</span>
+                        </a>
 
                         <form action="{{ route('login') }}" method="POST" class="space-y-4">
                             @csrf

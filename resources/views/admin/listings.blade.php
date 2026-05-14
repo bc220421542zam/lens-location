@@ -52,9 +52,25 @@
 
                             <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" title="{{ $listing->status->value === 'approved' ? 'Pending' : 'Approve' }}">
-                                    <i class="fa-solid {{ $listing->status->value === 'approved' ? 'fa-toggle-on' : 'fa-toggle-off' }} text-green-800 text-lg"></i>
-                                </button>
+                                <button type="submit"
+                            title="{{ $listing->status->value === 'approved' ? 'Reject Listing' : 'Approve Listing' }}"
+                            class="p-1.5 transition hover:opacity-70">
+
+                        @if($listing->status->value === 'approved')
+                            {{-- ACTIVE --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
+                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
+                                <circle cx="26" cy="10" r="7" fill="white"/>
+                            </svg>
+                        @else
+                            {{-- INACTIVE --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
+                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
+                                <circle cx="10" cy="10" r="7" fill="white"/>
+                            </svg>
+                        @endif
+
+                    </button>
                             </form>
 
                             <form method="POST" action="{{ route('admin.listings.delete', $listing->id) }}"

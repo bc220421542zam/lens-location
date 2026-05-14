@@ -6,6 +6,7 @@ use App\Http\Controllers\Owner;
 use App\Http\Controllers\Photographer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\SocialiteController;
 
 Route::redirect('/', '/login');
 
@@ -14,6 +15,10 @@ Route::redirect('/', '/login');
     Route::post('/register', [AuthController::class, 'register']);
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+});
+Route::controller(SocialiteController::class)->group(function () {
+    Route::get('/auth/google','redirectToGoogle') ->name('auth.google');
+    Route::get('/auth/google-callback',  'handleGoogleCallback')->name('auth.google.callback');
 });
 
     Route::middleware('auth')->group(function () {

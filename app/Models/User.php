@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'status',
+        'google_id',
         'notif_new_booking',
         'notif_new_user',
         'notif_new_listing',

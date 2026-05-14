@@ -8,7 +8,7 @@
         <div class="w-full max-w-sm sm:max-w-md lg:max-w-5xl
                     rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden">
 
-            {{-- MOBILE + TABLET: Image on top --}}
+            {{-- MOBILE & TABLET: Image on top --}}
             <div class="relative h-40 sm:h-48 lg:hidden w-full">
                 <img src="{{ asset('images/Studio-photography-rental.jpg') }}"
                      alt="Register"
@@ -79,7 +79,7 @@
                                         value="{{ old('first_name') }}"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('first_name') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('first_name') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('first_name')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -91,7 +91,7 @@
                                         value="{{ old('last_name') }}"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('last_name') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('last_name') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('last_name')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -107,7 +107,7 @@
                                         value="{{ old('email') }}"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('email') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('email') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('email')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -119,7 +119,7 @@
                                         value="{{ old('phone') }}"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('phone') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('phone')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -134,7 +134,7 @@
                                     <input type="password" id="password" name="password"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('password') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('password') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('password')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -146,7 +146,7 @@
                                         name="password_confirmation"
                                         class="w-full px-4 py-2.5 border rounded-lg text-sm
                                                focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-gray-300' }}">
+                                               {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('password_confirmation')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -164,7 +164,7 @@
                             <p class="text-center text-sm text-gray-500">
                                 Already have an account?
                                 <a href="{{ route('login') }}"
-                                    class="text-indigo-700 font-semibold underline hover:text-indigo-900">
+                                    class="text-indigo-800 font-semibold underline hover:text-indigo-900">
                                     Login
                                 </a>
                             </p>

@@ -4,9 +4,8 @@
     {{-- HEADER --}}
     <div class="top-bar mb-4">
         <div>
-        <x-nav/>
-    <h1 class="title text-indigo-900">Add New Location</h1>
-    <p class="text-sm text-gray-400">Fill the details below to submit your location</p>
+            <h1 class="title text-indigo-900">Add New Location</h1>
+            <p class="text-sm text-gray-400">Fill the details below to submit your location</p>
         </div>
     </div>
     {{-- FORM --}}

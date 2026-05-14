@@ -45,7 +45,7 @@
                         <td class="flex items-center gap-3 py-2 pl-2">
 
                             <button @click="openUser({{ $user->toJson() }})" 
-                            class="text-indigo-900 hover:text-indigo-700 p-1.5 w-10 rounded-xl py-1 bg-indigo-50 hover:bg-gray-200 transition shadow-sm hover:shadow">
+                            class="text-indigo-900 hover:text-indigo-700 p-1.5 py-1 transition hover:opacity-70">
                                 <i class="fa-regular fa-eye text-sm"></i>
                             </button>
 
@@ -56,7 +56,7 @@
 
                     <button type="submit"
                             title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
-                            class="p-1.5 w-10 rounded-xl bg-indigo-50 hover:bg-gray-200 transition shadow-sm hover:shadow">
+                            class="p-1.5 transition hover:opacity-70">
 
                         @if($user->status->value === 'active')
                             {{-- ACTIVE --}}
@@ -77,14 +77,14 @@
             @else
                 {{-- CURRENT LOGGED-IN USER --}}
                 <span title="This is your account"
-                    class="p-1.5 w-10 rounded-xl bg-indigo-50 inline-flex items-center justify-center">
+                    class="p-1.5 inline-flex items-center justify-center">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.5"
-                        class="w-5 h-5 text-indigo-500">
+                        class="w-6 h-6 mr-1 text-indigo-500">
 
                         <path stroke-linecap="round"
                             stroke-linejoin="round"

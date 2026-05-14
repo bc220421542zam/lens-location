@@ -6,32 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('users', function (Blueprint $table) {
-        $table->id();
-                        
-        $table->string('first_name');         
-        $table->string('last_name');
-        $table->string('business_name')->nullable();          
-        $table->string('email')->unique();
-        $table->string('phone');              
-        $table->timestamp('email_verified_at')->nullable();
-        $table->string('password');
-        $table->rememberToken();
-        $table->timestamps();
-        $table->enum('role', ['admin', 'owner', 'photographer'])->default('admin');
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('google_id')->nullable()->unique();  
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('business_name')->nullable();
+            $table->string('email')->unique();
+            $table->string('phone');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->enum('role', ['admin', 'owner', 'photographer'])->default('admin');
+            $table->boolean('notif_new_booking')->default(true);
+            $table->boolean('notif_new_user')->default(true);
+            $table->boolean('notif_new_listing')->default(true);
+            $table->boolean('notif_dispute')->default(false);
+            $table->boolean('notif_review')->default(false);
+            $table->timestamps();
+        });
 
-        // Notification preferences
-        $table->boolean('notif_new_booking')->default(true);
-        $table->boolean('notif_new_user')->default(true);
-        $table->boolean('notif_new_listing')->default(true);
-        $table->boolean('notif_dispute')->default(false);
-        $table->boolean('notif_review')->default(false);
-    });
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -48,13 +44,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
