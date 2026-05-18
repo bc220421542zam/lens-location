@@ -7,6 +7,9 @@ use App\Http\Controllers\Photographer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
+
 
 Route::redirect('/', '/login');
 
@@ -58,6 +61,12 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile',          [Admin\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/photo',    [Admin\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
+
+        //nav
+        Route::get('/notifications',           [NotificationController::class, 'index'])   ->name('notifications');
+        Route::get('/notifications/unread',    [NotificationController::class, 'unread'])  ->name('notifications.unread');
+        Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+        
     });
 
         // Owner 
@@ -76,6 +85,11 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::get('/locations/{location}/edit', [Owner\LocationController::class, 'edit'])->name('locations.edit');
         Route::put('/locations/{location}',      [Owner\LocationController::class, 'update'])->name('locations.update');
         Route::delete('/locations/{location}',   [Owner\LocationController::class, 'destroy'])->name('locations.destroy');
+
+        //Notifications
+        Route::get('/notifications',           [OwnerNotificationController::class, 'index'])->name('notifications');
+        Route::get('/notifications/unread',    [OwnerNotificationController::class, 'unread'])->name('notifications.unread');
+        Route::post('/notifications/read-all', [OwnerNotificationController::class, 'readAll'])->name('notifications.read-all');
 
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');

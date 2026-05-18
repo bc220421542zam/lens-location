@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ListingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
+use App\Notifications\ListingStatusNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -52,6 +53,14 @@ class ListingController extends Controller
         $listing->status = $listing->status->toggleApproval();
         $listing->save();
 
+        // ↓ Notify the owner about the status change
+        if ($listing->owner) {
+            $listing->owner->notify(new ListingStatusNotification(
+                $listing->title,
+                $listing->status->value  // passes the actual current status
+            ));
+        }
+
         return back()->with('success', 'Listing status updated.');
     }
 
@@ -60,6 +69,14 @@ class ListingController extends Controller
         $listing->status = ListingStatus::Approved;
         $listing->save();
 
+        // ↓ Notify the owner that their listing was approved
+        if ($listing->owner) {
+            $listing->owner->notify(new ListingStatusNotification(
+                $listing->title,
+                'approved'
+            ));
+        }
+
         return back()->with('success', 'Listing approved.');
     }
 
@@ -67,6 +84,14 @@ class ListingController extends Controller
     {
         $listing->status = ListingStatus::Rejected;
         $listing->save();
+
+        // ↓ Notify the owner that their listing was rejected
+        if ($listing->owner) {
+            $listing->owner->notify(new ListingStatusNotification(
+                $listing->title,
+                'rejected'
+            ));
+        }
 
         return back()->with('success', 'Listing rejected.');
     }

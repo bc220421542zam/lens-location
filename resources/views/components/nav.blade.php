@@ -1,4 +1,23 @@
 {{-- TOP NAVBAR --}}
+@php
+    $userRole = auth()->user()->role?->value ?? '';
+    $isAdmin  = $userRole === 'admin';
+    $isOwner  = $userRole === 'owner';
+
+    if ($isAdmin) {
+        $unreadRoute  = route('admin.notifications.unread');
+        $readAllRoute = route('admin.notifications.read-all');
+        $allRoute     = route('admin.notifications');
+    } elseif ($isOwner) {
+        $unreadRoute  = route('owner.notifications.unread');
+        $readAllRoute = route('owner.notifications.read-all');
+        $allRoute     = route('owner.notifications');
+    } else {
+        $unreadRoute  = null;
+        $readAllRoute = null;
+        $allRoute     = null;
+    }
+@endphp
 <nav class="shrink-0 bg-[#EEEFF7] shadow flex justify-between items-center px-3 md:px-6 py-2.5 z-10">
 
     <div class="flex items-center gap-2 md:gap-3">
@@ -15,23 +34,26 @@
     <div class="flex items-center gap-1 md:gap-4">
 
         {{-- Preferences --}}
-        <x-profileComponents.preferences/>
+        <x-profileComponents.preferences
+            :unreadRoute="$unreadRoute"
+            :readAllRoute="$readAllRoute"
+            :allRoute="$allRoute"
+        />
 
         {{-- PROFILE DROPDOWN --}}
         <div class="relative" x-data="{ open: false }">
-
             <button @click="open = !open"
                 class="flex items-center gap-1.5 md:gap-2 p-1 md:p-1.5 rounded-lg transition-colors">
-
-            {{-- Profile Photo --}}
                 @if(auth()->user()->profile_picture)
-                    <img src="{{ Storage::url(auth()->user()->profile_picture)}}" class="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-indigo-200 shrink-0" alt="Profile Picture">
+                    <img src="{{ Storage::url(auth()->user()->profile_picture)}}"
+                         class="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-indigo-200 shrink-0"
+                         alt="Profile Picture">
                 @else
                     <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
                         <i class="fa-regular fa-user text-xs md:text-sm text-indigo-900"></i>
                     </div>
                 @endif
-            </button> 
+            </button>
 
             {{-- DROPDOWN PANEL --}}
             <div x-show="open"

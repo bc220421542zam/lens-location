@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewUser;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Notifications\AdminNewUserNotification;
 use App\Support\RoleRedirector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request): RedirectResponse
     {
         $user = User::create($request->validated());
+
+        // ↓ Notify all admins about new user
+        User::where('role', 'admin')->each(fn($admin) =>
+            $admin->notify(new AdminNewUserNotification($user->name, $user->id))
+        );
+        broadcast(new NewUser($user->name, $user->id));
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -55,8 +63,6 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    // Google OAuth 
-
     public function redirectToGoogle(): RedirectResponse
     {
         return Socialite::driver('google')->redirect();
@@ -72,7 +78,8 @@ class AuthController extends Controller
             ]);
         }
 
-        // Find existing user or create a new one
+        $exists = User::where('email', $googleUser->getEmail())->exists();
+
         $user = User::updateOrCreate(
             ['email' => $googleUser->getEmail()],
             [
@@ -83,7 +90,15 @@ class AuthController extends Controller
             ]
         );
 
-        // Block check — consistent with your existing login logic
+        // Only notify admins if this is a brand new user
+        if (!$exists) {
+            User::where('role', 'admin')->each(fn($admin) =>
+                $admin->notify(new AdminNewUserNotification($user->name, $user->id))
+            );
+            broadcast(new NewUser($user->name, $user->id));
+            
+        }
+
         if ($user->isBlocked()) {
             return redirect()->route('login')->withErrors([
                 'email' => 'Your account has been blocked. Please contact admin.',

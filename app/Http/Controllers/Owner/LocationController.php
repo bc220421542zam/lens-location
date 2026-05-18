@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Enums\ListingStatus;
+use App\Events\NewListing;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\StoreLocationRequest;
 use App\Http\Requests\Owner\UpdateLocationRequest;
 use App\Models\Location;
+use App\Models\User;
+use App\Notifications\AdminNewListingNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class LocationController extends Controller
 {
-    private const IMAGE_DISK = 'public';
+    private const IMAGE_DISK   = 'public';
     private const IMAGE_FOLDER = 'locations';
 
     public function create(): View
@@ -23,12 +26,17 @@ class LocationController extends Controller
 
     public function store(StoreLocationRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data            = $request->validated();
         $data['user_id'] = auth()->id();
         $data['status']  = ListingStatus::Pending;
         $data['image']   = $this->storeImage($request);
 
-        Location::create($data);
+        $listing = Location::create($data);
+
+        //  Notify all admins about the new listing
+        User::where('role', 'admin')->each(fn($admin) =>
+            $admin->notify(new AdminNewListingNotification($listing->title, $listing->id))
+        );
 
         return redirect()
             ->route('owner.listings')
@@ -46,7 +54,7 @@ class LocationController extends Controller
     {
         $this->authorizeOwnership($location);
 
-        $data = $request->validated();
+        $data          = $request->validated();
         $data['image'] = $this->storeImage($request, replacing: $location->image) ?? $location->image;
 
         $location->update($data);

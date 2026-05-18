@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\UserStatusNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,6 +47,11 @@ class UserController extends Controller
     {
         $user->status = $user->status->toggle();
         $user->save();
+
+        // ↓ Notify the user about their new status
+        $user->notify(new UserStatusNotification(
+            $user->status->value  // passes 'blocked' or 'active'/'approved'
+        ));
 
         return back()->with('success', 'User status updated.');
     }
