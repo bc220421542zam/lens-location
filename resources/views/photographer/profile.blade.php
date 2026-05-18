@@ -1,11 +1,10 @@
 <x-layouts.photographer>
 <div class="page" x-data="{ tab: 'profile' }">
 
-    {{-- TOP BAR --}}
     <x-topbar 
-        title="Profile"
-        description="Manage your profile, {{ auth()->user()->first_name }}">
-    </x-topbar>
+    title="My Profile"
+    description="Manage your profile information and account settings"
+    ></x-topbar>
 
     <div class="flex flex-col lg:flex-row gap-6">
 
@@ -13,44 +12,15 @@
         <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
 
             {{-- PHOTO UPLOAD --}}
-            <form action="{{ route('owner.profile.photo') }}" method="POST" 
+            <form action="{{ route('photographer.profile.photo') }}" method="POST" 
                 enctype="multipart/form-data">
                 @csrf
                 <input type="file" id="profile_pic_trigger" name="profile_picture"
                     class="hidden" accept="image/*" onchange="this.form.submit()">
-
-                <div class="card flex flex-col items-center py-6">
-
-                    <div class="relative w-20 h-20 mb-3">
-                        @if(auth()->user()->profile_picture)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
-                                alt="Profile"
-                                class="w-20 h-20 rounded-full object-cover border-2 border-indigo-200">
-                        @else
-                            <div class="w-20 h-20 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center">
-                                <i class="fa-solid fa-user text-3xl text-indigo-400"></i>
-                            </div>
-                        @endif
-
-                        {{-- Camera overlay --}}
-                        <label for="profile_pic_trigger"
-                            class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#2C3399] transition">
-                            <i class="fa-solid fa-camera text-white" style="font-size:10px"></i>
-                        </label>
-                    </div>
-
-                    <p class="font-semibold text-indigo-900 text-center">
-                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1 text-center">
-                        {{ auth()->user()->email }}
-                    </p>
-                </div>
+                <x-profileComponents.profile-photo/>
             </form>
-
-            {{-- Account Details --}}
+            {{--Account Details--}}
             <x-profileComponents.account-details/>
-
         </div>
 
         {{-- RIGHT COLUMN --}}
@@ -74,7 +44,7 @@
             <div x-show="tab === 'profile'" class="card">
                 <h3 class="font-semibold text-indigo-900 mb-4">Profile Information</h3>
 
-                <form action="{{ route('owner.profile.update') }}" method="POST">
+                <form action="{{ route('photographer.profile.update') }}" method="POST">
                     @csrf
                     <div class="space-y-4">
 
@@ -96,6 +66,14 @@
                         </div>
 
                         <div>
+                            <label class="text-xs text-gray-500 mb-1 block">Business Name</label>
+                            <input type="text" name="business_name"
+                                value="{{ old('business_name', auth()->user()->business_name ?? '') }}"
+                                placeholder="Your business name"
+                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+
+                        <div>
                             <label class="text-xs text-gray-500 mb-1 block">Email</label>
                             <input type="email"
                                 value="{{ auth()->user()->email }}"
@@ -114,7 +92,7 @@
                     </div>
 
                     <div class="flex flex-wrap gap-3 mt-6 justify-end">
-                        <a href="{{ route('owner.listings') }}"
+                        <a href="{{ route('photographer.listings') }}"
                             class="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                             Cancel
                         </a>
@@ -137,15 +115,14 @@
                 }">
 
         {{-- NOTIFICATIONS --}}
-        <x-profileComponents.notifications/>
-        {{--change password--}}
-        <x-profileComponents.change-password/>
-        {{-- DANGER ZONE --}}
+        <x-profileComponents.notifications/>       
+        {{-- change password --}}
+        <x-profileComponents.change-password route="photographer.profile.password"/>
+        {{--Danger Zone --}}
         <x-profileComponents.danger-zone/>
 
             </div>
         </div>
     </div>
 </div>
-
 </x-layouts.photographer>

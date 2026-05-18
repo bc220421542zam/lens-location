@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="icon" href="/images/Lenslocation Logo.png"/>
 </head>
 <body class="{{ session('theme') == 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-slate-900' }}">
 
@@ -14,7 +14,7 @@
         <nav class="flex justify-between items-center px-4 sm:px-6 lg:px-10 py-3 bg-[#EEEFF7]">
 
             {{-- Logo --}}
-            <img src="/images/Logo.png" alt="Logo" class="h-8 sm:h-10">
+            <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="h-8 sm:h-10">
 
             {{-- Nav Links --}}
             @guest

@@ -1,13 +1,10 @@
 <x-layouts.owner>
 <div class="page">
 
-    {{-- HEADER --}}
-    <div class="top-bar mb-4">
-        <div>
-            <h1 class="title text-indigo-900">Add New Location</h1>
-            <p class="text-sm text-gray-400">Fill the details below to submit your location</p>
-        </div>
-    </div>
+<x-topbar 
+    title="Add New Location"
+    description="Fill in the details of your photography location">
+</x-topbar>
     {{-- FORM --}}
     <form action="{{ route('owner.locations.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

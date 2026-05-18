@@ -1,14 +1,14 @@
 <x-layouts.admin>
     <x-topbar 
         title="Dashboard"
-        description="welcome back, {{ auth()->user()->first_name }}">
+        description="Welcome back, {{ auth()->user()->first_name }}">
     </x-topbar>
 
 
     {{-- STAT CARDS --}}
-    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
 
-        <div class="shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+        <div class="shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl ">
             <div class="flex justify-between items-start">
                 <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Total Users</h3>
                 <i class="fa-solid fa-users text-indigo-900 shrink-0 ml-2 text-sm md:text-base"></i>

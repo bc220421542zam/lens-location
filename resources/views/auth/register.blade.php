@@ -159,6 +159,8 @@
                                        hover:bg-indigo-700 transition-colors duration-200">
                                 Sign Up
                             </button>
+                            {{--login with Google--}}
+                            <x-google-login />
 
                             {{-- Login Link --}}
                             <p class="text-center text-sm text-gray-500">

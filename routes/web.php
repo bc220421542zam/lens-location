@@ -81,7 +81,7 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
         Route::post('/profile/update',        [Owner\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/photo',         [Owner\ProfileController::class, 'updatePhoto'])->name('profile.photo');
-        Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
+        //Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 

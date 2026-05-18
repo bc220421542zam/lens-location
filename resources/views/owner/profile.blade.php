@@ -4,8 +4,7 @@
     <x-topbar 
     title="My Profile"
     description="Manage your profile information and account settings"
->
-</x-topbar>
+    ></x-topbar>
 
     <div class="flex flex-col lg:flex-row gap-6">
 
@@ -18,34 +17,7 @@
                 @csrf
                 <input type="file" id="profile_pic_trigger" name="profile_picture"
                     class="hidden" accept="image/*" onchange="this.form.submit()">
-
-                <div class="card flex flex-col items-center py-6">
-
-                    <div class="relative w-20 h-20 mb-3">
-                        @if(auth()->user()->profile_picture)
-                            <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
-                                alt="Profile"
-                                class="w-20 h-20 rounded-full object-cover border-2 border-indigo-200">
-                        @else
-                            <div class="w-20 h-20 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center">
-                                <i class="fa-solid fa-user text-3xl text-indigo-400"></i>
-                            </div>
-                        @endif
-
-                        {{-- Camera overlay --}}
-                        <label for="profile_pic_trigger"
-                            class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-900 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#2C3399] transition">
-                            <i class="fa-solid fa-camera text-white" style="font-size:10px"></i>
-                        </label>
-                    </div>
-
-                    <p class="font-semibold text-indigo-900 text-center">
-                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1 text-center">
-                        {{ auth()->user()->email }}
-                    </p>
-                </div>
+                <x-profileComponents.profile-photo/>
             </form>
 
             {{-- BUSINESS STATUS CARD --}}
@@ -60,14 +32,6 @@
                     </div>
                     <div class="flex justify-between text-gray-600">
                         <span>Total Bookings</span>
-                        <span class="font-medium text-indigo-900">00</span>
-                    </div>
-                    <div class="flex justify-between text-gray-600">
-                        <span>Members</span>
-                        <span class="font-medium text-indigo-900">00</span>
-                    </div>
-                    <div class="flex justify-between text-gray-600">
-                        <span>Revenue</span>
                         <span class="font-medium text-indigo-900">00</span>
                     </div>
                 </div>

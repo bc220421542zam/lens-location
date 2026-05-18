@@ -1,5 +1,12 @@
 <div class="flex items-center gap-0.5 md:gap-1">
 
+    {{-- Role badge — hidden on mobile, visible from sm --}}
+    <div class="hidden sm:flex items-center mr-1 md:mr-2">
+        <span class="text-xs font-medium text-indigo-900 bg-indigo-200 border border-indigo-300 shadow-sm rounded-xl px-3 py-1 capitalize">
+            {{ auth()->user()->role ?? 'User' }}
+        </span>
+    </div>
+
     {{-- Theme toggle --}}
     <button title="Theme" class="text-indigo-900 hover:text-indigo-700 p-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
         <i class="fa-solid fa-palette text-base md:text-lg"></i>

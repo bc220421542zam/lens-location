@@ -80,3 +80,55 @@
 
                 </form>
             </div>
+
+{{-- JAVASCRIPT --}}
+<script>
+function togglePw(fieldId, eyeId) {
+    const field = document.getElementById(fieldId);
+    const eye   = document.getElementById(eyeId);
+    if (field.type === 'password') {
+        field.type = 'text';
+        eye.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        field.type = 'password';
+        eye.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+function adminStrength(val) {
+    const bar  = document.getElementById('a_strength_bar');
+    const text = document.getElementById('a_strength_text');
+    const rules = {
+        length:  val.length >= 8,
+        upper:   /[A-Z]/.test(val),
+        number:  /[0-9]/.test(val),
+        special: /[^A-Za-z0-9]/.test(val),
+    };
+    document.getElementById('a_rule_len').style.color = rules.length  ? '#16a34a' : '#9ca3af';
+    document.getElementById('a_rule_up') .style.color = rules.upper   ? '#16a34a' : '#9ca3af';
+    document.getElementById('a_rule_num').style.color = rules.number  ? '#16a34a' : '#9ca3af';
+    document.getElementById('a_rule_spe').style.color = rules.special ? '#16a34a' : '#9ca3af';
+    const score  = Object.values(rules).filter(Boolean).length;
+    if (val.length === 0) { bar.style.width = '0%'; text.textContent = 'Enter a password'; text.style.color = '#9ca3af'; return; }
+    const levels = [
+        { width: '25%',  color: '#ef4444', label: 'Weak'   },
+        { width: '50%',  color: '#f97316', label: 'Fair'   },
+        { width: '75%',  color: '#eab308', label: 'Good'   },
+        { width: '100%', color: '#16a34a', label: 'Strong' },
+    ];
+    const level = levels[score - 1] || levels[0];
+    bar.style.width      = level.width;
+    bar.style.background = level.color;
+    text.textContent     = 'Strength: ' + level.label;
+    text.style.color     = level.color;
+}
+
+function adminMatch() {
+    const newPw  = document.getElementById('a_new_pw').value;
+    const conPw  = document.getElementById('a_con_pw').value;
+    const txt    = document.getElementById('a_match_text');
+    if (conPw.length === 0) { txt.style.color = 'transparent'; return; }
+    if (newPw === conPw) { txt.textContent = '✓ Passwords match';      txt.style.color = '#16a34a'; }
+    else                 { txt.textContent = '✗ Passwords do not match'; txt.style.color = '#ef4444'; }
+}
+</script>
