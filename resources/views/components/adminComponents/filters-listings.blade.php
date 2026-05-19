@@ -1,39 +1,94 @@
 @props(['categories'])
+{{--Filters--}}
 <form method="GET" action="{{ route('admin.listings') }}"
-                  class="flex flex-col sm:flex-row sm:items-center gap-2 grid grid-cols-1 sm:grid-cols-5 mb-4">
+      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between">
+        {{--Search--}}
+    <div class="flex-1">
+        <label for="filter-search"
+            class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                d="M17 17l-3.5-3.5M13 8.5a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+            </svg>    
+            Search
+        </label>
+                <input type="text" name="search" value="{{ request('search') }}"
+                  placeholder="Search by title, city, owner ..."
+                  class="input text-indigo-800">
+    </div>
 
-                <div class="relative flex items-center flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute right-3 text-indigo-800 text-sm"></i>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Search by title, city, or owner"
-                           class="border border-indigo-900 pl-4 pr-8 py-1 rounded-xl shade outline-none w-full text-sm">
-                </div>
-
-                <select name="status"
-                        class="border border-indigo-900 px-3 py-1 rounded-xl shade outline-none text-sm">
-                    <option value="">All status</option>
-                    <option value="pending"  @selected(request('status') === 'pending')>Pending</option>
-                    <option value="approved" @selected(request('status') === 'approved')>Approved</option>
-                    <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
-                </select>
-
-                <select name="category"
-                        class="border border-indigo-900 px-3 py-1 rounded-xl shade outline-none text-sm">
-                    <option value="">All categories</option>
+        {{-- Category --}}
+    <div class="w-full md:w-48">
+        <label for="filter-category"
+            class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                d="M4 6h12M4 10h8M4 14h5"/>
+            </svg>    
+            Category
+        </label>
+            <select name="category" class="input text-indigo-800">
+                <option value="" class="text-indigo-900">All</option>
                     @foreach ($categories as $cat)
-                        <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
+                        <option value="{{ $cat }}" @selected(request('category') === $cat) class="text-indigo-900">{{ $cat }}</option>
                     @endforeach
-                </select>
+            </select>
+    </div>
 
-                <button type="submit"
-                        class="bg-indigo-900 text-white text-sm px-4 py-1 rounded-xl hover:bg-[#2C3399]">
-                    Filter
-                </button>
+        {{-- Status --}}
+    <div class="w-full md:w-48">
+        <label for="filter-status" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                d="M10 5v5l3 3M10 3a7 7 0 100 14A7 7 0 0010 3z"/>
+            </svg>
+            Status
+        </label>
+            <select name="status" id="filter-status" class="input text-indigo-800">
+                <option value="" class="text-indigo-900">All</option>
+                <option value="pending" @selected(request('status') === 'pending') class="text-indigo-900">Pending</option>
+                <option value="approved" @selected(request('status') === 'approved') class="text-indigo-900">Approved</option>
+                <option value="rejected" @selected(request('status') === 'rejected') class="text-indigo-900">Rejected</option>
+            </select>
+    </div>
+                
+        {{--price/hr--}}
+    <div class="w-full md:w-40">
+        <label for="filter-max-price" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M13 6.5C13 5.12 11.66 4 10 4S7 5.12 7 6.5 8.34 9 10 9s3 1.12 3 2.5S11.66 15 10 15s-3-1.12-3-2.5"/>
+            </svg>
+            Max price/hr
+        </label>
+            <input type="number" name="max_price" min="0" step="100"
+                value="{{ request('max_price') }}"
+                class="input text-indigo-800">
+    </div>
 
-                @if (request()->hasAny(['search', 'status', 'category']))
-                    <a href="{{ route('admin.listings') }}"
-                       class="text-sm text-indigo-700 px-3 py-1 rounded-xl border border-indigo-300 hover:bg-indigo-50">
-                        Reset
-                    </a>
-                @endif
-            </form>
+        {{--filter buttons--}}
+    <div class="flex gap-2 items-end">
+        <button type="submit" class="btn w-auto px-4 mt-5 rounded-lg inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M3 5h14M6 10h8M9 15h2"/>
+            </svg>    
+                Filter
+        </button>             
+    </div>
+        {{-- Reset button --}}
+    <div class="flex items-end">
+        @if (request()->hasAny(['search', 'status', 'category']))
+            <a href="{{ route('admin.listings') }}"
+            class="px-4 w-auto mt-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 inline-flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    d="M5 5l10 10M15 5L5 15"/>
+                </svg>
+                Reset
+           </a>
+        @endif
+    </div>
+</form>
+ 
