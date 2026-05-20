@@ -46,14 +46,16 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($locations as $location)
             <div class="card flex flex-col p-0 overflow-hidden">
-                <div class="relative aspect-[4/3] bg-gray-100">
-                    @if ($location->image)
-                        <img src="{{ asset('storage/'.$location->image) }}"
-                             alt="{{ $location->title }}"
-                             class="w-full h-full object-cover">
+                <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">
+                    @if($location->image)
+                        <img src="{{ Storage::url($location->image) }}"
+                            alt="{{ $location->title }}"
+                            class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gray-50">
-                            <i class="fa-solid fa-camera text-5xl text-gray-300"></i>
+                            <span class="text-5xl text-gray-300">
+                                <i class="fa-solid fa-camera"></i>
+                            </span>
                         </div>
                     @endif
                     <span class="badge badge-active">{{ $location->category }}</span>

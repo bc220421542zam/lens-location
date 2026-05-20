@@ -3,7 +3,7 @@
 
     {{-- TOP BAR --}}
     <x-topbar 
-    title="Bookings"
+    title="Manage Bookings"
     description="Manage incoming booking requests">
     </x-topbar>
 

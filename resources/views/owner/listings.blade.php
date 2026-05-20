@@ -53,16 +53,13 @@
 
             {{-- INFO --}}
             <div class="p-3 sm:p-4 flex-1">
-                <h3 class="font-semibold text-indigo-900 text-sm sm:text-base leading-snug">
-                    {{ $location->title }}
-                </h3>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 flex flex-wrap gap-x-1 items-center">
-                    <span>{{ $location->city }}</span>
-                    <span class="text-gray-300">&middot;</span>
-                    <span>PKR {{ number_format($location->price_per_hour) }}/hr</span>
-                    <span class="text-gray-300">&middot;</span>
-                    <span>{{ ucfirst($location->category) }}</span>
-                </p>
+                <h3 class="font-semibold text-indigo-900">{{ $location->title }}</h3>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fa-solid fa-location-dot mr-1"></i>{{ $location->city }}
+                    </p>
+                    <p class="text-sm font-semibold text-indigo-800 mt-2">
+                        PKR {{ number_format((float) $location->price_per_hour) }} /hr
+                    </p>
             </div>
 
             {{-- ACTION BUTTONS --}}
