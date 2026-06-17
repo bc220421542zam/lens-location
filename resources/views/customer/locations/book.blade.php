@@ -1,4 +1,4 @@
-<x-layouts.photographer>
+<x-layouts.customer>
 <div class="page max-w-2xl"
      x-data="{
         hours: {{ old('hours', 1) }},
@@ -8,7 +8,7 @@
 
     <div class="flex items-center justify-between mb-6">
         <h1 class="title text-indigo-900">Book Location</h1>
-        <a href="{{ route('photographer.listings.show', $location->id) }}"
+        <a href="{{ route('customer.listings.show', $location->id) }}"
            class="text-sm text-indigo-700 hover:underline">&larr; Back</a>
     </div>
 
@@ -34,7 +34,7 @@
     </div>
 
     {{-- BOOKING FORM --}}
-    <form method="POST" action="{{ route('photographer.listings.book.store', $location->id) }}"
+    <form method="POST" action="{{ route('customer.listings.book.store', $location->id) }}"
           class="card flex flex-col gap-4">
         @csrf
 
@@ -80,4 +80,4 @@
     </form>
 
 </div>
-</x-layouts.photographer>
+</x-layouts.customer>

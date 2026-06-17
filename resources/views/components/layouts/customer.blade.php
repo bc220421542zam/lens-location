@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>photographer Dashboard</title>
+    <title>customer Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -14,7 +14,7 @@
     {{--Top Nav bar--}}
     <x-nav/>
     <div class="flex flex-1 overflow-hidden">
-       <x-sidebar-photographer />
+       <x-sidebar-customer />
 
         {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-8">

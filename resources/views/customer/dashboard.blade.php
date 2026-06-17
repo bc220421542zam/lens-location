@@ -1,22 +1,17 @@
-<x-layouts.photographer>
+<x-layouts.customer>
 <div class="page">
 
     {{-- TOP BAR --}}
     <x-topbar 
-        title="My Bookings"
-        description="Manage your booking requests">
+        title="Dashboard"
+        description="welcome back, {{ auth()->user()->first_name }}">
         <x-slot:actions>
-        <a href="{{ route('photographer.listings') }}"
+        <a href="{{ route('customer.listings') }}"
            class="btn w-full sm:w-auto px-4 text-center">
             Find Location
         </a>
     </x-slot:actions>
     </x-topbar>
-
-    @if (session('success'))
-        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>
-    @endif
-
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="card">
@@ -39,28 +34,11 @@
         </div>
     </div>
 
-    {{-- FILTER TABS --}}
-    @php
-        $tabs = [
-            ''          => 'All',
-            'pending'   => 'Pending',
-            'confirmed' => 'Confirmed',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-        ];
-    @endphp
-    <div class="flex flex-wrap gap-2 mb-4">
-        @foreach ($tabs as $value => $label)
-            <a href="{{ $value === '' ? route('photographer.bookings') : route('photographer.bookings', ['status' => $value]) }}"
-               class="action-btn {{ request('status', '') === $value ? 'bg-indigo-900 text-white' : '' }}">
-                {{ $label }}
-            </a>
-        @endforeach
-    </div>
-
-    {{-- BOOKINGS LIST --}}
+    {{-- UPCOMING BOOKINGS --}}
     <div class="flex flex-col gap-3">
-        @forelse ($bookings as $booking)
+        <h2 class="text-indigo-900 font-semibold">Upcoming bookings</h2>
+
+        @forelse ($upcoming as $booking)
             <div class="card flex flex-col md:flex-row md:items-center gap-4">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
@@ -73,50 +51,36 @@
                     @endif
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-gray-900">{{ $booking->location?->title ?? 'Deleted location' }}</p>
+                    <p class="font-semibold text-gray-900">{{ $booking->location?->title }}</p>
                     <p class="text-sm text-gray-500">
                         {{ $booking->hours }} hr{{ $booking->hours > 1 ? 's' : '' }}
                         @if ($booking->shoot_type) &middot; {{ $booking->shoot_type }} @endif
-                        @if ($booking->location?->owner)
-                            &middot; with {{ $booking->location->owner->name }}
-                        @endif
                     </p>
                 </div>
                 <div class="text-left md:text-right shrink-0">
                     <p class="text-sm text-gray-400">{{ $booking->booking_date->format('M d, Y · g:i A') }}</p>
                     <p class="font-semibold text-gray-900">PKR {{ number_format((float) $booking->total_price) }}</p>
                     @php
-                        $badge = match ($booking->status->value) {
-                            'pending'   => 'bg-yellow-100 text-yellow-700',
-                            'confirmed' => 'bg-green-100 text-green-700',
-                            'completed' => 'bg-indigo-100 text-indigo-700',
-                            'cancelled' => 'bg-red-100 text-red-600',
-                        };
+                        $badge = $booking->status->value === 'confirmed'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700';
                     @endphp
                     <span class="text-xs font-semibold px-2 py-1 rounded-full {{ $badge }}">
                         {{ ucfirst($booking->status->value) }}
                     </span>
                 </div>
-                @if ($booking->status->value === 'pending')
-                    <form method="POST" action="{{ route('photographer.bookings.cancel', $booking->id) }}"
-                          onsubmit="return confirm('Cancel this booking?')"
-                          class="shrink-0">
-                        @csrf
-                        <button type="submit" class="action-btn danger">Cancel</button>
-                    </form>
-                @endif
             </div>
         @empty
             <div class="card text-center py-10 text-gray-400">
                 <i class="fa-solid fa-calendar text-2xl mb-2"></i>
-                <p class="font-medium">No bookings yet</p>
-                <a href="{{ route('photographer.listings') }}"
+                <p class="font-medium">No upcoming bookings</p>
+                <a href="{{ route('customer.listings') }}"
                    class="text-sm text-indigo-700 hover:underline mt-2 inline-block">
-                    Browse listings
+                    Find a location to book
                 </a>
             </div>
         @endforelse
     </div>
 
 </div>
-</x-layouts.photographer>
+</x-layouts.customer>

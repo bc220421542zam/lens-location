@@ -1,9 +1,9 @@
-<x-layouts.photographer>
+<x-layouts.customer>
 <div class="page max-w-3xl">
 
     <div class="flex items-center justify-between mb-6">
         <h1 class="title text-indigo-900">{{ $location->title }}</h1>
-        <a href="{{ route('photographer.listings') }}" class="text-sm text-indigo-700 hover:underline">
+        <a href="{{ route('customer.listings') }}" class="text-sm text-indigo-700 hover:underline">
             &larr; Back to listings
         </a>
     </div>
@@ -40,7 +40,7 @@
                 <dd class="text-gray-700 whitespace-pre-line">{{ $location->description }}</dd>
             </div>
 
-            <a href="{{ route('photographer.listings.book', $location->id) }}"
+            <a href="{{ route('customer.listings.book', $location->id) }}"
                class="btn w-full md:w-auto md:px-6 inline-block text-center">
                 Book this location
             </a>
@@ -48,4 +48,4 @@
     </div>
 
 </div>
-</x-layouts.photographer>
+</x-layouts.customer>

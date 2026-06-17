@@ -28,7 +28,7 @@
                 <option value="">All</option>
                     <option value="admin"        @selected(request('role') === 'admin')>Admin</option>
                     <option value="owner"        @selected(request('role') === 'owner')>Owner</option>
-                    <option value="photographer" @selected(request('role') === 'photographer')>Photographer</option>
+                    <option value="customer" @selected(request('role') === 'customer')>Customer</option>
             </select>
     </div>
 

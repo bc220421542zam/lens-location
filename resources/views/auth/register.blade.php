@@ -56,10 +56,10 @@
 
              <!-- Role Dropdown -->
             <div class=" grid grid-cols-2 gap-2 text-indigo-900">
-                <h1 class="font-bold text-indigo-900 text-center"> Sign Up as... </h1>
+                <h1 class="font-bold text-indigo-900 text-center"> Sign Up as </h1>
                 <select id="role" name="role" form="registerForm">
                     <label for="role" class="block mb-1"><option value="">User Role</option></label>
-                    <option value="photographer" {{ old('role') == 'photographer' ? 'selected' : '' }}>Photographer</option>
+                    <option value="customer" {{ old('role') == 'customer' ? 'selected' : '' }}>Customer</option>
                     <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Location Owner</option>
                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                 </select>
@@ -77,9 +77,7 @@
                                         class="block text-sm font-medium text-indigo-900 mb-1">First Name</label>
                                     <input type="text" id="first_name" name="first_name"
                                         value="{{ old('first_name') }}"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('first_name') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('first_name') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('first_name')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -89,37 +87,32 @@
                                         class="block text-sm font-medium text-indigo-900 mb-1">Last Name</label>
                                     <input type="text" id="last_name" name="last_name"
                                         value="{{ old('last_name') }}"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('last_name') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('last_name') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('last_name')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
 
-                            {{-- Email + Phone --}}
+                            {{-- Email --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label for="email"
                                         class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
                                     <input type="email" id="email" name="email"
                                         value="{{ old('email') }}"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('email') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('email') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('email')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
+                                {{-- Phone --}}
                                 <div>
                                     <label for="phone"
                                         class="block text-sm font-medium text-indigo-900 mb-1">Phone</label>
                                     <input type="text" id="phone" name="phone"
                                         value="{{ old('phone') }}"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('phone')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -132,9 +125,7 @@
                                     <label for="password"
                                         class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
                                     <input type="password" id="password" name="password"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('password') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('password') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('password')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
@@ -144,9 +135,7 @@
                                         class="block text-sm font-medium text-indigo-900 mb-1">Confirm Password</label>
                                     <input type="password" id="password_confirmation"
                                         name="password_confirmation"
-                                        class="w-full px-4 py-2.5 border rounded-lg text-sm
-                                               focus:outline-none focus:ring-2 focus:ring-indigo-700
-                                               {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-indigo-300' }}">
+                                        class="field {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-indigo-300' }}">
                                     @error('password_confirmation')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror

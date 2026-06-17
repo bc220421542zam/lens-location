@@ -1,4 +1,4 @@
-<x-layouts.photographer>
+<x-layouts.customer>
 <div class="page">
 
     {{-- TOP BAR --}}
@@ -12,7 +12,7 @@
     @endif
 
     {{-- FILTERS --}}
-    <form method="GET" action="{{ route('photographer.listings') }}"
+    <form method="GET" action="{{ route('customer.listings') }}"
           class="card mb-4 flex flex-col md:flex-row gap-3 md:items-end">
         <div class="flex-1">
             <label class="label">Search</label>
@@ -37,7 +37,7 @@
         </div>
         <div class="flex gap-2">
             <button type="submit" class="btn w-auto px-4">Filter</button>
-            <a href="{{ route('photographer.listings') }}"
+            <a href="{{ route('customer.listings') }}"
                class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Reset</a>
         </div>
     </form>
@@ -69,9 +69,9 @@
                         PKR {{ number_format((float) $location->price_per_hour) }} /hr
                     </p>
                     <div class="flex gap-2 mt-3 pt-3 border-t border-indigo-100">
-                        <a href="{{ route('photographer.listings.show', $location->id) }}"
+                        <a href="{{ route('customer.listings.show', $location->id) }}"
                            class="action-btn text-center">View</a>
-                        <a href="{{ route('photographer.listings.book', $location->id) }}"
+                        <a href="{{ route('customer.listings.book', $location->id) }}"
                            class="action-btn publish text-center">Book</a>
                     </div>
                 </div>
@@ -89,4 +89,4 @@
     </div>
 
 </div>
-</x-layouts.photographer>
+</x-layouts.customer>

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->enum('role', ['admin', 'owner', 'photographer'])->default('admin');
+            $table->enum('role', ['admin', 'owner', 'customer'])->default('admin');
             $table->boolean('notif_new_booking')->default(true);
             $table->boolean('notif_new_user')->default(true);
             $table->boolean('notif_new_listing')->default(true);

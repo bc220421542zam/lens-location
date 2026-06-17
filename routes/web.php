@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Owner;
-use App\Http\Controllers\Photographer;
+use App\Http\Controllers\Customer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
@@ -26,17 +26,6 @@ Route::controller(SocialiteController::class)->group(function () {
 
     Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    Route::get('/theme/{mode}', function ($mode) {
-    Session::put('theme', $mode);
-    return back();
-    })->name('theme.set');
-
-
-    Route::get('/language/{lang}', function ($lang) {
-        Session::put('language', $lang);
-        return back();
-    })->name('lang.set');
 
         // Admin 
         Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
@@ -99,24 +88,24 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 
-        // Photographer 
-        Route::middleware('role:photographer')->prefix('photographer')->name('photographer.')->group(function () {
-        Route::get('/dashboard', [Photographer\DashboardController::class, 'index'])->name('dashboard');
+        // Customer 
+        Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
+        Route::get('/dashboard', [Customer\DashboardController::class, 'index'])->name('dashboard');
 
         // Browse approved listings
-        Route::get('/listings',                  [Photographer\BrowseController::class, 'index'])->name('listings');
-        Route::get('/listings/{location}',       [Photographer\BrowseController::class, 'show'])->name('listings.show');
-        Route::get('/listings/{location}/book',  [Photographer\BookingController::class, 'create'])->name('listings.book');
-        Route::post('/listings/{location}/book', [Photographer\BookingController::class, 'store'])->name('listings.book.store');
+        Route::get('/listings',                  [Customer\BrowseController::class, 'index'])->name('listings');
+        Route::get('/listings/{location}',       [Customer\BrowseController::class, 'show'])->name('listings.show');
+        Route::get('/listings/{location}/book',  [Customer\BookingController::class, 'create'])->name('listings.book');
+        Route::post('/listings/{location}/book', [Customer\BookingController::class, 'store'])->name('listings.book.store');
 
         // My bookings
-        Route::get('/bookings',                   [Photographer\BookingController::class, 'index'])->name('bookings');
-        Route::post('/bookings/{booking}/cancel', [Photographer\BookingController::class, 'cancel'])->name('bookings.cancel');
+        Route::get('/bookings',                   [Customer\BookingController::class, 'index'])->name('bookings');
+        Route::post('/bookings/{booking}/cancel', [Customer\BookingController::class, 'cancel'])->name('bookings.cancel');
 
         // Profile
-        Route::get('/profile',           [Photographer\ProfileController::class, 'show'])->name('profile');
-        Route::post('/profile',          [Photographer\ProfileController::class, 'updateProfile'])->name('profile.update');
-        Route::post('/profile/photo',    [Photographer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
-        Route::post('/profile/password', [Photographer\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::get('/profile',           [Customer\ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile',          [Customer\ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/photo',    [Customer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::post('/profile/password', [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
     });
 });

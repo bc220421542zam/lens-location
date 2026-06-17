@@ -10,7 +10,7 @@ class Booking extends Model
 {
     protected $fillable = [
         'location_id',
-        'photographer_id',
+        'customer_id',
         'booking_date',
         'hours',
         'total_price',
@@ -32,8 +32,8 @@ class Booking extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function photographer(): BelongsTo
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'photographer_id');
+        return $this->belongsTo(User::class, 'customer_id');
     }
 }

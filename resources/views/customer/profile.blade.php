@@ -1,4 +1,4 @@
-<x-layouts.photographer>
+<x-layouts.customer>
 <div class="page" x-data="{ tab: 'profile' }">
 
     <x-topbar 
@@ -12,7 +12,7 @@
         <div class="flex flex-col gap-4 w-full lg:w-56 lg:shrink-0">
 
             {{-- PHOTO UPLOAD --}}
-            <form action="{{ route('photographer.profile.photo') }}" method="POST" 
+            <form action="{{ route('customer.profile.photo') }}" method="POST" 
                 enctype="multipart/form-data">
                 @csrf
                 <input type="file" id="profile_pic_trigger" name="profile_picture"
@@ -44,7 +44,7 @@
             <div x-show="tab === 'profile'" class="card">
                 <h3 class="font-semibold text-indigo-900 mb-4">Profile Information</h3>
 
-                <form action="{{ route('photographer.profile.update') }}" method="POST">
+                <form action="{{ route('customer.profile.update') }}" method="POST">
                     @csrf
                     <div class="space-y-4">
 
@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="flex flex-wrap gap-3 mt-6 justify-end">
-                        <a href="{{ route('photographer.listings') }}"
+                        <a href="{{ route('customer.listings') }}"
                             class="px-6 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                             Cancel
                         </a>
@@ -117,7 +117,7 @@
         {{-- NOTIFICATIONS --}}
         <x-profileComponents.notifications/>       
         {{-- change password --}}
-        <x-profileComponents.change-password route="photographer.profile.password"/>
+        <x-profileComponents.change-password route="customer.profile.password"/>
         {{--Danger Zone --}}
         <x-profileComponents.danger-zone/>
 
@@ -125,4 +125,4 @@
         </div>
     </div>
 </div>
-</x-layouts.photographer>
+</x-layouts.customer>

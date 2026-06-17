@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Photographer;
+namespace App\Http\Controllers\Customer;
 
 use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $bookings = Booking::where('photographer_id', auth()->id())->get();
+        $bookings = Booking::where('customer_id', auth()->id())->get();
 
         $stats = [
             'total'     => $bookings->count(),
@@ -26,13 +26,13 @@ class DashboardController extends Controller
         ];
 
         $upcoming = Booking::with('location.owner')
-            ->where('photographer_id', auth()->id())
+            ->where('customer_id', auth()->id())
             ->whereIn('status', [BookingStatus::Pending, BookingStatus::Confirmed])
             ->where('booking_date', '>=', now())
             ->orderBy('booking_date')
             ->take(5)
             ->get();
 
-        return view('photographer.dashboard', compact('stats', 'upcoming'));
+        return view('customer.dashboard', compact('stats', 'upcoming'));
     }
 }

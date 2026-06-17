@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Photographer;
+namespace App\Http\Controllers\Customer;
 
 use App\Enums\ListingStatus;
 use App\Http\Controllers\Controller;
@@ -35,7 +35,7 @@ class BrowseController extends Controller
             ->orderBy('category')
             ->pluck('category');
 
-        return view('photographer.listings', compact('locations', 'categories'));
+        return view('customer.listings', compact('locations', 'categories'));
     }
 
     public function show(Location $location): View
@@ -43,6 +43,6 @@ class BrowseController extends Controller
         abort_unless($location->status === ListingStatus::Approved, 404);
         $location->load('owner');
 
-        return view('photographer.locations.show', compact('location'));
+        return view('customer.locations.show', compact('location'));
     }
 }
