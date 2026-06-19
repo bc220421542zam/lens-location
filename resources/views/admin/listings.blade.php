@@ -10,7 +10,7 @@
     <x-adminComponents.filters-listings :categories="$categories" />
 
     {{-- LISTINGS TABLE --}}
-    <div class="shade bg-[#EEEFF7] p-4 rounded-2xl">
+    <div class="shade card bg-[#EEEFF7] p-4 rounded-2xl">
         <x-success class="mb-4" />
     <x-error class="mb-4" />
         <div class="flex flex-col gap-3 mb-4">

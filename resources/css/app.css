@@ -44,8 +44,15 @@
 }
 .card{
   @apply p-6 w-full rounded-lg shadow-lg border
-  border-slate-200 bg-[#EEEFF7];
+  border-indigo-300 bg-[#EEEFF7];
 }
+.left-border {
+    @apply border-l-3 border-indigo-500 pl-4;
+}
+.right-border {
+    @apply border-r-3 border-indigo-500 pl-4;
+}
+
 .container {
     @apply flex flex-col md:flex-row w-full w-screen;
     min-height: calc(100vh - 72px); /* header height remove */

@@ -1,5 +1,5 @@
 <x-layouts.owner>
-<div class="page" x-data="{ tab: '{{ request('status', 'all') }}' }">
+<div x-data="{ tab: '{{ request('status', 'all') }}' }">
 
     {{-- TOP BAR --}}
     <x-topbar 

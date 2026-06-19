@@ -1,6 +1,6 @@
 {{--Filters--}}
 <form method="GET" action="{{ route('admin.users') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between">
+      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl">
         {{--Search--}}
     <div class="flex-1">
         <label for="filter-search"

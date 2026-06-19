@@ -16,7 +16,7 @@ class BookingController extends Controller
     {
         $ownerLocationIds = Location::where('user_id', auth()->id())->pluck('id');
 
-        $bookings = Booking::with(['location', 'photographer'])
+        $bookings = Booking::with(['location', 'customer'])
             ->whereIn('location_id', $ownerLocationIds)
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->latest()

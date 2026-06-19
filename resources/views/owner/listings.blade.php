@@ -1,7 +1,5 @@
 <x-layouts.owner>
 
-<div class="page">
-
   {{-- TOP BAR --}}
 <x-topbar 
     title="My Listings"
@@ -97,6 +95,4 @@
         @endforelse
 
     </div>
-</div>
-
 </x-layouts.owner>

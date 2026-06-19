@@ -1,7 +1,7 @@
 @props(['categories'])
 {{--Filters--}}
 <form method="GET" action="{{ route('admin.listings') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between">
+      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl">
         {{--Search--}}
     <div class="flex-1">
         <label for="filter-search"
@@ -27,7 +27,7 @@
             </svg>    
             Category
         </label>
-            <select name="category" class="input text-indigo-800">
+            <select name="category" class="input text-indigo-800 pr-3">
                 <option value="" class="text-indigo-900">All</option>
                     @foreach ($categories as $cat)
                         <option value="{{ $cat }}" @selected(request('category') === $cat) class="text-indigo-900">{{ $cat }}</option>

@@ -4,17 +4,6 @@
     'allRoute',
 ])
 
-{{-- Theme bootstrap --}}
-<script>
-    (function () {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (saved === 'dark' || (!saved && prefersDark)) {
-            document.documentElement.classList.add('dark');
-        }
-    })();
-</script>
-
 <div
     x-data="navbarActions()"
     x-init="init()"
@@ -30,7 +19,7 @@
         </span>
     </div>
 
-    {{-- Theme toggle --}}
+    <!-- {{-- Theme toggle --}}
     <button
         @click="toggleTheme()"
         :title="isDark ? 'Switch to light' : 'Switch to dark'"
@@ -57,7 +46,7 @@
                      9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753
                      9.753 0 0 0 9.002-5.998Z" />
         </svg>
-    </button>
+    </button> -->
 
     {{-- Notifications bell --}}
     <div class="relative">
@@ -209,16 +198,16 @@ function navbarActions() {
             return this.notifications.filter(n => !n.read).length;
         },
 
-        toggleTheme() {
-            this.isDark = !this.isDark;
-            if (this.isDark) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
-        },
+        // toggleTheme() {
+        //     this.isDark = !this.isDark;
+        //     if (this.isDark) {
+        //         document.documentElement.classList.add('dark');
+        //         localStorage.setItem('theme', 'dark');
+        //     } else {
+        //         document.documentElement.classList.remove('dark');
+        //         localStorage.setItem('theme', 'light');
+        //     }
+        // },
 
         togglePanel() {
             this.panelOpen = !this.panelOpen;
