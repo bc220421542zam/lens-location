@@ -46,12 +46,6 @@
   @apply p-6 w-full rounded-lg shadow-lg border
   border-indigo-300 bg-[#EEEFF7];
 }
-.left-border {
-    @apply border-l-3 border-indigo-500 pl-4;
-}
-.right-border {
-    @apply border-r-3 border-indigo-500 pl-4;
-}
 
 .container {
     @apply flex flex-col md:flex-row w-full w-screen;

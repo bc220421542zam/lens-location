@@ -12,7 +12,7 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    private const PER_PAGE = 4;
+    private const PER_PAGE = 10;
 
     public function index(Request $request): View
     {

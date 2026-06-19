@@ -53,7 +53,7 @@ class ListingController extends Controller
         $listing->status = $listing->status->toggleApproval();
         $listing->save();
 
-        // ↓ Notify the owner about the status change
+        //  Notify the owner about the status change
         if ($listing->owner) {
             $listing->owner->notify(new ListingStatusNotification(
                 $listing->title,
@@ -69,7 +69,7 @@ class ListingController extends Controller
         $listing->status = ListingStatus::Approved;
         $listing->save();
 
-        // ↓ Notify the owner that their listing was approved
+        //  Notify the owner that their listing was approved
         if ($listing->owner) {
             $listing->owner->notify(new ListingStatusNotification(
                 $listing->title,
@@ -85,7 +85,7 @@ class ListingController extends Controller
         $listing->status = ListingStatus::Rejected;
         $listing->save();
 
-        // ↓ Notify the owner that their listing was rejected
+        // Notify the owner that their listing was rejected
         if ($listing->owner) {
             $listing->owner->notify(new ListingStatusNotification(
                 $listing->title,
