@@ -1,7 +1,7 @@
 <x-layouts.owner>
 
     <x-topbar 
-        title="Owner Dashboard"
+        title="Dashboard"
         description="Welcome back, {{ auth()->user()->first_name }}!">
     </x-topbar>
 

@@ -1,6 +1,6 @@
 <x-layouts.admin>
     <x-topbar 
-        title="Admin Dashboard"
+        title="Dashboard"
         description="Welcome back, {{ auth()->user()->first_name }}">
     </x-topbar>
 

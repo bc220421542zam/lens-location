@@ -1,5 +1,5 @@
 <x-layouts.customer>
-<div class="page">
+<div>
 
     {{-- TOP BAR --}}
     <x-topbar 
@@ -13,7 +13,7 @@
 
     {{-- FILTERS --}}
     <form method="GET" action="{{ route('customer.listings') }}"
-          class="card mb-4 flex flex-col md:flex-row gap-3 md:items-end">
+          class="card rounded-2xl mb-4 flex flex-col md:flex-row gap-3 md:items-end">
         <div class="flex-1">
             <label class="label">Search</label>
             <input type="text" name="search" value="{{ request('search') }}"
@@ -45,7 +45,7 @@
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($locations as $location)
-            <div class="card flex flex-col p-0 overflow-hidden">
+            <div class="card rounded-2xl flex flex-col p-0 overflow-hidden">
                 <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">
                     @if($location->image)
                         <img src="{{ Storage::url($location->image) }}"

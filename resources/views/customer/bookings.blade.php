@@ -1,5 +1,5 @@
 <x-layouts.customer>
-<div class="page">
+<div>
 
     {{-- TOP BAR --}}
     <x-topbar 
@@ -19,19 +19,19 @@
 
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Total Bookings</p>
             <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Upcoming</p>
             <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['upcoming'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Completed</p>
             <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['completed'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Total Spent</p>
             <p class="text-2xl font-semibold text-indigo-800 mt-1">
                 PKR {{ number_format((float) $stats['spent']) }}
@@ -61,7 +61,7 @@
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
         @forelse ($bookings as $booking)
-            <div class="card flex flex-col md:flex-row md:items-center gap-4">
+            <div class="card rounded-2xl flex flex-col md:flex-row md:items-center gap-4">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
@@ -107,7 +107,7 @@
                 @endif
             </div>
         @empty
-            <div class="card text-center py-10 text-gray-400">
+            <div class="card rounded-2xl text-center py-10 text-gray-400">
                 <i class="fa-solid fa-calendar text-2xl mb-2"></i>
                 <p class="font-medium">No bookings yet</p>
                 <a href="{{ route('customer.listings') }}"
