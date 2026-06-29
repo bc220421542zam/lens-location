@@ -6,27 +6,9 @@
         title="Dashboard"
         description="welcome back, {{ auth()->user()->first_name }}">
     </x-topbar>
+    
     {{-- STATS --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card rounded-2xl shade">
-            <p class="label">Total Bookings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
-        </div>
-        <div class="card rounded-2xl shade">
-            <p class="label">Upcoming</p>
-            <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['upcoming'] }}</p>
-        </div>
-        <div class="card rounded-2xl shade">
-            <p class="label">Completed</p>
-            <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['completed'] }}</p>
-        </div>
-        <div class="card rounded-2xl shade">
-            <p class="label">Total Spent</p>
-            <p class="text-2xl font-semibold text-indigo-800 mt-1">
-                PKR {{ number_format((float) $stats['spent']) }}
-            </p>
-        </div>
-    </div>
+    <x-customerComp.statsDashboard :stats="$stats" />
 
     {{-- CHARTS --}}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">

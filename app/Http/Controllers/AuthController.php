@@ -24,7 +24,12 @@ class AuthController extends Controller
         User::where('role', 'admin')->each(fn($admin) =>
             $admin->notify(new AdminNewUserNotification($user->name, $user->id))
         );
+        try {
+    
         broadcast(new NewUser($user->name, $user->id));
+            } catch (\Throwable $e) {
+                \Log::warning('Broadcast failed: ' . $e->getMessage());
+            }
 
         Auth::login($user);
         $request->session()->regenerate();

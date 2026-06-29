@@ -6,7 +6,7 @@
     description="Manage your photography locations">
     <x-slot:actions>
         <a href="{{ route('owner.locations.create') }}"
-           class="btn w-full sm:w-auto px-4 text-center">
+           class="btn w-full sm:w-auto px-4 text-center shade">
             + Add Location
         </a>
     </x-slot:actions>
@@ -65,7 +65,7 @@
 
                 {{-- Edit --}}
                 <a href="{{ route('owner.locations.edit', $location->id) }}"
-                   class="action-btn text-center flex-1 text-sm py-1.5">
+                   class="action-btn shade text-center flex-1 text-sm py-1.5">
                    Edit
                 </a>
 
@@ -77,7 +77,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="action-btn danger w-full text-sm py-1.5">
+                        class="action-btn shade danger w-full text-sm py-1.5">
                         Delete
                     </button>
                 </form>

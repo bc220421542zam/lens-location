@@ -8,39 +8,11 @@
     </x-topbar>
 
     @if (session('success'))
-        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>
+        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-600 text-sm">{{ session('success') }}</div>
     @endif
 
     {{-- FILTERS --}}
-    <form method="GET" action="{{ route('customer.listings') }}"
-          class="card rounded-2xl mb-4 flex flex-col md:flex-row gap-3 md:items-end">
-        <div class="flex-1">
-            <label class="label">Search</label>
-            <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Title, city, description"
-                   class="input">
-        </div>
-        <div class="w-full md:w-48">
-            <label class="label">Category</label>
-            <select name="category" class="input">
-                <option value="">All</option>
-                @foreach ($categories as $cat)
-                    <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="w-full md:w-40">
-            <label class="label">Max price/hr</label>
-            <input type="number" name="max_price" min="0" step="100"
-                   value="{{ request('max_price') }}"
-                   class="input">
-        </div>
-        <div class="flex gap-2">
-            <button type="submit" class="btn w-auto px-4">Filter</button>
-            <a href="{{ route('customer.listings') }}"
-               class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Reset</a>
-        </div>
-    </form>
+    <x-customerComp.listing-filter-comp :categories="$categories" />
 
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -70,9 +42,9 @@
                     </p>
                     <div class="flex gap-2 mt-3 pt-3 border-t border-indigo-100">
                         <a href="{{ route('customer.listings.show', $location->id) }}"
-                           class="action-btn text-center">View</a>
+                           class="action-btn shade text-center">View</a>
                         <a href="{{ route('customer.listings.book', $location->id) }}"
-                           class="action-btn publish text-center">Book</a>
+                           class="action-btn shade publish text-center">Book</a>
                     </div>
                 </div>
             </div>

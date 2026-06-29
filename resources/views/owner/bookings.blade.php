@@ -16,19 +16,19 @@
 
     {{-- STATS --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Total Bookings</p>
             <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Pending</p>
             <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Confirmed</p>
             <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['confirmed'] }}</p>
         </div>
-        <div class="card">
+        <div class="card rounded-2xl">
             <p class="label">Completed</p>
             <p class="text-2xl font-semibold text-indigo-800 mt-1">{{ $stats['completed'] }}</p>
         </div>
@@ -37,22 +37,22 @@
     {{-- FILTER TABS --}}
     <div class="flex gap-2 mb-4">
         <a href="{{ route('owner.bookings') }}"
-           class="action-btn {{ !request('status') ? 'bg-indigo-900 text-white' : '' }}">All</a>
+           class="shade action-btn {{ !request('status') ? 'bg-indigo-900 text-white' : '' }}">All</a>
         <a href="{{ route('owner.bookings', ['status' => 'pending']) }}"
-           class="action-btn {{ request('status') == 'pending' ? 'bg-indigo-900 text-white' : '' }}">Pending</a>
+           class="shade action-btn {{ request('status') == 'pending' ? 'bg-indigo-900 text-white' : '' }}">Pending</a>
         <a href="{{ route('owner.bookings', ['status' => 'confirmed']) }}"
-           class="action-btn {{ request('status') == 'confirmed' ? 'bg-indigo-900 text-white' : '' }}">Confirmed</a>
+           class="shade action-btn {{ request('status') == 'confirmed' ? 'bg-indigo-900 text-white' : '' }}">Confirmed</a>
         <a href="{{ route('owner.bookings', ['status' => 'completed']) }}"
-           class="action-btn {{ request('status') == 'completed' ? 'bg-indigo-900 text-white' : '' }}">Completed</a>
+           class="shade action-btn {{ request('status') == 'completed' ? 'bg-indigo-900 text-white' : '' }}">Completed</a>
         <a href="{{ route('owner.bookings', ['status' => 'cancelled']) }}"
-           class="action-btn danger {{ request('status') == 'cancelled' ? 'bg-red-700 text-white' : '' }}">Cancelled</a>
+           class="shade action-btn danger {{ request('status') == 'cancelled' ? 'bg-red-700 text-white' : '' }}">Cancelled</a>
     </div>
 
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
 
         @forelse($bookings as $booking)
-        <div class="card flex items-center gap-4">
+        <div class="card rounded-2xl flex items-center gap-4">
 
             {{-- AVATAR --}}
             <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 shrink-0">

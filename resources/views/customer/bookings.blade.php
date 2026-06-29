@@ -18,26 +18,7 @@
     @endif
 
     {{-- STATS --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card rounded-2xl">
-            <p class="label">Total Bookings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
-        </div>
-        <div class="card rounded-2xl">
-            <p class="label">Upcoming</p>
-            <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['upcoming'] }}</p>
-        </div>
-        <div class="card rounded-2xl">
-            <p class="label">Completed</p>
-            <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['completed'] }}</p>
-        </div>
-        <div class="card rounded-2xl">
-            <p class="label">Total Spent</p>
-            <p class="text-2xl font-semibold text-indigo-800 mt-1">
-                PKR {{ number_format((float) $stats['spent']) }}
-            </p>
-        </div>
-    </div>
+    <x-customerComp.statsBookings :stats="$stats" />
 
     {{-- FILTER TABS --}}
     @php

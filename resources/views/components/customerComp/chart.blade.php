@@ -28,7 +28,7 @@
             data: {
                 labels: chartData.labels,
                 datasets: [
-                    { label: 'Total',     data: chartData.total,     borderColor: colors.total,     backgroundColor: makeGradient(lineCtx, colors.total),     borderWidth: 2, pointBackgroundColor: colors.total,     pointRadius: isMobile ? 2 : 4, tension: 0.3, fill: true },
+                    { label: 'Total bookings',     data: chartData.total,     borderColor: colors.total,     backgroundColor: makeGradient(lineCtx, colors.total),     borderWidth: 2, pointBackgroundColor: colors.total,     pointRadius: isMobile ? 2 : 4, tension: 0.3, fill: true },
                     { label: 'Upcoming',  data: chartData.upcoming,  borderColor: colors.upcoming,  backgroundColor: makeGradient(lineCtx, colors.upcoming),  borderWidth: 2, pointBackgroundColor: colors.upcoming,  pointRadius: isMobile ? 2 : 4, tension: 0.3, fill: true },
                     { label: 'Completed', data: chartData.completed, borderColor: colors.completed, backgroundColor: makeGradient(lineCtx, colors.completed), borderWidth: 2, pointBackgroundColor: colors.completed, pointRadius: isMobile ? 2 : 4, tension: 0.3, fill: true },
                     { label: 'Cancelled', data: chartData.cancelled, borderColor: colors.cancelled, backgroundColor: makeGradient(lineCtx, colors.cancelled), borderWidth: 2, pointBackgroundColor: colors.cancelled, pointRadius: isMobile ? 2 : 4, tension: 0.3, fill: true },
@@ -93,7 +93,7 @@
         new Chart(document.getElementById('distributionChart').getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: ['Total', 'Upcoming', 'Completed', 'Cancelled'],
+                labels: ['Total bookings', 'Upcoming', 'Completed', 'Cancelled'],
                 datasets: [{
                     data: donutData,
                     backgroundColor: donutColors,

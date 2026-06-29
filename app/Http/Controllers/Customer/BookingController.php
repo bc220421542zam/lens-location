@@ -31,9 +31,10 @@ class BookingController extends Controller
                 ->where('booking_date', '>=', now())
                 ->count(),
             'completed' => $allBookings->where('status', BookingStatus::Completed)->count(),
-            'spent'     => $allBookings
-                ->where('status', BookingStatus::Completed)
-                ->sum('total_price'),
+            'cancelled' => $allBookings->where('status', BookingStatus::Cancelled)->count(),
+            // 'spent'     => $allBookings
+            //     ->where('status', BookingStatus::Completed)
+            //     ->sum('total_price'),
         ];
 
         return view('customer.bookings', compact('bookings', 'stats'));

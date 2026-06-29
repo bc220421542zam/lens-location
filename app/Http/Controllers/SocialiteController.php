@@ -44,6 +44,6 @@ class SocialiteController extends Controller
         }
 
         Auth::login($user);
-        return redirect()->route('dashboard');
+        return RoleRedirector::to($user);
     }
 }
