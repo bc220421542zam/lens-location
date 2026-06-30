@@ -6,7 +6,7 @@
     description="Manage your photography locations">
     <x-slot:actions>
         <a href="{{ route('owner.locations.create') }}"
-           class="btn w-full sm:w-auto px-4 text-center shade">
+           class="btn w-full sm:w-auto px-4 text-center shade btn-transition">
             + Add Location
         </a>
     </x-slot:actions>
@@ -14,7 +14,7 @@
 
     {{-- SUCCESS MESSAGE --}}
     @if(session('success'))
-        <div class="mb-4 p-3 bg-green-200 text-green-700 rounded-lg text-sm">
+        <div class="mb-4 p-3 bg-green-200 text-green-600 rounded-lg text-sm">
             {{ session('success') }}
         </div>
     @endif
@@ -23,7 +23,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
 
         @forelse($locations as $location)
-        <div class="card p-0 overflow-hidden flex flex-col">
+        <div class="card card-transition p-0 overflow-hidden flex flex-col">
 
             {{-- IMAGE --}}
             <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">

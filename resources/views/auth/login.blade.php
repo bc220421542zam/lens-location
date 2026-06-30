@@ -3,8 +3,8 @@
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
         {{-- CARD --}}
-        <div class="w-full max-w-sm sm:max-w-md md:max-w-4xl
-                    rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden">
+        <div class="w-full max-w-sm sm:max-w-md md:max-w-4xl card-transition
+                    rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden ">
 
             {{-- MOBILE: Image on top --}}
             <div class="relative h-48 sm:h-56 md:hidden w-full">
@@ -62,7 +62,7 @@
                                     class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
                                 <input type="email" id="email" name="email"
                                     value="{{ old('email') }}"
-                                    class="field {{ $errors->has('email') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }}">
+                                    class="field {{ $errors->has('email') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
                                 @error('email')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -73,7 +73,7 @@
                                 <label for="password"
                                     class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
                                 <input type="password" id="password" name="password"
-                                    class="field {{ $errors->has('password') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }}">
+                                    class="field {{ $errors->has('password') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
                                 @error('password')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -95,7 +95,7 @@
                             {{-- Submit --}}
                             <button type="submit"
                                 class="w-full bg-indigo-900 text-white py-2.5 rounded-lg font-semibold text-sm
-                                       hover:bg-indigo-700 transition-colors duration-200">
+                                       hover:bg-indigo-700 transition-colors duration-200 hover:shadow-lg ease-in-out">
                                 Login
                             </button>
 

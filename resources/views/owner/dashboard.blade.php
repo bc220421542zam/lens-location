@@ -13,14 +13,14 @@
 
     {{-- STATS --}}
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-        <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+        <div class="shade card card-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
             <div class="flex justify-between items-start">
                 <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Total Listings</h3>
                 <i class="fa-solid fa-location-dot text-indigo-700 shrink-0 ml-2 text-sm md:text-base"></i>
             </div>
             <p class="text-xl md:text-2xl font-bold text-indigo-700">{{ $stats['total'] }}</p>
         </div>
-        <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+        <div class="shade card card-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
             <div class="flex items-center justify-between">
                 <p class="label text-xs md:text-sm">Approved</p>
             <svg viewBox="0 0 24 24" fill="currentColor" class="size-5 text-[#14b8a6]">
@@ -30,14 +30,14 @@
             </div>
             <p class="text-xl md:text-2xl font-semibold text-[#14b8a6] mt-1">{{ $stats['active'] }}</p>
         </div>
-        <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+        <div class="shade card card-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
             <div class="flex items-center justify-between">
                 <p class="label text-xs md:text-sm">Pending</p>
                 <i class="fa-solid fa-hourglass-half text-yellow-600"></i>
             </div>
             <p class="text-xl md:text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
         </div>
-        <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+        <div class="shade card card-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
             <div class="flex items-center justify-between">
                 <p class="label text-xs md:text-sm">Total Bookings</p>
                 <i class="fa-solid fa-calendar-days text-[#ec4899] shrink-0 ml-2 text-sm md:text-base"></i>
@@ -50,7 +50,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
 
     {{-- LINE CHART: Overview --}}
-    <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+    <div class="shade card chart-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
         <h2 class="font-bold text-indigo-900 text-sm md:text-base mb-3 md:mb-4">Overview</h2>
         <div class="relative w-full" style="height:240px;">
             <canvas id="overviewChart"></canvas>
@@ -58,7 +58,7 @@
     </div>
 
     {{-- DONUT CHART: Distribution --}}
-    <div class="shade card bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
+    <div class="shade card chart-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl">
         <h2 class="font-bold text-indigo-900 text-sm md:text-base mb-3 md:mb-4">Distribution</h2>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6" style="min-height:200px;">
             <div class="relative shrink-0" style="width:160px; height:160px;">

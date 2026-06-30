@@ -16,7 +16,7 @@
     <x-adminComponents.filters-users />
 
     {{-- Users Table --}}
-    <div class="shade card bg-[#EEEFF7] p-4 rounded-2xl">
+    <div class="shade card chart-transition bg-[#EEEFF7] p-4 rounded-2xl">
     <x-success class="mb-4" />
     <x-error class="mb-4" />
     

@@ -18,7 +18,7 @@
         $allRoute     = null;
     }
 @endphp
-<nav class="shrink-0 border border-indigo-300 bg-[#EEEFF7] shade flex justify-between items-center px-3 md:px-6 py-2.5 z-10">
+<nav class="shrink-0 border border-indigo-300 bg-[#EEEFF7] shade flex justify-between items-center px-3 md:px-6 py-2.5 z-10 hover:shadow-lg transition-shadow duration-200">
 
     <div class="flex items-center gap-2 md:gap-3">
         {{-- Logo --}}

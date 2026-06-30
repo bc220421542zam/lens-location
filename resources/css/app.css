@@ -37,14 +37,26 @@
 .error { @apply text-xs text-red-500 mt-px; }
 .label { @apply text-indigo-900 text-sm mb-1 block; }
 .field {@apply w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-700 }
+.field-transition { @apply transition-all duration-100 ease-in hover:scale-100 hover:shadow-lg hover:bg-indigo-100; }
 
 .input {
   @apply w-full px-4 py-2 rounded-lg bg-white shadow-md
   focus:outline-none focus:ring-2 focus:ring-indigo-700;
 }
+.input-field {
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-400 
+         hover:outline-none hover:ring-2 hover:ring-indigo-200 
+         bg-white items-center gap-1.5 text-indigo-900 mb-1 text-sm;
+}
 .card{
-  @apply p-6 w-full rounded-lg shadow-lg border
-  border-indigo-300 bg-[#EEEFF7];
+  @apply p-6 w-full rounded-lg shadow-lg 
+ border border-indigo-300  bg-[#EEEFF7]; 
+}
+.card-transition {
+  @apply transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg;
+}
+.chart-transition {
+  @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-lg;
 }
 
 .container {
@@ -71,4 +83,6 @@
 .action-btn         { @apply flex-1 text-sm px-3 py-1.5 rounded-md border border-indigo-200 bg-gray-50 text-blue-800 hover:bg-blue-100; }
 .action-btn.danger  { @apply border-red-200 px-4 text-red-600 hover:bg-red-100; }
 .action-btn.publish { @apply border-blue-200 px-4 bg-blue-50 text-blue-600 hover:bg-blue-100; }
+
+.btn-transition { @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-sm; }
 }
