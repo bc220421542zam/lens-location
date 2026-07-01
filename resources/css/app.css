@@ -4,6 +4,15 @@
 @tailwind utilities;
 @variant dark (&:where(.dark, .dark *));
 
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    width: 2rem;
+    height: 100%;
+}
+
 @layer components {
  nav {  @apply flex items-center justify-between; }
 .round-btn {
@@ -29,8 +38,8 @@
 }
 
 .btn {
-  @apply bg-indigo-800 active:bg-indigo-900
-         hover:bg-indigo-600 p-2 rounded-md
+  @apply bg-indigo-900 active:bg-indigo-900
+         hover:bg-indigo-800 p-2 rounded-md
          text-white block w-full;
 }
 .title { @apply text-3xl mb-4 font-bold; }
@@ -43,6 +52,7 @@
   @apply w-full px-4 py-2 rounded-lg bg-white shadow-md
   focus:outline-none focus:ring-2 focus:ring-indigo-700;
 }
+/* Transition */
 .input-field {
   @apply focus:outline-none focus:ring-2 focus:ring-indigo-400 
          hover:outline-none hover:ring-2 hover:ring-indigo-200 
@@ -59,10 +69,7 @@
   @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-lg;
 }
 
-.container {
-    @apply flex flex-col md:flex-row w-full w-screen;
-    min-height: calc(100vh - 72px); /* header height remove */
-}
+
 
 /* LEFT & right SIDE of login register*/
 .left { @apply w-full w-screen md:w-1/2 flex flex-col justify-center items-center bg-slate-100 p-6; }
@@ -79,7 +86,8 @@
 .badge-active { @apply bg-green-100 text-green-700; }
 .badge-draft  { @apply bg-yellow-100 text-yellow-700; }
 .badge-rejected { @apply bg-red-100 text-red-700; }
- 
+
+/* buttons  */
 .action-btn         { @apply flex-1 text-sm px-3 py-1.5 rounded-md border border-indigo-200 bg-gray-50 text-blue-800 hover:bg-blue-100; }
 .action-btn.danger  { @apply border-red-200 px-4 text-red-600 hover:bg-red-100; }
 .action-btn.publish { @apply border-blue-200 px-4 bg-blue-50 text-blue-600 hover:bg-blue-100; }

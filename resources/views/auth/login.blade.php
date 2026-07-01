@@ -1,5 +1,5 @@
 <x-layout>
-<div class="min-h-screen bg-slate-50 relative overflow-hidden">
+<div class="min-h-screen bg-[#DDDEEF] relative overflow-hidden">
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
         {{-- CARD --}}

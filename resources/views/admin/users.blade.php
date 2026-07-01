@@ -127,23 +127,24 @@
 
         <div class="absolute inset-0 bg-black opacity-50" @click="showModal = false"></div>
 
-        <div class="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-md z-10 max-h-[90vh] overflow-y-auto">
+        {{-- Pop-up card on view --}}
+        <div class="relative card card-transition bg-white rounded-2xl shadow-xl p-6 w-full max-w-md z-10 max-h-[90vh] overflow-y-auto">
 
             <button @click="showModal = false"
-                class="absolute top-3 right-4 text-indigo-900 text-xl hover:opacity-75">
+                class="absolute btn-trnasition top-3 right-4 text-indigo-900 text-xl hover:opacity-75">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
             <h2 class="text-lg font-bold text-indigo-900 mb-4">User Detail</h2>
 
             <template x-if="selectedUser">
-                <div class="space-y-3">
+                <div class="space-y-2">
 
                     <div class="flex justify-center mb-4">
                         <img :src="selectedUser.profile_picture
                             ? '/storage/' + selectedUser.profile_picture
                             : '/images/default-avatar.png'"
-                            class="w-20 h-20 rounded-full object-cover shade">
+                            class="w-20 h-20 rounded-full object-cover border border-indigo-200 card-transition shade">
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
@@ -184,7 +185,7 @@
 
             <div class="mt-5 text-right">
                 <button @click="showModal = false"
-                    class="bg-indigo-900 text-white px-5 py-2 rounded-lg text-sm hover:bg-[#2C3399]">
+                    class="bg-indigo-900 btn-transition text-white px-5 py-2 rounded-lg text-sm hover:bg-[#2C3399]">
                     Close
                 </button>
             </div>

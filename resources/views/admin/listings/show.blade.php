@@ -22,7 +22,7 @@
             </div>
         @endif
 
-        <div class="shade bg-[#EEEFF7] p-6 rounded-2xl">
+        <div class="shade card card-transition bg-[#EEEFF7] p-6 rounded-2xl">
             @if ($listing->image)
                 <img src="{{ asset('storage/'.$listing->image) }}"
                      alt="{{ $listing->title }}"
@@ -39,23 +39,23 @@
 
             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
-                    <dt class="text-xs uppercase text-gray-500">Owner</dt>
-                    <dd class="font-medium">{{ $listing->owner->name }}</dd>
+                    <dt class="text-xs uppercase underline text-indigo-800">Owner</dt>
+                    <dd class="font-medium text-indigo-900">{{ $listing->owner->name }}</dd>
                     <dd class="text-xs text-gray-500">{{ $listing->owner->email }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs uppercase text-gray-500">Price / hour</dt>
-                    <dd class="font-medium">PKR {{ number_format((float) $listing->price_per_hour) }}</dd>
+                    <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
+                    <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $listing->price_per_hour) }}</dd>
                 </div>
                 <div class="sm:col-span-2">
-                    <dt class="text-xs uppercase text-gray-500">Address</dt>
-                    <dd class="font-medium">{{ $listing->address }}</dd>
+                    <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
+                    <dd class="font-medium text-indigo-900">{{ $listing->address }}</dd>
                 </div>
             </dl>
 
             <div class="mb-6">
-                <dt class="text-xs uppercase text-gray-500 mb-1">Description</dt>
-                <dd class="text-gray-700 whitespace-pre-line">{{ $listing->description }}</dd>
+                <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
+                <dd class="text-gray-500 whitespace-pre-line">{{ $listing->description }}</dd>
             </div>
 
             <div class="flex flex-wrap gap-2 pt-4 border-t border-indigo-100">
@@ -63,7 +63,7 @@
                     <form method="POST" action="{{ route('admin.listings.approve', $listing->id) }}">
                         @csrf
                         <button type="submit"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700">
+                                class="px-4 py-2 btn-transition bg-green-600 text-white rounded-lg text-sm hover:bg-green-700">
                             <i class="fa-solid fa-check mr-1"></i> Approve
                         </button>
                     </form>
@@ -72,7 +72,7 @@
                     <form method="POST" action="{{ route('admin.listings.reject', $listing->id) }}">
                         @csrf
                         <button type="submit"
-                                class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">
+                                class="px-4 py-2 btn-transition bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">
                             <i class="fa-solid fa-xmark mr-1"></i> Reject
                         </button>
                     </form>
@@ -82,7 +82,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">
+                            class="px-4 py-2 btn-transition bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">
                         <i class="fa-regular fa-trash-can mr-1"></i> Delete
                     </button>
                 </form>

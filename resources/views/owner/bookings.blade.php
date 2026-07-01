@@ -15,39 +15,10 @@
     @endif
 
     {{-- STATS --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card card-transition rounded-2xl">
-            <p class="label">Total Bookings</p>
-            <p class="text-2xl font-semibold text-indigo-900 mt-1">{{ $stats['total'] }}</p>
-        </div>
-        <div class="card card-transition rounded-2xl">
-            <p class="label">Pending</p>
-            <p class="text-2xl font-semibold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
-        </div>
-        <div class="card card-transition rounded-2xl">
-            <p class="label">Confirmed</p>
-            <p class="text-2xl font-semibold text-green-600 mt-1">{{ $stats['confirmed'] }}</p>
-        </div>
-        <div class="card card-transition rounded-2xl">
-            <p class="label">Completed</p>
-            <p class="text-2xl font-semibold text-indigo-800 mt-1">{{ $stats['completed'] }}</p>
-        </div>
-    </div>
+    <x-ownerComp.booking-stats :stats="$stats" />
 
     {{-- FILTER TABS --}}
-    <div class="flex gap-2 mb-4">
-        <a href="{{ route('owner.bookings') }}"
-           class="shade btn-transition action-btn {{ !request('status') ? 'bg-indigo-900 text-white' : '' }} ">All</a>
-        <a href="{{ route('owner.bookings', ['status' => 'pending']) }}"
-           class="shade btn-transition action-btn {{ request('status') == 'pending' ? 'bg-indigo-900 text-white' : '' }}">Pending</a>
-        <a href="{{ route('owner.bookings', ['status' => 'confirmed']) }}"
-           class="shade btn-transition action-btn {{ request('status') == 'confirmed' ? 'bg-indigo-900 text-white' : '' }}">Confirmed</a>
-        <a href="{{ route('owner.bookings', ['status' => 'completed']) }}"
-           class="shade btn-transition action-btn {{ request('status') == 'completed' ? 'bg-indigo-900 text-white' : '' }}">Completed</a>
-        <a href="{{ route('owner.bookings', ['status' => 'cancelled']) }}"
-           class="shade btn-transition action-btn danger {{ request('status') == 'cancelled' ? 'bg-red-700 text-white' : '' }}">Cancelled</a>
-    </div>
-
+    <x-booking-filter />
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
 

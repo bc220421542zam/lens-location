@@ -14,8 +14,9 @@
     <x-nav/>
     <div class="flex flex-1 overflow-hidden">
 
-        <x-sidebar-owner />
-
+    {{-- Sidebar --}}
+    <x-ownerComp.sidebar-owner/>
+    
      {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-8">
             {{ $slot }}  

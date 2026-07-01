@@ -40,11 +40,14 @@
 
         <div>
             <label class="label">Booking Date &amp; Time</label>
-            <input type="datetime-local" name="booking_date"
-                   value="{{ old('booking_date') }}"
-                   min="{{ now()->format('Y-m-d\TH:i') }}"
-                   class="input @error('booking_date') border-red-400 @enderror"
-                   required>
+            <div class="relative">
+                <input type="datetime-local" name="booking_date"
+                    value="{{ old('booking_date') }}"
+                    min="{{ now()->format('Y-m-d\TH:i') }}"
+                    class="input text-indigo-800 pr-10 @error('booking_date') border-red-400 @enderror"
+                    required>
+                <i class="fa-regular fa-calendar absolute right-3 top-1/2 -translate-y-1/2 text-indigo-900 pointer-events-none"></i>
+            </div>
             @error('booking_date') <p class="error">{{ $message }}</p> @enderror
         </div>
 
@@ -52,17 +55,16 @@
             <label class="label">Hours</label>
             <input type="number" name="hours" x-model="hours"
                    min="1" max="24" step="1"
-                   class="input @error('hours') border-red-400 @enderror"
+                   class="input text-indigo-800 @error('hours') border-red-400 @enderror"
                    required>
             @error('hours') <p class="error">{{ $message }}</p> @enderror
         </div>
-
         <div>
             <label class="label">Shoot Type (optional)</label>
             <input type="text" name="shoot_type"
                    value="{{ old('shoot_type') }}"
                    placeholder="e.g. Portrait, Wedding, Brand"
-                   class="input @error('shoot_type') border-red-400 @enderror">
+                   class="input text-indigo-800 @error('shoot_type') border-red-400 @enderror">
             @error('shoot_type') <p class="error">{{ $message }}</p> @enderror
         </div>
 

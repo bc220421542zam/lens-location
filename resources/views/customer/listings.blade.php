@@ -17,7 +17,7 @@
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($locations as $location)
-            <div class="card rounded-2xl flex flex-col p-0 overflow-hidden">
+            <div class="card card-transition rounded-2xl flex flex-col p-0 overflow-hidden">
                 <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">
                     @if($location->image)
                         <img src="{{ Storage::url($location->image) }}"
@@ -42,14 +42,14 @@
                     </p>
                     <div class="flex gap-2 mt-3 pt-3 border-t border-indigo-100">
                         <a href="{{ route('customer.listings.show', $location->id) }}"
-                           class="action-btn shade text-center">View</a>
+                           class="action-btn btn-transition shade text-center">View</a>
                         <a href="{{ route('customer.listings.book', $location->id) }}"
-                           class="action-btn shade publish text-center">Book</a>
+                           class="action-btn btn-transition shade publish text-center">Book</a>
                     </div>
                 </div>
             </div>
         @empty
-            <div class="col-span-full card text-center py-10 text-gray-400">
+            <div class="col-span-full card card-transition text-center py-10 text-gray-400">
                 <i class="fa-solid fa-magnifying-glass text-2xl mb-2"></i>
                 <p class="font-medium">No listings match your filters</p>
             </div>

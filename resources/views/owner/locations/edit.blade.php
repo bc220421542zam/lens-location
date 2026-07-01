@@ -1,16 +1,29 @@
 <x-layouts.owner>
 <div class="page">
 
+  <div class="text-sm text-indigo-700 hover:underline">
+    <a href="{{ route('owner.listings', $location->id) }}"
+           class="text-sm text-indigo-700 hover:underline">&larr; Listings</a> / Edit
+</div>
+
 <x-topbar 
-    title="Add New Location"
-    description="Fill in the details of your photography location">
+    title="Edit Location"
+    description="Update the details of your photography location">
 </x-topbar>
+    {{-- Success message --}}
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- FORM --}}
-    <form action="{{ route('owner.locations.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('owner.locations.update', $location->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
 
         {{-- Basic Information --}}
-        <div class="card chart-transition mb-4 ">
+        <div class="card chart-transition mb-4">
             <h3 class="font-semibold text-indigo-900 mb-4">Basic Information</h3>
 
             {{-- Title + Category --}}
@@ -20,9 +33,9 @@
                         type="text"
                         name="title"
                         placeholder="Location title"
-                        value="{{ old('title') }}"
+                        value="{{ old('title', $location->title) }}"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                            @error('title') border-red-400 @enderror  ">
+                            @error('title') border-red-400 @enderror">
                     @error('title')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -33,11 +46,11 @@
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
                                @error('category') border-red-400 @enderror">
                         <option value="">Category</option>
-                        <option value="studio"  {{ old('category') == 'studio'  ? 'selected' : '' }}>Studio</option>
-                        <option value="outdoor" {{ old('category') == 'outdoor' ? 'selected' : '' }}>Outdoor</option>
-                        <option value="rooftop" {{ old('category') == 'rooftop' ? 'selected' : '' }}>Rooftop</option>
-                        <option value="indoor"  {{ old('category') == 'indoor'  ? 'selected' : '' }}>Indoor</option>
-                        <option value="garden"  {{ old('category') == 'garden'  ? 'selected' : '' }}>Garden</option>
+                        <option value="studio"  {{ old('category', $location->category) == 'studio'  ? 'selected' : '' }}>Studio</option>
+                        <option value="outdoor" {{ old('category', $location->category) == 'outdoor' ? 'selected' : '' }}>Outdoor</option>
+                        <option value="rooftop" {{ old('category', $location->category) == 'rooftop' ? 'selected' : '' }}>Rooftop</option>
+                        <option value="indoor"  {{ old('category', $location->category) == 'indoor'  ? 'selected' : '' }}>Indoor</option>
+                        <option value="garden"  {{ old('category', $location->category) == 'garden'  ? 'selected' : '' }}>Garden</option>
                     </select>
                     @error('category')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -53,7 +66,7 @@
                         placeholder="Describe your location..."
                         rows="4"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                               @error('description') border-red-400 @enderror">{{ old('description') }}</textarea>
+                               @error('description') border-red-400 @enderror">{{ old('description', $location->description) }}</textarea>
                     @error('description')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -64,7 +77,7 @@
                         type="number"
                         name="price_per_hour"
                         placeholder="e.g. 3000"
-                        value="{{ old('price_per_hour') }}"
+                        value="{{ old('price_per_hour', $location->price_per_hour) }}"
                         min="0"
                         step="100"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
@@ -86,7 +99,7 @@
                         type="text"
                         name="address"
                         placeholder="e.g. 12 Main Street"
-                        value="{{ old('address') }}"
+                        value="{{ old('address', $location->address) }}"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
                                @error('address') border-red-400 @enderror">
                     @error('address')
@@ -99,7 +112,7 @@
                         type="text"
                         name="city"
                         placeholder="e.g. Lahore"
-                        value="{{ old('city') }}"
+                        value="{{ old('city', $location->city) }}"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
                                @error('city') border-red-400 @enderror">
                     @error('city')
@@ -112,6 +125,19 @@
         {{-- Image Upload --}}
         <div class="card chart-transition mb-6">
             <h3 class="font-semibold text-indigo-900 mb-4">Image</h3>
+
+            {{-- Current Image --}}
+            @if($location->image)
+                <div class="mb-4">
+                    <p class="text-xs text-indigo-900 mb-2">Current Image</p>
+                    <img src="{{ asset('storage/' . $location->image) }}"
+                        alt="Current listing image"
+                        class="w-full h-48 object-cover rounded-xl shade">
+                    <p class="text-xs text-gray-400 mt-1">Upload a new image below to replace it</p>
+                </div>
+            @endif
+
+            {{-- New Image Upload --}}
             <div
                 class="border-2 border-dashed border-indigo-200 rounded-lg p-8 text-center
                        cursor-pointer hover:border-indigo-400 transition-colors"
@@ -126,8 +152,8 @@
 
                 {{-- Placeholder --}}
                 <div id="upload-placeholder">
-                    <p class="text-3xl mb-2"><i class=" icon fa-solid fa-upload"></i></p>
-                    <p class="text-sm text-gray-400">Click to upload</p>
+                    <p class="text-3xl mb-2"><i class="icon fa-solid fa-upload"></i></p>
+                    <p class="text-sm text-gray-400">Click to upload new image (optional)</p>
                     <p class="text-xs text-gray-300 mt-1">PNG, JPEG, WEBP — max 4MB</p>
                 </div>
 
@@ -152,17 +178,25 @@
             </a>
             <button type="submit"
                 class="px-6 py-2 rounded-lg bg-indigo-900 text-white text-sm hover:bg-indigo-800 transition-colors btn-transition">
-                Create
+                Update
             </button>
         </div>
 
     </form>
 </div>
 
-<input
-    type="file"
-    id="imageInput"
-    name="image"
-    accept=".png,.jpg,.jpeg,.webp"
-    hidden>
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('image-preview').src = e.target.result;
+        document.getElementById('preview-wrap').classList.remove('hidden');
+        document.getElementById('upload-placeholder').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+
 </x-layouts.owner>

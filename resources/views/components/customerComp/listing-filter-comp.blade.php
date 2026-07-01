@@ -1,6 +1,6 @@
 {{-- FILTERS --}}
     <form method="GET" action="{{ route('customer.listings') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl">
+      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl chart-transition">
         {{--Search--}}
     <div class="flex-1">
         <label for="filter-search"
@@ -13,7 +13,7 @@
         </label>
             <input type="text" name="search" value="{{ request('search') }}"
                    placeholder="Title, city, description ..."
-                   class="input">
+                   class="input text-indigo-800">
     </div>
 
         {{-- Category --}}

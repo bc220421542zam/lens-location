@@ -1,12 +1,12 @@
 <x-layout>
-<div class="min-h-screen bg-slate-50 relative overflow-hidden">
+<div class="min-h-screen bg-[#DDDEEF] relative overflow-hidden">
 
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6">
 
         {{-- CARD --}}
-        <div class="w-full max-w-sm sm:max-w-md lg:max-w-5xl
-                    rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden">
+        <div class="w-full max-w-sm sm:max-w-md lg:max-w-5xl chart-transition
+                rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden">
 
             {{-- MOBILE & TABLET: Image on top --}}
             <div class="relative h-40 sm:h-48 lg:hidden w-full">
@@ -49,123 +49,117 @@
                         </div>
 
                         <h1 class="text-xl sm:text-2xl font-bold text-center text-indigo-900 mb-1">Create Account</h1>
-                        <p class="text-sm text-gray-500 text-center mb-5">Fill in your details to get started</p>
+                        <p class="text-sm text-gray-500 text-center mb-4">Fill in your details to get started</p>
 
-                        <form id="registerForm" action="{{ route('register') }}" method="POST" class="space-y-4">
-                            @csrf
+                <form id="registerForm" action="{{ route('register') }}" method="POST" class="space-y-3">
+                @csrf
+                {{-- First Name--}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="first_name"
+                                class="block text-sm font-medium text-indigo-900 mb-1">First Name</label>
+                                <input type="text" id="first_name" name="first_name"
+                                value="{{ old('first_name') }}"
+                                class="field field-transition {{ $errors->has('first_name') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('first_name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        {{-- Last Name --}}
+                        <div>
+                            <label for="last_name"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Last Name</label>
+                                <input type="text" id="last_name" name="last_name"
+                                value="{{ old('last_name') }}"
+                                class="field field-transition {{ $errors->has('last_name') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('last_name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
 
-             <!-- Role Dropdown -->
-            <div class=" grid grid-cols-2 gap-2 text-indigo-900">
-                <h1 class="font-bold text-indigo-900 text-center"> Sign Up as </h1>
-                <select id="role" name="role" form="registerForm">
-                    <label for="role" class="block mb-1"><option value="">User Role</option></label>
+                    {{-- Email --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="email"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
+                                <input type="email" id="email" name="email"
+                                value="{{ old('email') }}"
+                                class="field field-transition {{ $errors->has('email') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('email')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        {{-- Phone --}}
+                        <div>
+                            <label for="phone"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Phone</label>
+                                <input type="text" id="phone" name="phone"
+                                value="{{ old('phone') }}"
+                                class="field field-transition {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('phone')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Password + Confirm Password --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                           <label for="password"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
+                                <input type="password" id="password" name="password"
+                                class="field field-transition {{ $errors->has('password') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('password')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="password_confirmation"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Confirm Password</label>
+                                <input type="password" id="password_confirmation"
+                                name="password_confirmation"
+                                class="field field-transition {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-indigo-300' }}">
+                            @error('password_confirmation')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+              <!-- Role Dropdown -->
+            <div class="w-133 mt-5 gap-2 text-indigo-900">
+                <select id="role" name="role" form="registerForm" class="field {{ $errors->has('role') ? 'border-red-400' : 'border-indigo-300' }} field-transition">
+                    <label for="role" class="block mb-1"><option value="">Select Role</option></label>
                     <option value="customer" {{ old('role') == 'customer' ? 'selected' : '' }}>Customer</option>
                     <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Location Owner</option>
                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                 </select>
-
                 @error('role')
-                    <p class="error">{{ $message }}</p>
+                    <p class=" text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
+                {{-- Submit --}}
+                    <button type="submit"
+                        class="w-full bg-indigo-900 text-white py-2.5 rounded-lg font-semibold text-sm
+                           hover:bg-indigo-700 transition-colors duration-200">
+                        Sign Up
+                    </button>
+                {{--login with Google--}}
+                    <x-google-login />
 
-                            {{-- First + Last Name --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="first_name"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">First Name</label>
-                                    <input type="text" id="first_name" name="first_name"
-                                        value="{{ old('first_name') }}"
-                                        class="field {{ $errors->has('first_name') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('first_name')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label for="last_name"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">Last Name</label>
-                                    <input type="text" id="last_name" name="last_name"
-                                        value="{{ old('last_name') }}"
-                                        class="field {{ $errors->has('last_name') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('last_name')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Email --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="email"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
-                                    <input type="email" id="email" name="email"
-                                        value="{{ old('email') }}"
-                                        class="field {{ $errors->has('email') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('email')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                {{-- Phone --}}
-                                <div>
-                                    <label for="phone"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">Phone</label>
-                                    <input type="text" id="phone" name="phone"
-                                        value="{{ old('phone') }}"
-                                        class="field {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('phone')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Password + Confirm Password --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="password"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
-                                    <input type="password" id="password" name="password"
-                                        class="field {{ $errors->has('password') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('password')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label for="password_confirmation"
-                                        class="block text-sm font-medium text-indigo-900 mb-1">Confirm Password</label>
-                                    <input type="password" id="password_confirmation"
-                                        name="password_confirmation"
-                                        class="field {{ $errors->has('password_confirmation') ? 'border-red-400' : 'border-indigo-300' }}">
-                                    @error('password_confirmation')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            {{-- Submit --}}
-                            <button type="submit"
-                                class="w-full bg-indigo-900 text-white py-2.5 rounded-lg font-semibold text-sm
-                                       hover:bg-indigo-700 transition-colors duration-200">
-                                Sign Up
-                            </button>
-                            {{--login with Google--}}
-                            <x-google-login />
-
-                            {{-- Login Link --}}
-                            <p class="text-center text-sm text-gray-500">
-                                Already have an account?
-                                <a href="{{ route('login') }}"
-                                    class="text-indigo-800 font-semibold underline hover:text-indigo-900">
-                                    Login
-                                </a>
-                            </p>
-
-                        </form>
-                    </div>
+                {{-- Login Link --}}
+                    <p class="text-center text-sm text-gray-500">
+                        Already have an account?
+                        <a href="{{ route('login') }}"
+                            class="text-indigo-800 font-semibold underline hover:text-indigo-900">
+                            Login
+                        </a>
+                    </p>
+                </form>
                 </div>
-
             </div>
         </div>
+    </div>
     </div>
 </div>
 </x-layout>

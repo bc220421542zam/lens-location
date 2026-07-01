@@ -11,7 +11,8 @@
 <body>
 
     <header class="shadow-lg">
-        <nav class="flex justify-between items-center px-4 sm:px-6 lg:px-10 py-3 bg-[#EEEFF7] shade border-b border-indigo-300 hover:shadow-xl">
+        <nav class="shrink-0 border border-indigo-300 bg-[#EEEFF7] shade
+         flex justify-between items-center px-3 md:px-6 py-2.5 z-10 hover:shadow-lg transition-shadow duration-200">
 
             {{-- Logo --}}
             <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="h-8 sm:h-10">
@@ -42,7 +43,7 @@
         </nav>
     </header>
 
-    <main class="w-full">
+    <main class="w-full ">
         {{ $slot }}
     </main>
 </body>

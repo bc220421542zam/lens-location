@@ -14,7 +14,8 @@
     {{--Top Nav bar--}}
     <x-nav/>
     <div class="flex flex-1 overflow-hidden">
-       <x-sidebar-customer />
+       {{-- Sidebar --}}
+       <x-customerComp.sidebar-customer/>
 
         {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-8">

@@ -7,7 +7,7 @@
         description="Manage your booking requests">
         <x-slot:actions>
         <a href="{{ route('customer.listings') }}"
-           class="btn w-full sm:w-auto px-4 text-center">
+           class="btn btn-transition w-full sm:w-auto px-4 text-center">
             Find Location
         </a>
     </x-slot:actions>
@@ -21,28 +21,12 @@
     <x-customerComp.statsBookings :stats="$stats" />
 
     {{-- FILTER TABS --}}
-    @php
-        $tabs = [
-            ''          => 'All',
-            'pending'   => 'Pending',
-            'confirmed' => 'Confirmed',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-        ];
-    @endphp
-    <div class="flex flex-wrap gap-2 mb-4">
-        @foreach ($tabs as $value => $label)
-            <a href="{{ $value === '' ? route('customer.bookings') : route('customer.bookings', ['status' => $value]) }}"
-               class="action-btn {{ request('status', '') === $value ? 'bg-indigo-900 text-white' : '' }}">
-                {{ $label }}
-            </a>
-        @endforeach
-    </div>
+    <x-booking-filter />
 
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
         @forelse ($bookings as $booking)
-            <div class="card rounded-2xl flex flex-col md:flex-row md:items-center gap-4">
+            <div class="card chart-transition rounded-2xl flex flex-col md:flex-row md:items-center gap-4">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
@@ -54,7 +38,7 @@
                     @endif
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-gray-900">{{ $booking->location?->title ?? 'Deleted location' }}</p>
+                    <p class="font-semibold text-indigo-900">{{ $booking->location?->title ?? 'Deleted location' }}</p>
                     <p class="text-sm text-gray-500">
                         {{ $booking->hours }} hr{{ $booking->hours > 1 ? 's' : '' }}
                         @if ($booking->shoot_type) &middot; {{ $booking->shoot_type }} @endif
@@ -88,7 +72,7 @@
                 @endif
             </div>
         @empty
-            <div class="card rounded-2xl text-center py-10 text-gray-400">
+            <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400">
                 <i class="fa-solid fa-calendar text-2xl mb-2"></i>
                 <p class="font-medium">No bookings yet</p>
                 <a href="{{ route('customer.listings') }}"
