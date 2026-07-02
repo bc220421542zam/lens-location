@@ -21,7 +21,7 @@
     <x-customerComp.statsBookings :stats="$stats" />
 
     {{-- FILTER TABS --}}
-    <x-booking-filter />
+    <x-customerComp.booking-filter />
 
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">

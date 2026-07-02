@@ -3,7 +3,7 @@
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
         {{-- CARD --}}
-        <div class="w-full max-w-sm sm:max-w-md md:max-w-4xl card-transition
+        <div class="w-full max-w-sm sm:max-w-md md:max-w-4xl chart-transition
                     rounded-2xl shadow-xl bg-white border border-indigo-200 overflow-hidden ">
 
             {{-- MOBILE: Image on top --}}
@@ -37,47 +37,43 @@
                     </div>
                 </div>
 
-                {{-- RIGHT: Form --}}
-                <div class="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-10">
-                    <div class="w-full">
+                
+            {{-- RIGHT: Form --}}
+            <div class="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-8 md:p-10">
+                <div class="w-full">
+                    {{-- Logo --}}
+                    <div class="flex justify-center mb-6">
+                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="h-8 md:h-10">
+                    </div>
 
-                        {{-- Logo --}}
-                        <div class="flex justify-center mb-6">
-                            <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="h-8 md:h-10">
+                    <h1 class="text-xl sm:text-2xl text-center font-bold text-indigo-900 mb-1">Welcome back</h1>
+                    <p class="text-sm text-gray-500 text-center mb-5 sm:mb-8">Sign in to your account to continue</p>
+
+                    {{-- Divider --}}
+                    <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                    @csrf
+                    {{-- Email --}}
+                    <div>
+                        <label for="email"
+                            class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
+                        <input type="email" id="email" name="email"
+                            value="{{ old('email') }}"
+                            class="field {{ $errors->has('email') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Password --}}
+                        <div>
+                            <label for="password"
+                                class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
+                            <input type="password" id="password" name="password"
+                            class="field {{ $errors->has('password') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                         </div>
-
-                        <h1 class="text-xl sm:text-2xl text-center font-bold text-indigo-900 mb-1">Welcome back</h1>
-                        <p class="text-sm text-gray-500 text-center mb-5 sm:mb-8">Sign in to your account to continue</p>
-
-                        {{--login with Google--}}
-                        <x-google-login />
-
-                        {{-- Divider --}}
-                        <form action="{{ route('login') }}" method="POST" class="space-y-4">
-                            @csrf
-
-                            {{-- Email --}}
-                            <div>
-                                <label for="email"
-                                    class="block text-sm font-medium text-indigo-900 mb-1">Email</label>
-                                <input type="email" id="email" name="email"
-                                    value="{{ old('email') }}"
-                                    class="field {{ $errors->has('email') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
-                                @error('email')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- Password --}}
-                            <div>
-                                <label for="password"
-                                    class="block text-sm font-medium text-indigo-900 mb-1">Password</label>
-                                <input type="password" id="password" name="password"
-                                    class="field {{ $errors->has('password') ? 'border-red-400 ring-1 ring-red-400' : 'border-indigo-300' }} field-transition">
-                                @error('password')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
 
                             {{-- Remember Me --}}
                             <div class="flex items-center gap-2">
@@ -98,6 +94,8 @@
                                        hover:bg-indigo-700 transition-colors duration-200 hover:shadow-lg ease-in-out">
                                 Login
                             </button>
+                             {{--login with Google--}}
+                            <x-google-login />
 
                             {{-- Sign Up Link --}}
                             <p class="text-center text-sm text-gray-500">

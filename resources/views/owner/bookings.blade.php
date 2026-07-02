@@ -18,7 +18,7 @@
     <x-ownerComp.booking-stats :stats="$stats" />
 
     {{-- FILTER TABS --}}
-    <x-booking-filter />
+    <x-ownerComp.booking-filter />
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
 
@@ -27,14 +27,14 @@
 
             {{-- AVATAR --}}
             <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 shrink-0">
-                {{ strtoupper(substr($booking->photographer->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr($booking->photographer->last_name ?? '', 0, 1)) }}
+                {{ strtoupper(substr($booking->customer->first_name ?? 'U', 0, 1)) }}{{ strtoupper(substr($booking->customer->last_name ?? '', 0, 1)) }}
             </div>
 
             {{-- INFO --}}
             <div class="flex-1">
-                <p class="font-semibold text-gray-900">
-                    {{ $booking->photographer->first_name ?? 'Unknown' }}
-                    {{ $booking->photographer->last_name ?? '' }}
+                <p class="font-semibold text-indigo-900">
+                    {{ $booking->customer->first_name ?? 'Unknown' }}
+                    {{ $booking->customer->last_name ?? '' }}
                 </p>
                 <p class="text-sm text-gray-500">
                     {{ $booking->location->title ?? 'N/A' }}
@@ -50,7 +50,7 @@
                     &middot;
                     {{ $booking->booking_date->format('g:i A') }}
                 </p>
-                <p class="font-semibold text-gray-900">
+                <p class="font-semibold text-indigo-900">
                     PKR {{ number_format($booking->total_price) }}
                 </p>
 

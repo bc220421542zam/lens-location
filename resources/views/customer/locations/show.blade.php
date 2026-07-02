@@ -22,22 +22,23 @@
 
             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
-                    <dt class="text-xs uppercase text-gray-500">Owner</dt>
+                    <dt class="text-xs uppercase underline text-indigo-900">Owner</dt>
                     <dd class="font-medium text-indigo-900">{{ $location->owner->name }}</dd>
+                    <dd class="text-xs text-gray-500">{{ $location->owner->email }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs uppercase text-gray-500">Price / hour</dt>
+                    <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
                     <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $location->price_per_hour) }}</dd>
                 </div>
                 <div class="sm:col-span-2">
-                    <dt class="text-xs uppercase text-gray-500">Address</dt>
+                    <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
                     <dd class="font-medium text-indigo-900">{{ $location->address }}</dd>
                 </div>
             </dl>
 
             <div class="mb-6">
-                <dt class="text-xs uppercase text-gray-500 mb-1">Description</dt>
-                <dd class="text-gray-700 whitespace-pre-line">{{ $location->description }}</dd>
+                <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
+                <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
             </div>
 
             <a href="{{ route('customer.listings.book', $location->id) }}"
