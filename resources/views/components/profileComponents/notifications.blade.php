@@ -1,4 +1,4 @@
- <div class="card">
+ <div class="card chart-transition bg-[#EEEFF7] rounded-2xl p-6">
                     <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Notifications</p>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between gap-4">

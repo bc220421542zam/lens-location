@@ -1,7 +1,7 @@
 @props(['route' => 'owner.profile.password'])
 
 {{-- Change Password --}}
-    <div class="card bg-[#EEEFF7]">
+    <div class="card chart-transition bg-[#EEEFF7] rounded-2xl">
         <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Change Password</p>
         <p class="text-xs text-gray-400 mb-4">Update your password to keep your account secure</p>
 
