@@ -74,14 +74,21 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                         </div>
+                        {{-- Forgot Password Link --}}
+                        <div class="flex justify-start mb-4">
+                            <a href="{{ route('forgot.password') }}"
+                                class="text-sm text-indigo-900 hover:text-indigo-900 hover:underline transition-colors duration-200">
+                                Forgot your password?
+                            </a>
+                        </div>
 
-                            {{-- Remember Me --}}
+                            <!-- {{-- Remember Me --}}
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" name="remember" id="remember"
                                     class="w-4 h-4 accent-indigo-700 cursor-pointer">
                                 <label for="remember"
                                     class="text-sm text-indigo-900 cursor-pointer">Remember me</label>
-                            </div>
+                            </div> -->
 
                             {{-- General Error --}}
                             @error('failed')

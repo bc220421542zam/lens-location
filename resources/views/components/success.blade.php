@@ -17,7 +17,7 @@
     setTimeout(() => {
         let msg = document.getElementById('flash-message');
         if (msg) {
-            msg.style.transition = "opacity 0.5s ease";
+            msg.style.transition = "opacity 0.5s ease-in-out";
             msg.style.opacity = "0";
  
             setTimeout(() => msg.remove(), 500);

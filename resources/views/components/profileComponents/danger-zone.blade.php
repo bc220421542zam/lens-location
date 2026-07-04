@@ -7,7 +7,7 @@
                     <p class="text-xs text-gray-400">Permanently delete your account and all data</p>
                 </div>
                 <button onclick="return confirm('Are you sure? This cannot be undone.')"
-                    class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition shrink-0">
+                    class="px-4 py-2 border border-red-300 text-red-600 btn-transition rounded-lg text-sm hover:bg-red-50 transition shrink-0">
                     Delete Account
                 </button>
             </div>

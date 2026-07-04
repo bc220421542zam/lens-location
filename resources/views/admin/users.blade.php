@@ -25,95 +25,106 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left min-w-[520px]">
-                <thead>
-                    <tr class="border-b border-indigo-400 text-indigo-900">
-                        <th class="py-2 px-2 text-sm">Name</th>
-                        <th class="px-2 text-sm">Email</th>
-                        <th class="px-2 text-sm">Role</th>
-                        <th class="px-2 text-sm">Status</th>
-                        <th class="px-2 text-sm">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($users as $user)
-                    <tr class="border-b border-indigo-400">
-                        <td class="py-2 pl-2 text-sm text-indigo-900">{{ $user->first_name }} {{ $user->last_name }}</td>
-                        <td class="pl-2 text-sm text-indigo-900">{{ $user->email }}</td>
-                        <td class="pl-2 text-sm text-indigo-900">{{ $user->role?->value ?? 'N/A' }}</td>
-                        <td class="pl-2 text-sm {{ $user->status?->value === 'active' ? 'text-green-700' : 'text-red-600' }}">
-                            {{ ucfirst($user->status?->value ?? 'N/A') }}
-                        </td>
-                        <td class="flex items-center gap-3 py-2 pl-2">
+            <div class="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
 
-                            <button @click="openUser({{ $user->toJson() }})" 
-                            class="text-indigo-900 hover:text-indigo-700 p-1.5 py-1 transition hover:opacity-70">
-                                <i class="fa-regular fa-eye text-sm"></i>
+    {{-- HEADER --}}
+      <div class="overflow-x-auto">
+        <table class="w-full text-left min-w-[640px]">
+            <thead>
+                <tr class="text-[11px] uppercase tracking-wide text-indigo-900 text-indigo-flex items-center gap-2 px-4 py-3 border-b border-indigo-100 bg-indigo-50/60 ">
+                    <th class="py-3 px-4 font-medium">Name</th>
+                    <th class="px-2 font-medium">Email</th>
+                    <th class="px-2 font-medium">Role</th>
+                    <th class="px-2 font-medium">Status</th>
+                    <th class="px-2 font-medium text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($users as $user)
+                <tr class="border-t border-indigo-50 {{ $loop->even ? 'bg-indigo-50/40' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
+                    <td class="py-3 px-4 text-sm font-medium text-indigo-900">
+                        {{ $user->first_name }} {{ $user->last_name }}
+                    </td>
+                    <td class="px-2 text-sm text-indigo-700">{{ $user->email }}</td>
+                    <td class="px-2 text-sm text-indigo-700">{{ $user->role?->value ?? 'N/A' }}</td>
+                    <td class="px-2 text-sm">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium
+                            {{ $user->status?->value === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $user->status?->value === 'active' ? 'bg-green-600' : 'bg-red-600' }}"></span>
+                            {{ ucfirst($user->status?->value ?? 'N/A') }}
+                        </span>
+                    </td>
+                    <td class="px-2 py-3">
+                        <div class="flex items-center justify-center gap-2">
+
+                            {{-- VIEW --}}
+                            <button @click="openUser({{ $user->toJson() }})"
+                                title="View"
+                                class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">
+                                <i class="fa-regular fa-eye text-xs"></i>
                             </button>
 
-        {{-- ACTIVATE / DEACTIVATE TOGGLE --}}
-            @if(auth()->id() !== $user->id)
-                <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
-                    @csrf
+                            {{-- ACTIVATE / DEACTIVATE TOGGLE --}}
+                            @if(auth()->id() !== $user->id)
+                                <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
+                                    @csrf
+                                    <button type="submit"
+                                            title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
+                                            class="transition hover:opacity-80">
+                                        @if($user->status->value === 'active')
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-8 h-5">
+                                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
+                                                <circle cx="26" cy="10" r="7" fill="white"/>
+                                            </svg>
+                                        @else
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-8 h-5">
+                                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
+                                                <circle cx="10" cy="10" r="7" fill="white"/>
+                                            </svg>
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                {{-- CURRENT LOGGED-IN USER --}}
+                                <span title="This is your account"
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        class="w-4 h-4">
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                                    </svg>
+                                </span>
+                            @endif
 
-                    <button type="submit"
-                            title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
-                            class="p-1.5 transition hover:opacity-70">
-
-                        @if($user->status->value === 'active')
-                            {{-- ACTIVE --}}
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
-                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
-                                <circle cx="26" cy="10" r="7" fill="white"/>
-                            </svg>
-                        @else
-                            {{-- INACTIVE --}}
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-5">
-                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
-                                <circle cx="10" cy="10" r="7" fill="white"/>
-                            </svg>
-                        @endif
-
-                    </button>
-                </form>
-            @else
-                {{-- CURRENT LOGGED-IN USER --}}
-                <span title="This is your account"
-                    class="p-1.5 inline-flex items-center justify-center">
-
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        class="w-6 h-6 mr-1 text-indigo-500">
-
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
-                    </svg>
-
-                </span>
-            @endif
-
+                            {{-- DELETE --}}
                             <form method="POST" action="{{ route('admin.users.delete', $user->id) }}"
                                 onsubmit="return confirm('Delete this user?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-700">
-                                    <i class="fa-regular fa-trash-can text-sm"></i>
+                                <button type="submit"
+                                    title="Delete"
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                    <i class="fa-regular fa-trash-can text-xs"></i>
                                 </button>
                             </form>
 
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="py-4 text-center text-indigo-800 text-sm">No users found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="py-6 text-center text-indigo-400 text-sm">No users found.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
         </div>
 
         <div class="mt-4">{{ $users->links() }}</div>

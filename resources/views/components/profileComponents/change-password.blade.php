@@ -15,7 +15,7 @@
                     <div class="relative text-gray-400">
                     <input type="password" name="current_password" id="s_current_pw"
                         placeholder="Current password"
-                        class="w-full border rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
+                        class="w-full border input input-field rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
                         {{ $errors->has('current_password') ? 'border-red-400' : 'border-gray-200' }}">
                             <button type="button" onclick="togglePw('s_current_pw','s_eye1')"
                                 class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
@@ -34,7 +34,7 @@
                             <input type="password" name="new_password" id="s_new_pw"
                                 placeholder="New password"
                                 oninput="checkStrength(this.value)"
-                                class="w-full border rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
+                                class="w-full border input input-field rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
                                 {{ $errors->has('new_password') ? 'border-red-400' : 'border-gray-200' }}">
                             <button type="button" onclick="togglePw('s_new_pw','s_eye2')"
                                 class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
@@ -54,7 +54,7 @@
                                 <input type="password" name="new_password_confirmation" id="s_confirm_pw"
                                     placeholder="Confirm new password"
                                     oninput="checkMatch()"
-                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    class="w-full border input input-field border-gray-200 rounded-lg px-3 py-2 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <button type="button" onclick="togglePw('s_confirm_pw','s_eye3')"
                                     class="absolute right-3 top-2.5 text-indigo-400 hover:text-indigo-700">
                                     <i id="s_eye3" class="fa-regular fa-eye text-sm"></i>
@@ -69,11 +69,11 @@
 
                     <div class="flex justify-end gap-3">
                         <button type="reset"
-                            class="px-5 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
+                            class="px-5 py-2 border bg-white btn-transition border-gray-200 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition">
                             Clear
                         </button>
                         <button type="submit"
-                            class="px-5 py-2 bg-indigo-900 text-white rounded-lg text-sm hover:bg-indigo-800 transition">
+                            class="px-5 py-2 bg-indigo-900 text-white btn-transition rounded-lg text-sm hover:bg-indigo-800 transition">
                             Update Password
                         </button>
                     </div>

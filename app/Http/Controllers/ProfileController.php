@@ -21,7 +21,7 @@ abstract class ProfileController extends Controller
         return redirect()
             ->route($this->profileRouteName())
             ->with('success', 'Profile updated successfully.')
-            ->with('tab', 'personal');
+            ->with('tab', 'profile');
     }
 
     public function updatePhoto(UpdatePhotoRequest $request): RedirectResponse
@@ -40,7 +40,8 @@ abstract class ProfileController extends Controller
 
         return back()->with('success', 'Profile photo updated.');
     }
-    //Update Password
+
+    // Update Password
     public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
     {
         $user = $request->user();
@@ -48,7 +49,7 @@ abstract class ProfileController extends Controller
         if (! Hash::check($request->input('current_password'), $user->password)) {
             return back()
                 ->withErrors(['current_password' => 'Current password is incorrect.'])
-                ->with('tab', 'password');
+                ->with('tab', 'change-password');
         }
 
         $user->password = Hash::make($request->input('new_password'));
@@ -57,6 +58,21 @@ abstract class ProfileController extends Controller
         return redirect()
             ->route($this->profileRouteName())
             ->with('success', 'Password updated successfully.')
-            ->with('tab', 'password');
+            ->with('tab', 'change-password');
     }
+    // Notifications
+    public function updateNotifications(Request $request)
+{
+    $request->validate([
+        'notif_push'  => 'boolean',
+        'notif_email' => 'boolean',
+        'notif_sms'   => 'boolean',
+    ]);
+
+    $request->user()->update($request->only([
+        'notif_push', 'notif_email', 'notif_sms',
+    ]));
+
+    return response()->json(['status' => 'ok']);
+}
 }

@@ -1,10 +1,13 @@
 <x-layouts.customer>
-<div class="page" x-data="{ tab: 'profile' }">
+<div class="page" x-data="{ tab: '{{ session('tab', 'profile') }}' }">
 
     <x-topbar 
     title="My Profile"
     description="Manage your profile information and account settings"
     ></x-topbar>
+
+    {{--Flash-Message--}}
+    <x-profileComponents.flash-alert/>
 
     <div class="flex flex-col lg:flex-row gap-6">
 
@@ -19,27 +22,8 @@
                     class="hidden" accept="image/*" onchange="this.form.submit()">
                 <x-profileComponents.profile-photo/>
             </form>
-
-         <div class="shade card card-transition bg-[#EEEFF7] rounded-2xl p-4">
-                <p class="text-xs font-semibold text-indigo-900 uppercase tracking-wide mb-3">Actions</p>
-                <div class="space-y-2">
-                <button @click="tab = 'profile'"
-                    :class="tab === 'profile' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-10 w-full py-2 rounded-lg text-sm transition btn-transition">
-                    Profile
-                </button>
-                <button @click="tab = 'settings'"
-                    :class="tab === 'settings' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-10 w-full py-2 rounded-lg text-sm transition btn-transition">
-                    Settings
-                </button>
-                <button @click="tab = 'change-password'"
-                    :class="tab === 'change-password' ? 'bg-indigo-900 text-white' : 'bg-[#EEEFF7] text-indigo-900 border border-indigo-200'"
-                    class="px-8 w-full py-2 rounded-lg text-sm transition btn-transition">
-                    Change Password
-                </button>
-                </div>
-            </div>
+            {{-- ACTION BUTTONS --}}
+            <x-profileComponents.profile-action-btns/> 
         </div>
 
         {{-- RIGHT COLUMN --}}
@@ -139,7 +123,7 @@
                 }">
 
         {{-- NOTIFICATIONS --}}
-            <x-profileComponents.notifications/>
+            <x-profileComponents.notifications prefix="customer" />
         {{--Account Details--}}
             <x-profileComponents.account-details/>      
         {{--Danger Zone --}}

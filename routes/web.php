@@ -16,8 +16,14 @@ Route::redirect('/', '/login');
     Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    
+    // Password Reset Routes
+    Route::view('/forgot-password', 'auth.forgot-password')->name('forgot.password');
+    Route::view('/reset-password', 'auth.reset-password')->name('reset.password');
+ 
 });
 Route::controller(SocialiteController::class)->group(function () {
     Route::get('/auth/google','redirectToGoogle') ->name('auth.google');
@@ -51,10 +57,14 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile/photo',    [Admin\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
 
-        //nav
+        //notificationss
         Route::get('/notifications',           [NotificationController::class, 'index'])   ->name('notifications');
         Route::get('/notifications/unread',    [NotificationController::class, 'unread'])  ->name('notifications.unread');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
+        ->name('admin.profile.notifications');
+
+        
         
     });
 
@@ -79,6 +89,8 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::get('/notifications',           [OwnerNotificationController::class, 'index'])->name('notifications');
         Route::get('/notifications/unread',    [OwnerNotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [OwnerNotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
+        ->name('owner.profile.notifications');
 
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
@@ -86,6 +98,7 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile/photo',         [Owner\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         //Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
+
     });
 
         // Customer 
@@ -107,5 +120,8 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile',          [Customer\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/photo',    [Customer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password', [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
+        ->name('customer.profile.notifications');
+
     });
 });
