@@ -16,7 +16,7 @@
     <x-adminComponents.filters-users />
 
     {{-- Users Table --}}
-    <div class="shade card chart-transition bg-[#EEEFF7] p-4 rounded-2xl">
+    <div class="shade card chart-transition bg-[#EEEFF7] p-4 rounded-2xl border-l-3 border-indigo-400">
     <x-success class="mb-4" />
     <x-error class="mb-4" />
     
@@ -25,23 +25,78 @@
         </div>
 
         <div class="overflow-x-auto">
-            <div class="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-r-3 border-indigo-400 overflow-hidden">
 
     {{-- HEADER --}}
       <div class="overflow-x-auto">
-        <table class="w-full text-left min-w-[640px]">
+        <table class="w-full text-left min-w-[720px]">
             <thead>
-                <tr class="text-[11px] uppercase tracking-wide text-indigo-900 text-indigo-flex items-center gap-2 px-4 py-3 border-b border-indigo-100 bg-indigo-50/60 ">
-                    <th class="py-3 px-4 font-medium">Name</th>
-                    <th class="px-2 font-medium">Email</th>
-                    <th class="px-2 font-medium">Role</th>
-                    <th class="px-2 font-medium">Status</th>
+                <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
+                    <th class="py-3 px-4 font-medium">Sr. No.</th>
+
+                    @php
+                        $currentSort = request('sort');
+                        $currentDirection = request('direction', 'asc');
+
+                        $sortLink = function($column) use ($currentSort, $currentDirection) {
+                            $nextDirection = ($currentSort === $column && $currentDirection === 'asc') ? 'desc' : 'asc';
+                            return request()->fullUrlWithQuery(['sort' => $column, 'direction' => $nextDirection]);
+                        };
+                    @endphp
+
+                    <th class="px-2 font-medium">
+                        <a href="{{ $sortLink('first_name') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
+                            Name
+                            @if($currentSort === 'first_name')
+                                <i class="fa-solid fa-sort-{{ $currentDirection === 'asc' ? 'up' : 'down' }} text-[10px]"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-[10px] text-indigo-300"></i>
+                            @endif
+                        </a>
+                    </th>
+
+                    <th class="px-2 font-medium">
+                        <a href="{{ $sortLink('email') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
+                            Email
+                            @if($currentSort === 'email')
+                                <i class="fa-solid fa-sort-{{ $currentDirection === 'asc' ? 'up' : 'down' }} text-[10px]"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-[10px] text-indigo-300"></i>
+                            @endif
+                        </a>
+                    </th>
+
+                    <th class="px-2 font-medium">
+                        <a href="{{ $sortLink('role') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
+                            Role
+                            @if($currentSort === 'role')
+                                <i class="fa-solid fa-sort-{{ $currentDirection === 'asc' ? 'up' : 'down' }} text-[10px]"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-[10px] text-indigo-300"></i>
+                            @endif
+                        </a>
+                    </th>
+
+                    <th class="px-2 font-medium">
+                        <a href="{{ $sortLink('status') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
+                            Status
+                            @if($currentSort === 'status')
+                                <i class="fa-solid fa-sort-{{ $currentDirection === 'asc' ? 'up' : 'down' }} text-[10px]"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-[10px] text-indigo-300"></i>
+                            @endif
+                        </a>
+                    </th>
+
                     <th class="px-2 font-medium text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($users as $user)
                 <tr class="border-t border-indigo-50 {{ $loop->even ? 'bg-indigo-50/40' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
+                    <td class="py-3 px-4 text-sm text-indigo-700">
+                        {{ $users->firstItem() + $loop->index }}
+                    </td>
                     <td class="py-3 px-4 text-sm font-medium text-indigo-900">
                         {{ $user->first_name }} {{ $user->last_name }}
                     </td>
@@ -70,14 +125,14 @@
                                     @csrf
                                     <button type="submit"
                                             title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
-                                            class="transition hover:opacity-80">
+                                            class="w-8 h-8 flex items-center justify-center transition hover:opacity-80">
                                         @if($user->status->value === 'active')
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-8 h-5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
                                                 <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
                                                 <circle cx="26" cy="10" r="7" fill="white"/>
                                             </svg>
                                         @else
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-8 h-5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
                                                 <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
                                                 <circle cx="10" cy="10" r="7" fill="white"/>
                                             </svg>
@@ -118,7 +173,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="py-6 text-center text-indigo-400 text-sm">No users found.</td>
+                    <td colspan="6" class="py-6 text-center text-indigo-400 text-sm">No users found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -127,7 +182,7 @@
 </div>
         </div>
 
-        <div class="mt-4">{{ $users->links() }}</div>
+        <div class="mt-4">{{ $users->appends(request()->query())->links() }}</div>
 
     </div>
 

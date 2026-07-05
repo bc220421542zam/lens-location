@@ -16,6 +16,15 @@ class ListingController extends Controller
 
     public function index(Request $request): View
     {
+        $allowedSorts = ['title', 'city', 'category', 'price_per_hour', 'status'];
+
+        $sort = $request->get('sort');
+        $direction = $request->get('direction', 'asc');
+
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
         $listings = Location::query()
             ->with('owner')
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
@@ -29,7 +38,11 @@ class ListingController extends Controller
             }))
             ->when($request->filled('status'),   fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('category'), fn ($q) => $q->where('category', $request->string('category')))
-            ->latest()
+            ->when(
+                $sort && in_array($sort, $allowedSorts),
+                fn ($q) => $q->orderBy($sort, $direction),
+                fn ($q) => $q->latest()
+            )
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 

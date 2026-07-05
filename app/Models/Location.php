@@ -38,4 +38,8 @@ class Location extends Model
     {
         return $this->hasMany(Booking::class);
     }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category');
+    }
 }

@@ -13,7 +13,7 @@
 @endphp
 
 <div
-    class="shade card card-transition bg-[#EEEFF7] rounded-2xl p-4"
+    class="shade card chart-transition bg-[#EEEFF7] rounded-2xl border-l-3 border-indigo-400 p-4"
     x-data="{
         push: {{ auth()->user()->notif_push ? 'true' : 'false' }},
         email: {{ auth()->user()->notif_email ? 'true' : 'false' }},

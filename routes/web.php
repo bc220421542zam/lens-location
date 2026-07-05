@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
 
 
@@ -57,14 +58,18 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile/photo',    [Admin\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
 
-        //notificationss
+        // Notifications
         Route::get('/notifications',           [NotificationController::class, 'index'])   ->name('notifications');
         Route::get('/notifications/unread',    [NotificationController::class, 'unread'])  ->name('notifications.unread');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
         ->name('admin.profile.notifications');
 
-        
+        // Categories
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.delete');
         
     });
 

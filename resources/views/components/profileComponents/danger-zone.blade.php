@@ -1,5 +1,5 @@
 {{-- DANGER ZONE --}}
-    <div class="card border border-red-100 bg-red-20 rounded-2xl p-4 chart-transition">
+    <div class="card border border-l-3 border-red-400 bg-red-20 rounded-2xl p-4 chart-transition">
         <p class="text-xs font-semibold text-red-400 uppercase tracking-wide mb-4">Danger Zone</p>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>

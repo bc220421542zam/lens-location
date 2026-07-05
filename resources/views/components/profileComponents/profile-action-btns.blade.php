@@ -1,4 +1,4 @@
-<div class="shade card card-transition bg-[#EEEFF7] rounded-2xl p-4">
+<div class="shade card card-transition bg-[#EEEFF7] rounded-2xl border-l-3 border-indigo-400 p-4">
     <p class="text-xs font-semibold text-indigo-900 uppercase tracking-wide mb-3">Actions</p>
         <div class="space-y-2">
             <button @click="tab = 'profile'"

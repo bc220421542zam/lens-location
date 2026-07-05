@@ -68,6 +68,12 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .chart-transition {
   @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-lg;
 }
+.border-top {
+  @apply border-t-3 border-indigo-400;
+}
+.border-left {
+  @apply border-l-3 border-indigo-400;
+}
 
 
 

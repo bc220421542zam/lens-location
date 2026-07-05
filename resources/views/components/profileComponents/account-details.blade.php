@@ -1,5 +1,5 @@
  {{-- ACCOUNT DETAILS --}}
-            <div class="shade bg-[#EEEFF7] rounded-2xl card card-transition p-4">
+            <div class="shade bg-[#EEEFF7] rounded-2xl border-l-3 border-indigo-400 card chart-transition p-4">
                 <p class="text-xs font-semibold text-indigo-900 uppercase tracking-wide mb-3">Account Details</p>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
