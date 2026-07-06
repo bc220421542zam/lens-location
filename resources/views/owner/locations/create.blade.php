@@ -16,6 +16,7 @@
             {{-- Title + Category --}}
             <div class="flex gap-4 mb-4">
                 <div class="flex-1">
+                    <label class="text-xs text-indigo-900 mb-1 block">Location Title</label>
                     <input
                         type="text"
                         name="title"
@@ -28,6 +29,7 @@
                     @enderror
                 </div>
                 <div class="w-44">
+                    <label class="text-xs text-indigo-900 mb-1 block">Categories</label>
                     <select
                         name="category"
                         class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
@@ -48,6 +50,7 @@
             {{-- Description + Price --}}
             <div class="flex gap-4">
                 <div class="flex-1">
+                    <label class="text-xs text-indigo-900 mb-1 block">Description</label>
                     <textarea
                         name="description"
                         placeholder="Describe your location..."

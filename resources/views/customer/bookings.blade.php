@@ -26,7 +26,7 @@
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
         @forelse ($bookings as $booking)
-            <div class="card chart-transition rounded-2xl flex flex-col md:flex-row md:items-center gap-4">
+            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400 flex flex-col md:flex-row md:items-center gap-4">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"

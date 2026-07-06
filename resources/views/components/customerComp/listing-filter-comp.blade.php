@@ -1,6 +1,6 @@
 {{-- FILTERS --}}
     <form method="GET" action="{{ route('customer.listings') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl chart-transition">
+      class="flex flex-col md:flex-row md:items-center gap-3 card mb-4 justify-between rounded-2xl border border-l-3 border-indigo-400 chart-transition">
         {{--Search--}}
     <div class="flex-1">
         <label for="filter-search"

@@ -30,7 +30,7 @@
         <div class="flex-1 min-w-0">
 
             {{-- PROFILE TAB --}}
-            <div x-show="tab === 'profile'" class="card chart-transition bg-[#EEEFF7] rounded-2xl p-6">
+            <div x-show="tab === 'profile'" class="card chart-transition bg-[#EEEFF7] rounded-2xl border border-l-3 border-indigo-400 p-6">
                 <h3 class="font-semibold text-indigo-900 mb-4">Profile Information</h3>
 
         <form action="{{ route('customer.profile.update') }}" method="POST">
