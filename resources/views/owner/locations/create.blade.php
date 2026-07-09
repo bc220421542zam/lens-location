@@ -10,7 +10,7 @@
         @csrf
 
         {{-- Basic Information --}}
-        <div class="card chart-transition mb-4 ">
+        <div class="card chart-transition mb-4 rounded-2xl border border-l-3 border-indigo-400 p-6"> 
             <h3 class="font-semibold text-indigo-900 mb-4">Basic Information</h3>
 
             {{-- Title + Category --}}
@@ -80,8 +80,8 @@
         </div>
 
         {{-- Location Details --}}
-        <div class="card chart-transition mb-4">
-            <h3 class="font-semibold text-indigo-900 mb-4">Location Details</h3>
+        <div class="card chart-transition mb-4 rounded-2xl border border-l-3 border-indigo-400 p-6">
+            <h3 class="font-semibold text-indigo-900 mb-4 ">Location Details</h3>
             <div class="flex gap-4">
                 <div class="flex-1">
                     <label class="text-xs text-indigo-900 mb-1 block">Street Address</label>
@@ -113,7 +113,7 @@
         </div>
 
         {{-- Image Upload --}}
-        <div class="card chart-transition mb-6">
+        <div class="card chart-transition mb-6 rounded-2xl border border-l-3 border-indigo-400 p-6">
             <h3 class="font-semibold text-indigo-900 mb-4">Image</h3>
             <div
                 class="border-2 border-dashed border-indigo-200 rounded-lg p-8 text-center

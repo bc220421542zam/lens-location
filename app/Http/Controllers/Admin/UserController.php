@@ -41,6 +41,8 @@ class UserController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
+        $users->onEachSide(1);
+
         return view('admin.users', compact('users'));
     }
 

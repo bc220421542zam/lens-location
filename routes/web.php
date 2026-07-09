@@ -129,4 +129,14 @@ Route::controller(SocialiteController::class)->group(function () {
         ->name('customer.profile.notifications');
 
     });
+
+    Route::get('/test-mail', function () {
+    Mail::raw('Hello, this is a quick test email from Laravel!', function ($message) {
+        $message->to('your-test-email@example.com')
+            ->subject('Laravel Live Mail Test');
+    });
+ 
+    return 'Test email sent!';
+    });
+
 });

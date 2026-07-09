@@ -46,6 +46,8 @@ class ListingController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
+        $listings->onEachSide(1);
+
         $categories = Location::select('category')
             ->distinct()
             ->orderBy('category')
