@@ -56,7 +56,7 @@
                 </div>
             </div>
         @empty
-            <div class="col-span-full card chart-transition text-center py-10 text-gray-400 rounded-2xl">
+            <div class="col-span-full card chart-transition text-center py-10 text-gray-400 rounded-2xl border border-l-3 border-indigo-400">
                 <i class="fa-solid fa-heart text-2xl mb-2"></i>
                 <p class="font-medium">No favorites yet — start exploring listings!</p>
             </div>
