@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Owner;
 use App\Http\Controllers\Customer;
+use App\Http\Controllers\Customer\FavoriteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
@@ -119,6 +120,10 @@ Route::controller(SocialiteController::class)->group(function () {
         // My bookings
         Route::get('/bookings',                   [Customer\BookingController::class, 'index'])->name('bookings');
         Route::post('/bookings/{booking}/cancel', [Customer\BookingController::class, 'cancel'])->name('bookings.cancel');
+
+        // Favorites
+        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites');
+        Route::post('/favorites/{location}/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
         // Profile
         Route::get('/profile',           [Customer\ProfileController::class, 'show'])->name('profile');

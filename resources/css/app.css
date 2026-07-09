@@ -88,7 +88,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .page        { @apply p-2 max-w-5xl mx-auto; }
 .top-bar     { @apply flex justify-between items-center mb-6; }
  
-.badge       { @apply absolute top-2 right-2 text-xs font-semibold px-3 py-1 rounded-full; }
+
+.badge-inline { @apply justify-between text-xs font-semibold px-3 py-1 rounded-full; }
 .badge-active { @apply bg-green-100 text-green-700; }
 .badge-draft  { @apply bg-yellow-100 text-yellow-700; }
 .badge-rejected { @apply bg-red-100 text-red-700; }
