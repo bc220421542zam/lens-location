@@ -274,7 +274,8 @@ function validateField(field) {
         case 'phone':
             var stripped = val.replace(/[\s\-\(\)\.]/g, '');
             if (stripped.length > 20) { showError(field, 'Phone number is too long.'); return false; }
-            if (!/^\+?[1-9][0-9]{6,19}$/.test(stripped)) { showError(field, 'Please enter a valid phone number.'); return false; }
+            if (stripped.length < 7) { showError(field, 'Phone number is too short.'); return false; }
+            if (!/^\+?[0-9]{7,20}$/.test(stripped)) { showError(field, 'Please enter a valid phone number.'); return false; }
             break;
         case 'password':
             if (val.length < 8) { showError(field, 'Password must be at least 8 characters.'); return false; }

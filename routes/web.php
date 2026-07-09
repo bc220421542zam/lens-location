@@ -6,8 +6,8 @@ use App\Http\Controllers\Owner;
 use App\Http\Controllers\Customer;
 use App\Http\Controllers\Customer\FavoriteController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
@@ -23,8 +23,10 @@ Route::redirect('/', '/login');
     Route::post('/login', [AuthController::class, 'login']);
     
     // Password Reset Routes
-    Route::view('/forgot-password', 'auth.forgot-password')->name('forgot.password');
-    Route::view('/reset-password', 'auth.reset-password')->name('reset.password');
+    Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
  
 });
 Route::controller(SocialiteController::class)->group(function () {
@@ -133,15 +135,6 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
         ->name('customer.profile.notifications');
 
-    });
-
-    Route::get('/test-mail', function () {
-    Mail::raw('Hello, this is a quick test email from Laravel!', function ($message) {
-        $message->to('your-test-email@example.com')
-            ->subject('Laravel Live Mail Test');
-    });
- 
-    return 'Test email sent!';
     });
 
 });
