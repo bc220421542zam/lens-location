@@ -23,7 +23,7 @@
     <div class="flex flex-col gap-3">
 
         @forelse($bookings as $booking)
-        <div class="card chart-transition rounded-2xl flex items-center gap-4">
+        <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400 flex items-center gap-4">
 
             {{-- AVATAR --}}
             <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 shrink-0">

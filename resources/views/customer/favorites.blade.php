@@ -1,25 +1,14 @@
 <x-layouts.customer>
 <div>
-
-    {{-- TOP BAR --}}
     <x-topbar 
-        title="Search Listings"
-        description="Find a place for your next shoot">
+        title="Favorites"
+        description="Listings you've saved">
     </x-topbar>
 
-    @if (session('success'))
-        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-600 text-sm">{{ session('success') }}</div>
-    @endif
+    <x-success class="mb-4" />
 
-    {{-- FILTERS --}}
-    <x-customerComp.listing-filter-comp :categories="$categories" />
-
-    {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        @forelse ($locations as $location)
-            @php
-                $isFavorited = auth()->user()->favorites->contains($location->id);
-            @endphp
+        @forelse($favorites as $location)
             <div class="card card-transition rounded-2xl flex flex-col p-0 overflow-hidden">
                 <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">
                     @if($location->image)
@@ -33,22 +22,25 @@
                             </span>
                         </div>
                     @endif
+
                     {{-- FAVORITE TOGGLE --}}
                     <form action="{{ route('customer.favorites.toggle', $location->id) }}" method="POST"
                         class="absolute top-2 right-2">
                         @csrf
                         <button type="submit"
                             class="w-8 h-8 flex items-center justify-center rounded-full bg-white/90 hover:bg-white transition"
-                            title="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
-                            <i class="fa-{{ $isFavorited ? 'solid' : 'regular' }} fa-heart text-sm {{ $isFavorited ? 'text-red-500' : 'text-indigo-400' }}"></i>
+                            title="Remove from favorites">
+                            <i class="fa-solid fa-heart text-red-500 text-sm"></i>
                         </button>
                     </form>
                 </div>
+
                 <div class="p-4 flex-1 flex flex-col">
                     <div class="flex items-center justify-between">
                         <h3 class="font-semibold text-indigo-900">{{ $location->title }}</h3>
                         <span class="badge-inline badge-active">{{ ucfirst($location->category) }}</span>
                     </div>
+
                     <p class="text-xs text-gray-500 mt-1">
                         <i class="fa-solid fa-location-dot mr-1"></i>{{ $location->city }}
                     </p>
@@ -64,16 +56,13 @@
                 </div>
             </div>
         @empty
-            <div class="col-span-full card card-transition text-center py-10 text-gray-400">
-                <i class="fa-solid fa-magnifying-glass text-2xl mb-2"></i>
-                <p class="font-medium">No listings match your filters</p>
+            <div class="col-span-full card chart-transition text-center py-10 text-gray-400 rounded-2xl border border-l-3 border-indigo-400">
+                <i class="fa-solid fa-heart text-2xl mb-2"></i>
+                <p class="font-medium">No favorites yet — start exploring listings!</p>
             </div>
         @endforelse
     </div>
 
-    <div class="mt-6">
-        {{ $locations->links() }}
-    </div>
-
+    <div class="mt-4">{{ $favorites->links() }}</div>
 </div>
 </x-layouts.customer>

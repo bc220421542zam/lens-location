@@ -1,5 +1,5 @@
 
-                <div class="flex flex-col items-center py-6 rounded-2xl card card-transition bg-[#EEEFF7]">
+                <div class="flex flex-col items-center py-6 rounded-2xl border-l-3 border-indigo-400 card card-transition bg-[#EEEFF7]">
 
                     <div class="relative w-20 h-20 mb-3">
                         @if(auth()->user()->profile_picture)

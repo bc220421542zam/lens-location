@@ -24,6 +24,7 @@
             ['route' => 'owner.dashboard', 'icon' => 'fa-house',        'label' => 'Dashboard'],
             ['route' => 'owner.bookings',  'icon' => 'fa-calendar',     'label' => 'Bookings'],
             ['route' => 'owner.listings',  'icon' => 'fa-location-dot', 'label' => 'Listings'],
+             ['route' => 'owner.locations.create',  'icon' => 'fa-square-plus', 'label' => 'Add Listing'],
             ['route' => 'owner.profile',   'icon' => 'fa-user',         'label' => 'Profile'],
         ];
     @endphp

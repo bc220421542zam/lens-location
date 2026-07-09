@@ -16,6 +16,18 @@ class UserController extends Controller
 
     public function index(Request $request): View
     {
+        $sort = $request->get('sort', 'first_name');
+        $direction = $request->get('direction', 'asc');
+
+        $allowedSorts = ['first_name', 'email', 'role', 'status'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'first_name';
+        }
+
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
         $users = User::query()
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
                 $term = '%'.$request->string('search').'%';
@@ -25,8 +37,11 @@ class UserController extends Controller
             }))
             ->when($request->filled('role'),   fn ($q) => $q->where('role',   $request->string('role')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->orderBy($sort, $direction)
             ->paginate(self::PER_PAGE)
             ->withQueryString();
+
+        $users->onEachSide(1);
 
         return view('admin.users', compact('users'));
     }
@@ -48,7 +63,7 @@ class UserController extends Controller
         $user->status = $user->status->toggle();
         $user->save();
 
-        // ↓ Notify the user about their new status
+        //  Notify the user about their new status
         $user->notify(new UserStatusNotification(
             $user->status->value  // passes 'blocked' or 'active'/'approved'
         ));

@@ -7,7 +7,7 @@
     <x-slot:actions>
         <a href="{{ route('owner.locations.create') }}"
            class="btn w-full sm:w-auto px-4 text-center shade btn-transition">
-            + Add Location
+            <i class="fa-solid fa-plus"></i> Add Location
         </a>
     </x-slot:actions>
 </x-topbar>

@@ -16,6 +16,7 @@ class Location extends Model
         'address',
         'city',
         'category',
+        'category_id',
         'price_per_hour',
         'image',
         'status',
@@ -37,5 +38,9 @@ class Location extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }
