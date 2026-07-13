@@ -63,6 +63,12 @@
             {{-- ACTION BUTTONS --}}
             <div class="flex gap-2 px-3 sm:px-4 pb-3 sm:pb-4 mt-auto">
 
+                {{-- View --}}
+                <a href="{{ route('owner.locations.show', $location->id) }}"
+                    class="action-btn shade text-center flex-1 text-sm py-1.5">
+                    View
+                </a>
+
                 {{-- Edit --}}
                 <a href="{{ route('owner.locations.edit', $location->id) }}"
                    class="action-btn shade text-center flex-1 text-sm py-1.5">

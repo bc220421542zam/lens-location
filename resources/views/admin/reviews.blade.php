@@ -12,13 +12,20 @@
 
         <div class="flex flex-col gap-3">
             @forelse($reviews as $review)
-            <div class="bg-white rounded-xl p-4 flex justify-between items-start {{ !$review->is_visible ? 'opacity-50' : '' }}">
+            <div class="bg-white shade rounded-xl p-4 flex justify-between items-start {{ !$review->is_visible ? 'opacity-50' : '' }}">
                 <div>
                     <p class="text-sm font-medium text-indigo-900">
-                        {{ $review->customer->first_name ?? 'Deleted user' }}
-                        <span class="text-indigo-400 font-normal">on {{ $review->location->title ?? 'Deleted listing' }}</span>
+                        {{ $review->customer->first_name ?? 'Customer' }}
+                        <span class="text-gray-500 font-normal">on</span>
+                        @if($review->location)
+                            <a href="{{ route('admin.listings.show', $review->location->id) }}" class="text-indigo-400 font-normal hover:underline">
+                                 {{ $review->location->title }}
+                            </a>
+                        @else
+                            <span class="text-indigo-400 font-normal">on Deleted listing</span>
+                        @endif
                     </p>
-                    <p class="text-xs text-indigo-500 mt-2 max-w-md">{{ $review->comment ?: 'No comment left.' }}</p>
+                    <p class="text-xs text-gray-400 mt-2 max-w-md">{{ $review->comment ?: 'No comment left.' }}</p>
                     @if(!$review->is_visible)
                         <span class="badge-inline bg-red-100 text-red-600 mt-2 inline-block">Hidden</span>
                     @endif

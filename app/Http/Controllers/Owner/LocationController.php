@@ -24,6 +24,15 @@ class LocationController extends Controller
         return view('owner.locations.create');
     }
 
+    public function show(Location $location): View
+{
+    $this->authorizeOwnership($location);
+
+    $location->load('owner');
+
+    return view('owner.locations.show', compact('location'));
+}
+
     public function store(StoreLocationRequest $request): RedirectResponse
     {
         $data            = $request->validated();

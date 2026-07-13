@@ -18,28 +18,28 @@ use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 
 Route::redirect('/', '/login');
 
-    Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    
+
     // Password Reset Routes
     Route::view('/forgot-password', 'auth.forgot-password')->name('forgot.password');
     Route::view('/reset-password', 'auth.reset-password')->name('reset.password');
- 
-});
-Route::controller(SocialiteController::class)->group(function () {
-    Route::get('/auth/google','redirectToGoogle') ->name('auth.google');
-    Route::get('/auth/google-callback',  'handleGoogleCallback')->name('auth.google.callback');
 });
 
-    Route::middleware('auth')->group(function () {
+Route::controller(SocialiteController::class)->group(function () {
+    Route::get('/auth/google', 'redirectToGoogle')->name('auth.google');
+    Route::get('/auth/google-callback', 'handleGoogleCallback')->name('auth.google.callback');
+});
+
+Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        // Admin 
-        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    // ==================== ADMIN ====================
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
         // Users
@@ -61,65 +61,61 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/profile',          [Admin\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/photo',    [Admin\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/profile/notifications', [Admin\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
 
         // Notifications
-        Route::get('/notifications',           [NotificationController::class, 'index'])   ->name('notifications');
-        Route::get('/notifications/unread',    [NotificationController::class, 'unread'])  ->name('notifications.unread');
+        Route::get('/notifications',           [NotificationController::class, 'index'])->name('notifications');
+        Route::get('/notifications/unread',    [NotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
-        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
-        ->name('admin.profile.notifications');
 
         // Categories
-        Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::get('/categories',               [CategoryController::class, 'index'])->name('categories');
+        Route::post('/categories',              [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}',    [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.delete');
 
-        //Reviews
-        Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews');
+        // Reviews
+        Route::get('/reviews',                  [AdminReviewController::class, 'index'])->name('reviews');
         Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
-        Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.delete');
-        
+        Route::delete('/reviews/{review}',      [AdminReviewController::class, 'destroy'])->name('reviews.delete');
     });
 
-        // Owner 
-        Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
+    // ==================== OWNER ====================
+    Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
         Route::get('/dashboard', [Owner\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/listings',  [Owner\ListingController::class, 'index'])->name('listings');
 
         // Bookings
-        Route::get('/bookings',                  [Owner\BookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings',                   [Owner\BookingController::class, 'index'])->name('bookings');
         Route::post('/bookings/{booking}/accept', [Owner\BookingController::class, 'accept'])->name('bookings.accept');
         Route::post('/bookings/{booking}/reject', [Owner\BookingController::class, 'reject'])->name('bookings.reject');
 
         // Locations (the listings owners create)
-        Route::get('/locations/create',         [Owner\LocationController::class, 'create'])->name('locations.create');
-        Route::post('/locations',               [Owner\LocationController::class, 'store'])->name('locations.store');
-        Route::get('/locations/{location}/edit', [Owner\LocationController::class, 'edit'])->name('locations.edit');
-        Route::put('/locations/{location}',      [Owner\LocationController::class, 'update'])->name('locations.update');
-        Route::delete('/locations/{location}',   [Owner\LocationController::class, 'destroy'])->name('locations.destroy');
+        Route::get('/locations/create',          [Owner\LocationController::class, 'create'])->name('locations.create');
+        Route::get('/locations/{location}',       [Owner\LocationController::class, 'show'])->name('locations.show');
+        Route::post('/locations',                [Owner\LocationController::class, 'store'])->name('locations.store');
+        Route::get('/locations/{location}/edit',  [Owner\LocationController::class, 'edit'])->name('locations.edit');
+        Route::put('/locations/{location}',       [Owner\LocationController::class, 'update'])->name('locations.update');
+        Route::delete('/locations/{location}',    [Owner\LocationController::class, 'destroy'])->name('locations.destroy');
 
-        //Notifications
+        // Notifications
         Route::get('/notifications',           [OwnerNotificationController::class, 'index'])->name('notifications');
         Route::get('/notifications/unread',    [OwnerNotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [OwnerNotificationController::class, 'readAll'])->name('notifications.read-all');
-        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
-        ->name('owner.profile.notifications');
 
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
         Route::post('/profile/update',        [Owner\ProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/photo',         [Owner\ProfileController::class, 'updatePhoto'])->name('profile.photo');
-        //Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/profile/notifications', [Owner\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
 
         // Reviews
         Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
-
     });
 
-        // Customer 
-        Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
+    // ==================== CUSTOMER ====================
+    Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
         Route::get('/dashboard', [Customer\DashboardController::class, 'index'])->name('dashboard');
 
         // Browse approved listings
@@ -133,29 +129,26 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/bookings/{booking}/cancel', [Customer\BookingController::class, 'cancel'])->name('bookings.cancel');
 
         // Favorites
-        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites');
+        Route::get('/favorites',                    [FavoriteController::class, 'index'])->name('favorites');
         Route::post('/favorites/{location}/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
         // Reviews
         Route::post('/listings/{location}/reviews', [CustomerReviewController::class, 'store'])->name('listings.reviews.store');
 
         // Profile
-        Route::get('/profile',           [Customer\ProfileController::class, 'show'])->name('profile');
-        Route::post('/profile',          [Customer\ProfileController::class, 'updateProfile'])->name('profile.update');
-        Route::post('/profile/photo',    [Customer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
-        Route::post('/profile/password', [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::post('/profile/notifications', [ProfileController::class, 'updateNotifications'])
-        ->name('customer.profile.notifications');
-
+        Route::get('/profile',                [Customer\ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile',               [Customer\ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/photo',         [Customer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::post('/profile/password',      [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/profile/notifications', [Customer\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
     });
 
     Route::get('/test-mail', function () {
-    Mail::raw('Hello, this is a quick test email from Laravel!', function ($message) {
-        $message->to('your-test-email@example.com')
-            ->subject('Laravel Live Mail Test');
-    });
- 
-    return 'Test email sent!';
-    });
+        Mail::raw('Hello, this is a quick test email from Laravel!', function ($message) {
+            $message->to('your-test-email@example.com')
+                ->subject('Laravel Live Mail Test');
+        });
 
+        return 'Test email sent!';
+    });
 });
