@@ -11,6 +11,9 @@ use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Owner\ReviewController as OwnerReviewController;
+use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 
 
 Route::redirect('/', '/login');
@@ -71,6 +74,11 @@ Route::controller(SocialiteController::class)->group(function () {
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.delete');
+
+        //Reviews
+        Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews');
+        Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
+        Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.delete');
         
     });
 
@@ -105,6 +113,9 @@ Route::controller(SocialiteController::class)->group(function () {
         //Route::post('/profile/payment',       [Owner\ProfileController::class, 'updatePayment'])->name('profile.payment');
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
 
+        // Reviews
+        Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
+
     });
 
         // Customer 
@@ -124,6 +135,9 @@ Route::controller(SocialiteController::class)->group(function () {
         // Favorites
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites');
         Route::post('/favorites/{location}/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+        // Reviews
+        Route::post('/listings/{location}/reviews', [CustomerReviewController::class, 'store'])->name('listings.reviews.store');
 
         // Profile
         Route::get('/profile',           [Customer\ProfileController::class, 'show'])->name('profile');
