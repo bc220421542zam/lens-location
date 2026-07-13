@@ -133,7 +133,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/favorites/{location}/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
         // Reviews
-        Route::post('/listings/{location}/reviews', [CustomerReviewController::class, 'store'])->name('listings.reviews.store');
+       Route::get('/bookings/{booking}/review', [CustomerReviewController::class, 'create'])->name('bookings.review');
+       Route::post('/bookings/{booking}/review', [CustomerReviewController::class, 'store'])->name('bookings.review.store');
 
         // Profile
         Route::get('/profile',                [Customer\ProfileController::class, 'show'])->name('profile');

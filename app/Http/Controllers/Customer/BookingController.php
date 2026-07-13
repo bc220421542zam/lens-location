@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Location;
+use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,6 +23,15 @@ class BookingController extends Controller
             ->latest('booking_date')
             ->get();
 
+        // Get the location_ids this customer has already reviewed, so we can show "Edit Review" vs "Leave a Review"
+        $reviewedLocationIds = Review::where('user_id', auth()->id())
+            ->whereIn('location_id', $bookings->pluck('location_id'))
+            ->pluck('location_id');
+
+        $bookings->each(function ($booking) use ($reviewedLocationIds) {
+            $booking->has_review = $reviewedLocationIds->contains($booking->location_id);
+        });
+
         $allBookings = Booking::where('customer_id', auth()->id())->get();
 
         $stats = [
@@ -32,9 +42,6 @@ class BookingController extends Controller
                 ->count(),
             'completed' => $allBookings->where('status', BookingStatus::Completed)->count(),
             'cancelled' => $allBookings->where('status', BookingStatus::Cancelled)->count(),
-            // 'spent'     => $allBookings
-            //     ->where('status', BookingStatus::Completed)
-            //     ->sum('total_price'),
         ];
 
         return view('customer.bookings', compact('bookings', 'stats'));
@@ -54,13 +61,13 @@ class BookingController extends Controller
         $hours = $request->integer('hours');
 
         Booking::create([
-            'location_id'     => $location->id,
+            'location_id' => $location->id,
             'customer_id' => auth()->id(),
-            'booking_date'    => $request->date('booking_date'),
-            'hours'           => $hours,
-            'total_price'     => (float) $location->price_per_hour * $hours,
-            'shoot_type'      => $request->input('shoot_type'),
-            'status'          => BookingStatus::Pending,
+            'booking_date' => $request->date('booking_date'),
+            'hours' => $hours,
+            'total_price' => (float) $location->price_per_hour * $hours,
+            'shoot_type' => $request->input('shoot_type'),
+            'status' => BookingStatus::Pending,
         ]);
 
         return redirect()

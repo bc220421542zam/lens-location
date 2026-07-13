@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Enums\ListingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
-use App\Models\Review;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class BrowseController extends Controller
@@ -46,10 +44,6 @@ class BrowseController extends Controller
 
         $location->load('owner');
 
-        $userReview = Review::where('user_id', Auth::id())
-            ->where('location_id', $location->id)
-            ->first();
-
-        return view('customer.locations.show', compact('location', 'userReview'));
+        return view('customer.locations.show', compact('location'));
     }
 }

@@ -47,6 +47,5 @@
             </a>
         </div>
     </div>
-    <x-customerComp.reviews-form :location="$location" :userReview="$userReview" />
 </div>
 </x-layouts.customer>

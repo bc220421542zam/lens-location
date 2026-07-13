@@ -62,14 +62,23 @@
                         {{ ucfirst($booking->status->value) }}
                     </span>
                 </div>
-                @if ($booking->status->value === 'pending')
-                    <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
-                          onsubmit="return confirm('Cancel this booking?')"
-                          class="shrink-0">
-                        @csrf
-                        <button type="submit" class="action-btn danger">Cancel</button>
-                    </form>
-                @endif
+
+                <div class="flex flex-col gap-2 shrink-0">
+                    @if ($booking->status->value === 'pending')
+                        <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
+                              onsubmit="return confirm('Cancel this booking?')">
+                            @csrf
+                            <button type="submit" class="action-btn danger w-full">Cancel</button>
+                        </form>
+                    @endif
+
+                    @if ($booking->status->value === 'completed')
+                        <a href="{{ route('customer.bookings.review', $booking->id) }}"
+                           class="action-btn shade text-center">
+                            {{ $booking->has_review ? 'Edit Review' : 'Leave a Review' }}
+                        </a>
+                    @endif
+                </div>
             </div>
         @empty
             <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400">
