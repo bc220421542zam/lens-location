@@ -1,58 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LensLocation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based marketplace that connects **photographers and cinematographers** with **location owners** to book unique shoot locations by the hour.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Table of Contents
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Overview](#overview)
+- [User Roles](#user-roles)
+- [Business Logic](#business-logic)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+LensLocation is a multi-role platform where:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Location owners** list their venues (studios, lofts, outdoor spaces, etc.) for rent by the hour.
+- **Customers** (photographers, cinematographers) browse approved listings, search and filter by category/city/price, and book locations for their shoots.
+- **Admins** oversee the platform — they approve or reject new listings, manage users (block/activate), categorize venues, and receive real-time notifications on platform activity.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## User Roles
 
-## Agentic Development
+| Role       | Description                                                                 |
+|------------|-----------------------------------------------------------------------------|
+| **Admin**    | Platform administrator. Manages users, approves/rejects listings, manages categories, and monitors notifications. |
+| **Owner**    | Venue owner who creates and manages location listings, accepts/rejects bookings, and sets payment details. |
+| **Customer** | Photographer/cinematographer who browses locations, books shoots, and manages favorites. |
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Business Logic
+
+### 1. Registration & Authentication
+
+- Users register with **first name, last name, email, phone, password**, and select a role (`owner` or `customer`).
+- Phone numbers accept 7–20 digits with an optional leading `+` — local formats (e.g., `03261719539`) are supported.
+- **Google OAuth** login is available as an alternative to email/password.
+- **Password reset** is handled via email (SMTP) using Laravel's built-in password broker.
+- On failed login, accounts marked as **blocked** by an admin are rejected with an informative message.
+- New registrations trigger a real-time notification to all admins.
+
+### 2. Listing Lifecycle (Owner → Admin → Customer)
+
+1. An **owner** creates a location listing with a title, description, address, city, category, hourly price, and optional image.
+2. The listing enters **pending** status and is invisible to customers.
+3. An **admin** reviews the listing and can **approve** or **reject** it.
+4. Once **approved**, the listing becomes visible in the customer browse/search interface.
+
+### 3. Booking Workflow (Customer → Owner)
+
+1. A **customer** views an approved listing and books it — specifying a **date/time**, **number of hours**, and optional **shoot type**.
+2. The total price is calculated automatically (`price_per_hour × hours`).
+3. The booking is created with **pending** status.
+4. The **owner** can **accept** or **reject** the booking.
+5. A **customer** may cancel their own booking before it is confirmed or completed.
+6. Booking statuses: `pending` → `confirmed` → `completed`, or `cancelled` at any point.
+
+### 4. Favorites
+
+- Customers can bookmark listings as **favorites** for quick access.
+- Each user can only favorite a listing once (unique constraint on `user_id + location_id`).
+
+### 5. Payment Details
+
+- Owners can store **bank account** (account holder, bank name, account number) and **mobile wallet** (wallet type, wallet number) details in their profile for payouts.
+
+### 6. Notifications (Real-time)
+
+The platform uses **Laravel Reverb** (WebSockets) for real-time push notifications. Admins and owners receive database + broadcast notifications for:
+
+- New user registrations
+- New listing submissions
+- New booking requests
+
+Users can configure which notification types they receive from their profile settings.
+
+### 7. Directory / Navigation
+
+- `/login` — Landing page; users authenticate here.
+- Role-based dashboards redirect on login:
+  - **Admin** → `/admin/dashboard`
+  - **Owner** → `/owner/listings`
+  - **Customer** → `/customer/dashboard`
+
+---
+
+## Tech Stack
+
+| Layer        | Technology                           |
+|-------------|--------------------------------------|
+| **Backend**  | PHP 8.3, Laravel 13                  |
+| **Database** | MySQL (`location_db`)                |
+| **Frontend** | Blade templates, Tailwind CSS 4, Vite 8 |
+| **WebSockets** | Laravel Reverb (self-hosted)       |
+| **OAuth**    | Laravel Socialite (Google)           |
+| **Mail**     | SMTP (for password resets)           |
+| **Dev tools** | Composer, npm, PHPUnit             |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- PHP 8.3+
+- Composer
+- Node.js 18+
+- MySQL 8.0+
+
+### Installation
 
 ```bash
-composer require laravel/boost --dev
+# Clone the repository
+git clone <repo-url> lens-location
+cd lens-location
 
-php artisan boost:install
+# Install PHP dependencies
+composer install
+
+# Copy environment file and generate app key
+cp .env.example .env
+php artisan key:generate
+
+# Edit .env with your database, mail, and Reverb settings
+# DB_DATABASE=location_db
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Run migrations
+php artisan migrate
+
+# Install and build frontend assets
+npm install
+npm run build
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Development
 
-## Contributing
+```bash
+# Start all services concurrently (server, queue, logs, Vite)
+composer run dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Or run individually:
 
-## Code of Conduct
+```bash
+php artisan serve           # Laravel dev server (port 8000)
+php artisan queue:listen    # Queue worker
+npm run dev                 # Vite dev server with HMR
+php artisan reverb:start    # WebSocket server (if using notifications)
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Running Tests
 
-## Security Vulnerabilities
+```bash
+composer run test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
+
+## Project Structure
+
+```
+app/
+├── Enums/
+│   ├── BookingStatus.php    # pending, confirmed, completed, cancelled
+│   ├── ListingStatus.php    # pending, approved, rejected
+│   ├── Role.php            # admin, owner, customer
+│   └── UserStatus.php      # active, blocked
+├── Http/Controllers/
+│   ├── Admin/              # Dashboard, users, listings, categories, notifications, profile
+│   ├── Customer/           # Dashboard, browse, bookings, favorites, profile
+│   ├── Owner/              # Dashboard, locations, bookings, profile, notifications
+│   └── AuthController.php  # Registration, login, password reset, Google OAuth
+├── Models/
+│   ├── User.php            # Multi-role user with favorites & payment
+│   ├── Location.php        # Listing owned by a user, belongs to a category
+│   ├── Category.php        # Location category (admin-managed)
+│   ├── Booking.php         # Customer booking of a location
+│   ├── Favorite.php        # Customer bookmark on a location
+│   └── Payment.php         # Owner bank/wallet details
+└── Notifications/          # Email + database notification classes
+
+database/migrations/         # Schema definitions for all tables
+routes/web.php              # All web routes with role-based middleware groups
+resources/views/            # Blade templates organized by role (admin/owner/customer)
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
