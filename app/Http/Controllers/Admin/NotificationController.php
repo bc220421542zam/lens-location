@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,8 +9,12 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $notifications = $request->user()->notifications()->latest()->paginate(20);
-        return view('owner.notifications.index', compact('notifications'));
+        $notifications = $request->user()
+            ->notifications()
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.notifications.index', compact('notifications'));
     }
 
     public function unread(Request $request)
@@ -33,6 +37,7 @@ class NotificationController extends Controller
     public function readAll(Request $request)
     {
         $request->user()->unreadNotifications()->update(['read_at' => now()]);
+
         return response()->json(['success' => true]);
     }
 }
