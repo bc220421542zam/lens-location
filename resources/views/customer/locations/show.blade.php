@@ -41,10 +41,19 @@
                 <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
             </div>
 
-            <a href="{{ route('customer.listings.book', $location->id) }}"
-               class="btn w-full md:w-auto md:px-6 inline-block text-center">
-                Book this location
-            </a>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <a href="{{ route('customer.listings.book', $location->id) }}"
+                   class="btn w-full sm:w-auto md:px-6 inline-block text-center">
+                    Book this location
+                </a>
+
+                <form action="{{ route('customer.listings.message', $location->id) }}" method="POST" class="w-full sm:w-auto">
+                    @csrf
+                    <button type="submit" class="action-btn shade w-full sm:w-auto px-6">
+                        <i class="fa-solid fa-message mr-1"></i> Message Owner
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

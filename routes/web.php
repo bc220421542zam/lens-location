@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Owner\ReviewController as OwnerReviewController;
@@ -90,7 +91,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/bookings/{booking}/accept', [Owner\BookingController::class, 'accept'])->name('bookings.accept');
         Route::post('/bookings/{booking}/reject', [Owner\BookingController::class, 'reject'])->name('bookings.reject');
 
-        // Locations (the listings owners create)
+        // Locations 
         Route::get('/locations/create',          [Owner\LocationController::class, 'create'])->name('locations.create');
         Route::get('/locations/{location}',       [Owner\LocationController::class, 'show'])->name('locations.show');
         Route::post('/locations',                [Owner\LocationController::class, 'store'])->name('locations.store');
@@ -103,6 +104,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications/unread',    [OwnerNotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [OwnerNotificationController::class, 'readAll'])->name('notifications.read-all');
 
+        //Messages
+        Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
+        Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+
+        // Reviews
+        Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
+
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
         Route::post('/profile/update',        [Owner\ProfileController::class, 'updateProfile'])->name('profile.update');
@@ -110,8 +118,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/password',      [Owner\ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::post('/profile/notifications', [Owner\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
 
-        // Reviews
-        Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
     });
 
     // ==================== CUSTOMER ====================
@@ -133,8 +139,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/favorites/{location}/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
         // Reviews
-       Route::get('/bookings/{booking}/review', [CustomerReviewController::class, 'create'])->name('bookings.review');
-       Route::post('/bookings/{booking}/review', [CustomerReviewController::class, 'store'])->name('bookings.review.store');
+        Route::get('/bookings/{booking}/review', [CustomerReviewController::class, 'create'])->name('bookings.review');
+        Route::post('/bookings/{booking}/review', [CustomerReviewController::class, 'store'])->name('bookings.review.store');
+
+        // Messages
+        Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
+        Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+        Route::post('/listings/{location}/message', [MessageController::class, 'startWithOwner'])->name('listings.message');
 
         // Profile
         Route::get('/profile',                [Customer\ProfileController::class, 'show'])->name('profile');
