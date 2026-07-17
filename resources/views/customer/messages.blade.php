@@ -2,7 +2,7 @@
 <div x-data="messagesPage()" x-init="init()" class="flex gap-4" style="height: 80vh;">
 
     {{-- CONVERSATION LIST --}}
-    <div class="w-full sm:w-80 shrink-0 card p-0 overflow-hidden flex flex-col {{ $conversation ? 'hidden sm:flex' : 'flex' }}">
+    <div class="w-full sm:w-80 shrink-0 card chart-transition rounded-2xl border-l-3 border-indigo-400 chart-transition rounded-2xl border-l-3 border-indigo-400 p-0 overflow-hidden flex flex-col {{ $conversation ? 'hidden sm:flex' : 'flex' }}">
         <div class="px-5 py-4 border-b border-indigo-100">
             <h2 class="text-lg font-semibold text-indigo-900">Messages</h2>
             <p class="text-xs text-gray-500">Your conversations with owners</p>
@@ -33,7 +33,7 @@
                     @endif
                 </a>
             @empty
-                <div class="text-center py-10 text-gray-400 px-4">
+                <div class="text-center py-10 text-gray-400 px-4 rounded-2xl border-l-3 border-indigo-400 ">
                     <i class="fa-solid fa-message text-2xl mb-2"></i>
                     <p class="font-medium text-sm">No conversations yet</p>
                 </div>
@@ -42,7 +42,7 @@
     </div>
 
     {{-- CHAT PANEL --}}
-    <div class="flex-1 card p-0 overflow-hidden flex flex-col {{ $conversation ? 'flex' : 'hidden sm:flex' }}">
+    <div class="flex-1 card chart-transition rounded-2xl border-l-3 border-indigo-400 p-0 overflow-hidden flex flex-col {{ $conversation ? 'flex' : 'hidden sm:flex' }}">
         @if($conversation)
             {{-- HEADER --}}
             <div class="flex items-center gap-3 px-5 py-4 border-b border-indigo-100 bg-white shrink-0">

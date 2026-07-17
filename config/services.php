@@ -41,4 +41,11 @@ return [
     'redirect'      => env('GOOGLE_REDIRECT'),
 ],
 
+'jazzcash' => [
+    'merchant_id' => env('JAZZCASH_MERCHANT_ID'),
+    'password' => env('JAZZCASH_PASSWORD'),
+    'salt' => env('JAZZCASH_INTEGRITY_SALT'),
+    'url' => env('JAZZCASH_URL'),
+],
+
 ];

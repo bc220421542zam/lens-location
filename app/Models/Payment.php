@@ -7,17 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'account_holder',
-        'bank_name',
-        'account_number',
-        'wallet_type',
-        'wallet_number',
-    ];
+    protected $fillable = ['booking_id', 'order_ref', 'amount', 'status'];
 
-    public function user(): BelongsTo
+    public function booking(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Booking::class);
     }
 }

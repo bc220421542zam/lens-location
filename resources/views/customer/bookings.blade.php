@@ -17,6 +17,10 @@
         <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{{ session('success') }}</div>
     @endif
 
+    @if (session('error'))
+        <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">{{ session('error') }}</div>
+    @endif
+
     {{-- STATS --}}
     <x-customerComp.statsBookings :stats="$stats" />
 
@@ -70,6 +74,13 @@
                             @csrf
                             <button type="submit" class="action-btn danger w-full">Cancel</button>
                         </form>
+                    @endif
+
+                    @if ($booking->status->value === 'confirmed')
+                        <a href="{{ route('customer.bookings.pay', $booking->id) }}"
+                           class="action-btn shade text-center">
+                            Pay with JazzCash
+                        </a>
                     @endif
 
                     @if ($booking->status->value === 'completed')

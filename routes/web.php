@@ -15,6 +15,8 @@ use App\Http\Controllers\Owner\NotificationController as OwnerNotificationContro
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Owner\ReviewController as OwnerReviewController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
+use App\Http\Controllers\Customer\PaymentController;
+
 
 
 Route::redirect('/', '/login');
@@ -153,6 +155,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/photo',         [Customer\ProfileController::class, 'updatePhoto'])->name('profile.photo');
         Route::post('/profile/password',      [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::post('/profile/notifications', [Customer\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
+
+        //payment-Jazzcash
+        Route::get('/bookings/{booking}/pay', [PaymentController::class, 'pay'])->name('bookings.pay');
+        Route::match(['get', 'post'], '/payments/callback', [PaymentController::class, 'callback'])->name('payments.callback');
     });
 
     Route::get('/test-mail', function () {
