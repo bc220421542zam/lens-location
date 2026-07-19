@@ -19,34 +19,6 @@
         </span>
     </div>
 
-    <!-- {{-- Theme toggle --}}
-    <button
-        @click="toggleTheme()"
-        :title="isDark ? 'Switch to light' : 'Switch to dark'"
-        class="text-indigo-900 dark:text-indigo-300
-               hover:text-indigo-700 dark:hover:text-indigo-100
-               p-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800/50
-               transition-colors duration-200"
-    >
-        <svg x-show="isDark" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-             class="w-5 h-5 md:w-6 md:h-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386
-                     6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591
-                     1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75
-                     12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-        </svg>
-        <svg x-show="!isDark" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-             class="w-5 h-5 md:w-6 md:h-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385
-                     0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753
-                     9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753
-                     9.753 0 0 0 9.002-5.998Z" />
-        </svg>
-    </button> -->
 
     {{-- Notifications bell --}}
     <div class="relative">
@@ -129,7 +101,7 @@
                             : 'bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100'"
                     >
                         <div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full
-                                    flex items-center justify-center text-white text-sm"
+                                    flex items-center justify-center text-white text-xs"
                              :class="{
                                  'bg-emerald-500': n.type === 'listing',
                                  'bg-violet-500':  n.type === 'user',
@@ -137,23 +109,10 @@
                                  'bg-orange-500':  n.type === 'user_status',
                              }">
                             <template x-if="n.type === 'listing' || n.type === 'listing_status'">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                     fill="currentColor" class="w-4 h-4">
-                                    <path d="M10.707 2.293a1 1 0 0 0-1.414 0l-7 7a1 1 0 0 0
-                                             1.414 1.414L4 10.414V17a1 1 0 0 0 1 1h2a1 1 0 0
-                                             0 1-1v-2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0
-                                             0 0 1 1h2a1 1 0 0 0 1-1v-6.586l.293.293a1 1 0 0
-                                             0 1.414-1.414l-7-7Z" />
-                                </svg>
+                                <i class="fa-solid fa-location-dot"></i>
                             </template>
                             <template x-if="n.type === 'user' || n.type === 'user_status'">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                     fill="currentColor" class="w-4 h-4">
-                                    <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465
-                                             14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957
-                                             0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002
-                                             7.002 0 0 0-13.074.003Z" />
-                                </svg>
+                                <i class="fa-solid fa-user"></i>
                             </template>
                         </div>
 
@@ -197,17 +156,6 @@ function navbarActions() {
         get unreadCount() {
             return this.notifications.filter(n => !n.read).length;
         },
-
-        // toggleTheme() {
-        //     this.isDark = !this.isDark;
-        //     if (this.isDark) {
-        //         document.documentElement.classList.add('dark');
-        //         localStorage.setItem('theme', 'dark');
-        //     } else {
-        //         document.documentElement.classList.remove('dark');
-        //         localStorage.setItem('theme', 'light');
-        //     }
-        // },
 
         togglePanel() {
             this.panelOpen = !this.panelOpen;
