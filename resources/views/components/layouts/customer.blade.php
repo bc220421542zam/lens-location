@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0">
+<body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0"
+    x-data="{ sidebarOpen: false }">
 
     {{--Top Nav bar--}}
     <x-nav/>
@@ -18,8 +19,8 @@
        <x-customerComp.sidebar-customer/>
 
         {{-- Main Content --}}
-        <main class="flex-1 overflow-y-auto p-8">
-            {{ $slot }}  
+        <main class="flex-1 min-w-0 overflow-y-auto p-4 md:p-8">
+            {{ $slot }}
         </main>
 
     </div>

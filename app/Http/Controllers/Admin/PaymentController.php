@@ -11,6 +11,13 @@ class PaymentController extends Controller
 {
     public function index(Request $request): View
     {
+        $request->validate([
+            'search'     => 'nullable|string|max:255',
+            'status'     => 'nullable|in:paid,pending,failed',
+            'min_amount' => 'nullable|numeric|min:0',
+            'max_amount' => 'nullable|numeric|min:0|gte:min_amount',
+        ]);
+
         $transactions = Transaction::with(['booking.location', 'customer', 'owner'])
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
                 $term = '%'.$request->string('search').'%';

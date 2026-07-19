@@ -59,7 +59,7 @@
             </div>
 
             <div class="flex flex-wrap gap-2 pt-4 border-t border-indigo-100">
-                @if ($current !== 'approved')
+                @if ($current === 'pending')
                     <form method="POST" action="{{ route('admin.listings.approve', $listing->id) }}">
                         @csrf
                         <button type="submit"

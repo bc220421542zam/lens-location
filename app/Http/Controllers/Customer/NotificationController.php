@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,14 +14,13 @@ class NotificationController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('admin.notifications.index', compact('notifications'));
+        return view('customer.notifications.index', compact('notifications'));
     }
 
     public function unread(Request $request)
     {
-        // Return recent notifications (read AND unread) so that reading them
-        // does not remove them from the dropdown. The unread badge is derived
-        // client-side from each item's read_at.
+        // Return recent notifications (read AND unread) so reading them does not
+        // remove them from the dropdown; the unread badge is derived client-side.
         $notifications = $request->user()
             ->notifications()
             ->latest()

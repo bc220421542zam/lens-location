@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Owner\NotificationController as OwnerNotificationController;
+use App\Http\Controllers\Customer\NotificationController as CustomerNotificationController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Owner\ReviewController as OwnerReviewController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
@@ -62,7 +63,6 @@ Route::middleware('auth')->group(function () {
         // Listings
         Route::get('/listings',                    [Admin\ListingController::class, 'index'])->name('listings');
         Route::get('/listings/{listing}',          [Admin\ListingController::class, 'show'])->name('listings.show');
-        Route::post('/listings/{listing}/toggle',  [Admin\ListingController::class, 'toggleApproval'])->name('listings.toggle');
         Route::post('/listings/{listing}/approve', [Admin\ListingController::class, 'approve'])->name('listings.approve');
         Route::post('/listings/{listing}/reject',  [Admin\ListingController::class, 'reject'])->name('listings.reject');
         Route::delete('/listings/{listing}',       [Admin\ListingController::class, 'destroy'])->name('listings.delete');
@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications',           [NotificationController::class, 'index'])->name('notifications');
         Route::get('/notifications/unread',    [NotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 
         // Categories
         Route::get('/categories',               [CategoryController::class, 'index'])->name('categories');
@@ -116,6 +117,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications',           [OwnerNotificationController::class, 'index'])->name('notifications');
         Route::get('/notifications/unread',    [OwnerNotificationController::class, 'unread'])->name('notifications.unread');
         Route::post('/notifications/read-all', [OwnerNotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/notifications/{id}/read', [OwnerNotificationController::class, 'read'])->name('notifications.read');
 
         //Messages
         Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
@@ -162,6 +164,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
         Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
         Route::post('/listings/{location}/message', [MessageController::class, 'startWithOwner'])->name('listings.message');
+
+        // Notifications
+        Route::get('/notifications',            [CustomerNotificationController::class, 'index'])->name('notifications');
+        Route::get('/notifications/unread',     [CustomerNotificationController::class, 'unread'])->name('notifications.unread');
+        Route::post('/notifications/read-all',  [CustomerNotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/notifications/{id}/read', [CustomerNotificationController::class, 'read'])->name('notifications.read');
 
         // Profile
         Route::get('/profile',                [Customer\ProfileController::class, 'show'])->name('profile');

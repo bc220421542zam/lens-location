@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Location;
+use App\Notifications\BookingStatusNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,6 +15,10 @@ class BookingController extends Controller
 {
     public function index(Request $request): View
     {
+        $request->validate([
+            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+        ]);
+
         $ownerLocationIds = Location::where('user_id', auth()->id())->pluck('id');
 
         $bookings = Booking::with(['location', 'customer'])
@@ -41,6 +46,14 @@ class BookingController extends Controller
         $booking->status = BookingStatus::Confirmed;
         $booking->save();
 
+        // Notify the customer their booking was confirmed.
+        if ($booking->customer) {
+            $booking->customer->notify(new BookingStatusNotification(
+                $booking->location->title,
+                'confirmed'
+            ));
+        }
+
         return back()->with('success', 'Booking accepted.');
     }
 
@@ -50,6 +63,14 @@ class BookingController extends Controller
 
         $booking->status = BookingStatus::Cancelled;
         $booking->save();
+
+        // Notify the customer their booking was declined.
+        if ($booking->customer) {
+            $booking->customer->notify(new BookingStatusNotification(
+                $booking->location->title,
+                'cancelled'
+            ));
+        }
 
         return back()->with('success', 'Booking rejected.');
     }

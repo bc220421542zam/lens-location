@@ -14,6 +14,12 @@ class BrowseController extends Controller
 
     public function index(Request $request): View
     {
+        $request->validate([
+            'search'    => 'nullable|string|max:255',
+            'category'  => 'nullable|string|max:255',
+            'max_price' => 'nullable|numeric|min:0',
+        ]);
+
         $locations = Location::query()
             ->with('owner')
             ->where('status', ListingStatus::Approved)

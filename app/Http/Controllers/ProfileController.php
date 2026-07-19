@@ -7,6 +7,7 @@ use App\Http\Requests\Profile\UpdatePhotoRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 abstract class ProfileController extends Controller

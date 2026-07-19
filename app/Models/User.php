@@ -36,6 +36,9 @@ class User extends Authenticatable
         'notif_new_listing',
         'notif_dispute',
         'notif_review',
+        'notif_push',
+        'notif_email',
+        'notif_sms',
     ];
 
     protected $hidden = [
@@ -55,6 +58,9 @@ class User extends Authenticatable
             'notif_new_listing'  => 'boolean',
             'notif_dispute'      => 'boolean',
             'notif_review'       => 'boolean',
+            'notif_push'         => 'boolean',
+            'notif_email'        => 'boolean',
+            'notif_sms'          => 'boolean',
         ];
     }
 

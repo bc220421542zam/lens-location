@@ -1,6 +1,7 @@
 @props([
     'unreadRoute',
     'readAllRoute',
+    'readRoute' => null,
     'allRoute',
 ])
 
@@ -107,12 +108,16 @@
                                  'bg-violet-500':  n.type === 'user',
                                  'bg-blue-500':    n.type === 'listing_status',
                                  'bg-orange-500':  n.type === 'user_status',
+                                 'bg-indigo-500':  n.type === 'booking_status',
                              }">
                             <template x-if="n.type === 'listing' || n.type === 'listing_status'">
                                 <i class="fa-solid fa-location-dot"></i>
                             </template>
                             <template x-if="n.type === 'user' || n.type === 'user_status'">
                                 <i class="fa-solid fa-user"></i>
+                            </template>
+                            <template x-if="n.type === 'booking_status'">
+                                <i class="fa-solid fa-calendar-check"></i>
                             </template>
                         </div>
 
@@ -152,6 +157,7 @@ function navbarActions() {
         notifications: [],
         unreadRouteUrl: '{{ $unreadRoute }}',
         readAllRouteUrl: '{{ $readAllRoute }}',
+        readRouteUrl: '{{ $readRoute }}',
 
         get unreadCount() {
             return this.notifications.filter(n => !n.read).length;
@@ -162,10 +168,22 @@ function navbarActions() {
         },
 
         markRead(n) {
+            if (n.read) return;
             n.read = true;
+            // Persist the single read so it stays read after refresh.
+            if (this.readRouteUrl) {
+                fetch(this.readRouteUrl.replace('__ID__', n.id), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                }).catch(() => {});
+            }
         },
 
         markAllRead() {
+            // Keep notifications visible; just clear their unread state (YouTube-style).
             this.notifications.forEach(n => n.read = true);
             fetch(this.readAllRouteUrl, {
                 method: 'POST',
