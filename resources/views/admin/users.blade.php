@@ -32,7 +32,7 @@
         <table class="w-full text-left min-w-[720px]">
             <thead>
                 <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
-                    <th class="py-3 px-4 font-medium">Sr. No.</th>
+                    <th class="py-3 px-3 font-medium">Sr. No.</th>
 
                     @php
                         $currentSort = request('sort');

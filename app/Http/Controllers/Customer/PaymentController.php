@@ -11,26 +11,49 @@ use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
+    private const COMMISSION_RATE = 0.10;
+
+    public function index(Request $request): View
+    {
+        $transactions = Transaction::where('customer_id', auth()->id())
+            ->with('booking.location')
+            ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
+                $term = '%'.$request->string('search').'%';
+                $q->where('jazzcash_txn_ref', 'like', $term)
+                    ->orWhereHas('booking.location', fn ($q) => $q->where('title', 'like', $term));
+            }))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->when($request->filled('min_amount'), fn ($q) => $q->where('amount', '>=', $request->float('min_amount')))
+            ->when($request->filled('max_amount'), fn ($q) => $q->where('amount', '<=', $request->float('max_amount')))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('customer.payments', compact('transactions'));
+    }
+
     public function pay(Booking $booking): View
     {
         abort_unless($booking->customer_id === auth()->id(), 403);
 
         $orderRef = 'ORD' . now()->format('YmdHis') . $booking->id;
+        $amount = $booking->total_price;
 
         Transaction::create([
-            'booking_id' => $booking->id,
-            'order_ref' => $orderRef,
-            'amount' => $booking->total_price,
-            'status' => 'pending',
+            'booking_id'       => $booking->id,
+            'customer_id'      => $booking->customer_id,
+            'owner_id'         => $booking->location->user_id,
+            'amount'           => $amount,
+            'owner_earning'    => $amount * (1 - self::COMMISSION_RATE),
+            'jazzcash_txn_ref' => $orderRef,
+            'status'           => 'pending',
         ]);
 
         $data = $this->buildJazzCashPayload($booking, $orderRef);
 
-        \Log::info('JazzCash Payload', $data);
-
         return view('customer.payments.redirect', [
             'data' => $data,
-            'url' => config('services.jazzcash.url'),
+            'url'  => config('services.jazzcash.url'),
         ]);
     }
 
@@ -38,36 +61,36 @@ class PaymentController extends Controller
     {
         $txnDateTime = now()->format('YmdHis');
         $expiry = now()->addMinutes(30)->format('YmdHis');
-        $amount = (int) round($booking->total_price * 100); // JazzCash expects amount in paisa
+        $amount = (int) round($booking->total_price * 100);
 
         $data = [
-            'pp_Version' => '1.1',
-            'pp_TxnType' => 'MPAY',
-            'pp_Language' => 'EN',
-            'pp_MerchantID' => config('services.jazzcash.merchant_id'),
-            'pp_SubMerchantID' => '',
-            'pp_Password' => config('services.jazzcash.password'),
-            'pp_BankID' => '',
-            'pp_ProductID' => '',
-            'pp_TxnRefNo' => $orderRef,
-            'pp_Amount' => $amount,
-            'pp_TxnCurrency' => 'PKR',
-            'pp_TxnDateTime' => $txnDateTime,
-            'pp_BillReference' => 'billRef',
-            'pp_Description' => 'Booking payment #' . $booking->id,
+            'pp_Version'           => '1.1',
+            'pp_TxnType'           => '',
+            'pp_Language'          => 'EN',
+            'pp_MerchantID'        => config('services.jazzcash.merchant_id'),
+            'pp_SubMerchantID'     => '',
+            'pp_Password'          => config('services.jazzcash.password'),
+            'pp_BankID'            => '',
+            'pp_ProductID'         => '',
+            'pp_TxnRefNo'          => $orderRef,
+            'pp_Amount'            => $amount,
+            'pp_TxnCurrency'       => 'PKR',
+            'pp_TxnDateTime'       => $txnDateTime,
+            'pp_BillReference'     => 'billRef',
+            'pp_Description'       => 'Booking payment #' . $booking->id,
             'pp_TxnExpiryDateTime' => $expiry,
-            'pp_ReturnURL' => route('customer.payments.callback'),
-            'ppmpf_1' => '',
-            'ppmpf_2' => '',
-            'ppmpf_3' => '',
-            'ppmpf_4' => '',
-            'ppmpf_5' => '',
+            'pp_ReturnURL'         => route('customer.payments.callback'),
+            'ppmpf_1'              => '',
+            'ppmpf_2'              => '',
+            'ppmpf_3'              => '',
+            'ppmpf_4'              => '',
+            'ppmpf_5'              => '',
         ];
 
         ksort($data);
         $stringToHash = config('services.jazzcash.salt') . '&' . implode('&', $data);
         $data['pp_SecureHash'] = hash_hmac('sha256', $stringToHash, config('services.jazzcash.salt'));
-        
+
         return $data;
     }
 
@@ -76,10 +99,13 @@ class PaymentController extends Controller
         $orderRef = $request->input('pp_TxnRefNo');
         $success = $request->input('pp_ResponseCode') === '000';
 
-        $transaction = Transaction::where('order_ref', $orderRef)->first();
+        $transaction = Transaction::where('jazzcash_txn_ref', $orderRef)->first();
 
         if ($transaction) {
             $transaction->update(['status' => $success ? 'paid' : 'failed']);
+            if ($success) {
+                $transaction->booking->update(['status' => 'confirmed']);
+            }
         }
 
         return redirect()->route('customer.bookings')

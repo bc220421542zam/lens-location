@@ -4,8 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6097b9aa6cb35ee383fb8f5d04f7db8d",
+    "content-hash": "51d7b1c33906659821b4d721ded82453",
     "packages": [
+        {
+            "name": "akcybex/laravel-jazzcash",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/akcybex/laravel-jazzcash.git",
+                "reference": "74cebf9362e3437c39ac2a20d7e94e2d9f289060"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/akcybex/laravel-jazzcash/zipball/74cebf9362e3437c39ac2a20d7e94e2d9f289060",
+                "reference": "74cebf9362e3437c39ac2a20d7e94e2d9f289060",
+                "shasum": ""
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "JazzCash": "AKCybex\\JazzCash\\Facades\\JazzCash"
+                    },
+                    "providers": [
+                        "AKCybex\\JazzCash\\AKJazzCashServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\": "app/",
+                    "AKCybex\\JazzCash\\": "src/"
+                },
+                "classmap": []
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rana Tayyab",
+                    "email": "akcybex@gmail.com"
+                }
+            ],
+            "description": "Jazzcash - Laravel Jazzcash Payment Gateway Integration",
+            "support": {
+                "issues": "https://github.com/akcybex/laravel-jazzcash/issues",
+                "source": "https://github.com/akcybex/laravel-jazzcash/tree/1.0"
+            },
+            "time": "2021-12-26T15:42:25+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.8",

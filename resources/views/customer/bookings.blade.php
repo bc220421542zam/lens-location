@@ -30,7 +30,7 @@
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
         @forelse ($bookings as $booking)
-            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400 flex flex-col md:flex-row md:items-center gap-4">
+            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400 flex flex-col md:flex-row md:items-start gap-4">
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
@@ -51,7 +51,7 @@
                         @endif
                     </p>
                 </div>
-                <div class="text-left md:text-right shrink-0">
+                <div class="text-left md:text-right shrink-0 flex flex-col gap-2 items-start md:items-end">
                     <p class="text-sm text-gray-400">{{ $booking->booking_date->format('M d, Y · g:i A') }}</p>
                     <p class="font-semibold text-gray-900">PKR {{ number_format((float) $booking->total_price) }}</p>
                     @php
@@ -65,6 +65,13 @@
                     <span class="text-xs font-semibold px-2 py-1 rounded-full {{ $badge }}">
                         {{ ucfirst($booking->status->value) }}
                     </span>
+
+                    @if ($booking->status->value === 'confirmed')
+                        <a href="{{ route('customer.bookings.pay', $booking->id) }}"
+                           class="action-btn shade text-center">
+                            Pay with JazzCash
+                        </a>
+                    @endif
                 </div>
 
                 <div class="flex flex-col gap-2 shrink-0">
@@ -74,13 +81,6 @@
                             @csrf
                             <button type="submit" class="action-btn danger w-full">Cancel</button>
                         </form>
-                    @endif
-
-                    @if ($booking->status->value === 'confirmed')
-                        <a href="{{ route('customer.bookings.pay', $booking->id) }}"
-                           class="action-btn shade text-center">
-                            Pay with JazzCash
-                        </a>
                     @endif
 
                     @if ($booking->status->value === 'completed')

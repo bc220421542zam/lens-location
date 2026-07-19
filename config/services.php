@@ -43,9 +43,9 @@ return [
 
 'jazzcash' => [
     'merchant_id' => env('JAZZCASH_MERCHANT_ID'),
-    'password' => env('JAZZCASH_PASSWORD'),
-    'salt' => env('JAZZCASH_INTEGRITY_SALT'),
-    'url' => env('JAZZCASH_URL'),
+    'password'    => env('JAZZCASH_PASSWORD'),
+    'salt'        => env('JAZZCASH_INTEGRITY_SALT'),
+    'url'         => env('JAZZCASH_URL', 'https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform'),
 ],
 
 ];

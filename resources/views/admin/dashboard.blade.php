@@ -3,43 +3,9 @@
         title="Dashboard"
         description="Welcome back, {{ auth()->user()->first_name }}">
     </x-topbar>
-
-
+    
     {{-- STATS --}}
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-
-        <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-indigo-800">
-            <div class="flex justify-between items-start">
-                <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Total Users</h3>
-                <i class="fa-solid fa-users text-indigo-900 shrink-0 ml-2 text-sm md:text-base"></i>
-            </div>
-            <p class="text-xl md:text-2xl font-bold text-indigo-900">{{ $stats['users'] }}</p>
-        </div>
-
-        <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-yellow-600/60">
-            <div class="flex justify-between items-start">
-                <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Total Listings</h3>
-                <i class="fa-solid fa-location-dot text-yellow-600 shrink-0 ml-2 text-sm md:text-base"></i>
-            </div>
-            <p class="text-xl md:text-2xl font-bold text-yellow-600">{{ $stats['listings'] }}</p>
-        </div>
-
-        <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-green-700/60">
-            <div class="flex justify-between items-start">
-                <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Total Bookings</h3>
-                <i class="fa-solid fa-calendar-days text-green-700 shrink-0 ml-2 text-sm md:text-base"></i>
-            </div>
-            <p class="text-xl md:text-2xl font-bold text-green-700">{{ $stats['bookings'] }}</p>
-        </div>
-
-        <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-red-500/60">
-            <div class="flex justify-between items-start">
-                <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Rejected Listings</h3>
-                <i class="fa-solid fa-ban text-red-500 shrink-0 ml-2 text-sm md:text-base"></i>
-            </div>
-            <p class="text-xl md:text-2xl font-bold text-red-500">{{ $stats['rejected_listings'] }}</p>
-        </div>
-    </div>
+    <x-adminComponents.dashboard-stats :stats="$stats" />
 
     {{-- CHARTS --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">

@@ -1,6 +1,6 @@
 <x-layouts.owner>
     <div class="max-w-3xl mx-auto py-8 px-4">
-        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">All Notifications</h1>
+        <h1 class="text-xl font-semibold text-indigo-900 dark:text-indigo-100 mb-6">All Notifications</h1>
 
         @forelse ($notifications as $n)
             <div class="flex items-start gap-4 p-4 mb-3 rounded-xl border
@@ -8,7 +8,7 @@
                     ? 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800'
                     : 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800' }}">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <p class="text-sm font-medium text-indigo-900 dark:text-indigo-100">
                         {{ $n->data['title'] }}
                     </p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

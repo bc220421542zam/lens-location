@@ -49,7 +49,7 @@
 
                 <form action="{{ route('customer.listings.message', $location->id) }}" method="POST" class="w-full sm:w-auto">
                     @csrf
-                    <button type="submit" class="action-btn shade w-full sm:w-auto px-6">
+                    <button type="submit" class="action-btn shade w-full sm:w-auto md:px-6 py-3">
                         <i class="fa-solid fa-message mr-1"></i> Message Owner
                     </button>
                 </form>

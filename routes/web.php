@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Owner\ReviewController as OwnerReviewController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\PaymentController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Owner\EarningController;
 
 
 
@@ -39,6 +41,10 @@ Route::controller(SocialiteController::class)->group(function () {
     Route::get('/auth/google', 'redirectToGoogle')->name('auth.google');
     Route::get('/auth/google-callback', 'handleGoogleCallback')->name('auth.google.callback');
 });
+
+// JazzCash callback — must sit outside auth/role middleware since JazzCash's
+// server hits this directly and isn't logged in as any of your users.
+Route::post('/jazzcash/callback', [PaymentController::class, 'callback'])->name('customer.payments.callback');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -83,6 +89,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/reviews',                  [AdminReviewController::class, 'index'])->name('reviews');
         Route::post('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggle');
         Route::delete('/reviews/{review}',      [AdminReviewController::class, 'destroy'])->name('reviews.delete');
+
+        // Payments
+        Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments');
     });
 
     // ==================== OWNER ====================
@@ -114,6 +123,9 @@ Route::middleware('auth')->group(function () {
 
         // Reviews
         Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
+
+        // Earnings
+        Route::get('/earnings', [EarningController::class, 'index'])->name('earnings');
 
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
@@ -160,7 +172,8 @@ Route::middleware('auth')->group(function () {
 
         //payment-Jazzcash
         Route::get('/bookings/{booking}/pay', [PaymentController::class, 'pay'])->name('bookings.pay');
-        Route::match(['get', 'post'], '/payments/callback', [PaymentController::class, 'callback'])->name('payments.callback');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments');
+
     });
 
 });

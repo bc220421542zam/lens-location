@@ -26,6 +26,7 @@
             ['route' => 'customer.listings',  'icon' => 'fa-location-dot', 'label' => 'Search Listings'],
             ['route' => 'customer.messages', 'icon' => 'fa-message', 'label' => 'Messages'],
             ['route' => 'customer.favorites', 'icon' => 'fa-heart',        'label' => 'Favorites'],
+            ['route' => 'customer.payments', 'icon' => 'fa-credit-card', 'label' => 'Payments'],
             ['route' => 'customer.profile',   'icon' => 'fa-user',         'label' => 'Profile'],
         ];
     @endphp
