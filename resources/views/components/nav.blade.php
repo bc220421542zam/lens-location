@@ -43,16 +43,30 @@
         {{-- PROFILE DROPDOWN --}}
         <div class="relative" x-data="{ open: false }">
             <button @click="open = !open"
-                class="flex items-center gap-1.5 md:gap-2 p-1 md:p-1.5 rounded-lg transition-colors">
+                class="flex items-center gap-2 p-1 md:p-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
+
                 @if(auth()->user()->profile_picture)
-                    <img src="{{ Storage::url(auth()->user()->profile_picture)}}"
-                         class="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-indigo-200 shrink-0"
+                    <img src="{{ Storage::url(auth()->user()->profile_picture) }}"
+                         class="w-8 h-8 md:w-9 md:h-9 rounded-full object-cover border border-indigo-200 shrink-0"
                          alt="Profile Picture">
                 @else
-                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
                         <i class="fa-regular fa-user text-xs md:text-sm text-indigo-900"></i>
                     </div>
                 @endif
+
+                {{-- Name + Role, hidden on very small screens --}}
+                <div class="hidden sm:flex flex-col items-start leading-tight">
+                    <span class="text-sm font-semibold text-indigo-900 truncate max-w-[140px]">
+                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                    </span>
+                    <span class="text-xs text-indigo-500 capitalize truncate max-w-[140px]">
+                        {{ $userRole ?: 'User' }}
+                    </span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down text-[10px] text-indigo-500 shrink-0 transition-transform"
+                   :class="open ? 'rotate-180' : ''"></i>
             </button>
 
             {{-- DROPDOWN PANEL --}}
@@ -64,14 +78,23 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
                 @click.outside="open = false"
-                class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-indigo-100 py-2 z-50">
+                class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-indigo-100 py-2 z-50"
+                style="display:none;">
 
                 {{-- User Info --}}
-                <div class="px-4 py-2.5">
-                    <p class="text-sm font-semibold text-indigo-900 truncate">
-                        {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
-                    </p>
-                    <p class="text-xs text-[#2C3399] truncate mt-0.5">{{ auth()->user()->email }}</p>
+                <div class="px-4 py-2.5 flex items-center gap-3">
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-indigo-900 truncate">
+                            {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                        </p>
+                        <p class="text-xs text-[#2C3399] truncate mt-0.5">{{ auth()->user()->email }}</p>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-2">
+                    <span class="inline-flex items-center text-[11px] font-medium text-indigo-700 capitalize">
+                        {{ $userRole ?: 'User' }}
+                    </span>
                 </div>
 
                 <div class="border-t border-indigo-100 mt-1 pt-1">
