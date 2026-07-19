@@ -64,16 +64,20 @@ abstract class ProfileController extends Controller
     // Notifications
     public function updateNotifications(Request $request)
 {
-    $request->validate([
-        'notif_push'  => 'boolean',
-        'notif_email' => 'boolean',
-        'notif_sms'   => 'boolean',
+    $user = $request->user();
+
+    // Read explicitly so this works whether the payload is form-encoded or JSON.
+    $user->forceFill([
+        'notif_push'  => $request->boolean('notif_push'),
+        'notif_email' => $request->boolean('notif_email'),
+        'notif_sms'   => $request->boolean('notif_sms'),
+    ])->save();
+
+    return response()->json([
+        'status'      => 'ok',
+        'notif_push'  => (bool) $user->notif_push,
+        'notif_email' => (bool) $user->notif_email,
+        'notif_sms'   => (bool) $user->notif_sms,
     ]);
-
-    $request->user()->update($request->only([
-        'notif_push', 'notif_email', 'notif_sms',
-    ]));
-
-    return response()->json(['status' => 'ok']);
 }
 }

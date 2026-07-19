@@ -19,6 +19,7 @@
         email: {{ auth()->user()->notif_email ? 'true' : 'false' }},
         sms: {{ auth()->user()->notif_sms ? 'true' : 'false' }},
         saved: false,
+        error: false,
         url: @js($notificationsUrl),
 
         save() {
@@ -30,22 +31,32 @@
             fetch(this.url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({
-                    notif_push: this.push,
-                    notif_email: this.email,
-                    notif_sms: this.sms,
+                body: new URLSearchParams({
+                    notif_push:  this.push  ? 1 : 0,
+                    notif_email: this.email ? 1 : 0,
+                    notif_sms:   this.sms   ? 1 : 0,
                 }),
             })
-            .then(res => res.json())
-            .then(() => {
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                // Reflect the server's persisted state so the UI is always truthful.
+                this.push  = !!data.notif_push;
+                this.email = !!data.notif_email;
+                this.sms   = !!data.notif_sms;
                 this.saved = true;
                 setTimeout(() => { this.saved = false; }, 2000);
             })
-            .catch(err => console.error('Failed to save notifications:', err));
+            .catch(err => {
+                console.error('Failed to save notifications:', err);
+                this.error = true;
+                setTimeout(() => { this.error = false; }, 3000);
+            });
         }
     }"
 >
@@ -93,5 +104,6 @@
         </div>
 
         <p x-show="saved" x-transition class="text-xs text-green-600 mt-2">Saved successfully.</p>
+        <p x-show="error" x-transition class="text-xs text-red-600 mt-2">Couldn't save, please try again.</p>
     </div>
 </div>
