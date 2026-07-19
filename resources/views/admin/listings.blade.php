@@ -125,25 +125,30 @@
                                             <i class="fa-regular fa-eye text-xs"></i>
                                         </a>
 
-                                        {{-- APPROVE / REJECT TOGGLE --}}
-                                        <form action="{{ route('admin.listings.toggle', $listing->id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit"
-                                                title="{{ $listing->status->value === 'approved' ? 'Reject Listing' : 'Approve Listing' }}"
-                                                class="w-8 h-8 flex items-center justify-center transition hover:opacity-80">
-                                                @if($listing->status->value === 'approved')
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
-                                                        <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
-                                                        <circle cx="26" cy="10" r="7" fill="white"/>
-                                                    </svg>
-                                                @else
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
-                                                        <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
-                                                        <circle cx="10" cy="10" r="7" fill="white"/>
-                                                    </svg>
-                                                @endif
-                                            </button>
-                                        </form>
+                                        {{-- APPROVE: shown only when not already approved and not rejected (rejected is terminal) --}}
+                                        @if($listing->status->value === 'pending')
+                                            <form action="{{ route('admin.listings.approve', $listing->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    title="Approve Listing"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 text-green-700 hover:bg-green-100 transition">
+                                                    <i class="fa-solid fa-check text-xs"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        {{-- REJECT: shown for pending and approved (rejected is terminal, no button) --}}
+                                        @if(in_array($listing->status->value, ['pending', 'approved']))
+                                            <form action="{{ route('admin.listings.reject', $listing->id) }}" method="POST"
+                                                onsubmit="return confirm('Reject this listing? This cannot be undone.')">
+                                                @csrf
+                                                <button type="submit"
+                                                    title="Reject Listing"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                                </button>
+                                            </form>
+                                        @endif
 
                                         {{-- DELETE --}}
                                         <form method="POST" action="{{ route('admin.listings.delete', $listing->id) }}"

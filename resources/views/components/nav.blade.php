@@ -3,18 +3,27 @@
     $userRole = auth()->user()->role?->value ?? '';
     $isAdmin  = $userRole === 'admin';
     $isOwner  = $userRole === 'owner';
+    $isCustomer = $userRole === 'customer';
 
     if ($isAdmin) {
         $unreadRoute  = route('admin.notifications.unread');
         $readAllRoute = route('admin.notifications.read-all');
+        $readRoute    = route('admin.notifications.read', ['id' => '__ID__']);
         $allRoute     = route('admin.notifications');
     } elseif ($isOwner) {
         $unreadRoute  = route('owner.notifications.unread');
         $readAllRoute = route('owner.notifications.read-all');
+        $readRoute    = route('owner.notifications.read', ['id' => '__ID__']);
         $allRoute     = route('owner.notifications');
+    } elseif ($isCustomer) {
+        $unreadRoute  = route('customer.notifications.unread');
+        $readAllRoute = route('customer.notifications.read-all');
+        $readRoute    = route('customer.notifications.read', ['id' => '__ID__']);
+        $allRoute     = route('customer.notifications');
     } else {
         $unreadRoute  = null;
         $readAllRoute = null;
+        $readRoute    = null;
         $allRoute     = null;
     }
 @endphp
@@ -37,6 +46,7 @@
         <x-profileComponents.preferences
             :unreadRoute="$unreadRoute"
             :readAllRoute="$readAllRoute"
+            :readRoute="$readRoute"
             :allRoute="$allRoute"
         />
 

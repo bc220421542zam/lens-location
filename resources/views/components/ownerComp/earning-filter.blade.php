@@ -1,5 +1,11 @@
+@if ($errors->any())
+    <div class="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 <form method="GET" action="{{ route('owner.earnings') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card chart-transition mb-4 justify-between rounded-2xl border-l-3 border-indigo-400">
+      class="flex flex-col md:flex-row md:items-end gap-3 card chart-transition mb-4 justify-between rounded-2xl border-l-3 border-indigo-400">
 
     {{-- Search --}}
     <div class="flex-1">
@@ -48,6 +54,34 @@
         </select>
     </div>
 
+    {{-- Min Amount --}}
+    <div class="w-full md:w-32">
+        <label for="filter-min-amount" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M4 10h12M4 10l4-4M4 10l4 4"/>
+            </svg>
+            Min (Rs.)
+        </label>
+        <input type="number" name="min_amount" id="filter-min-amount" value="{{ request('min_amount') }}"
+              placeholder="0" min="0" step="0.01"
+              class="input text-indigo-800">
+    </div>
+
+    {{-- Max Amount --}}
+    <div class="w-full md:w-32">
+        <label for="filter-max-amount" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                d="M16 10H4M16 10l-4-4M16 10l-4 4"/>
+            </svg>
+            Max (Rs.)
+        </label>
+        <input type="number" name="max_amount" id="filter-max-amount" value="{{ request('max_amount') }}"
+              placeholder="Any" min="0" step="0.01"
+              class="input text-indigo-800">
+    </div>
+
     {{-- Buttons --}}
     <div class="flex gap-2 items-end">
         <button type="submit" class="btn w-auto px-4 mt-5 rounded-lg inline-flex items-center gap-1.5">
@@ -60,7 +94,7 @@
     </div>
 
     <div class="flex items-end">
-        @if (request()->hasAny(['search', 'status', 'payout_status']))
+        @if (request()->hasAny(['search', 'status', 'payout_status', 'min_amount', 'max_amount']))
             <a href="{{ route('owner.earnings') }}"
             class="px-4 w-auto mt-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 inline-flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">

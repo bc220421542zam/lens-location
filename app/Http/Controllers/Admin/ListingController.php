@@ -16,6 +16,15 @@ class ListingController extends Controller
 
     public function index(Request $request): View
     {
+        $request->validate([
+            'search'    => 'nullable|string|max:255',
+            'status'    => 'nullable|in:pending,approved,rejected',
+            'category'  => 'nullable|string|max:255',
+            'max_price' => 'nullable|numeric|min:0',
+            'sort'      => 'nullable|in:title,city,category,price_per_hour,status',
+            'direction' => 'nullable|in:asc,desc',
+        ]);
+
         $allowedSorts = ['title', 'city', 'category', 'price_per_hour', 'status'];
 
         $sort = $request->get('sort');
@@ -38,6 +47,7 @@ class ListingController extends Controller
             }))
             ->when($request->filled('status'),   fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('category'), fn ($q) => $q->where('category', $request->string('category')))
+            ->when($request->filled('max_price'), fn ($q) => $q->where('price_per_hour', '<=', $request->float('max_price')))
             ->when(
                 $sort && in_array($sort, $allowedSorts),
                 fn ($q) => $q->orderBy($sort, $direction),
@@ -63,24 +73,17 @@ class ListingController extends Controller
         return view('admin.listings.show', compact('listing'));
     }
 
-    public function toggleApproval(Location $listing): RedirectResponse
-    {
-        $listing->status = $listing->status->toggleApproval();
-        $listing->save();
-
-        //  Notify the owner about the status change
-        if ($listing->owner) {
-            $listing->owner->notify(new ListingStatusNotification(
-                $listing->title,
-                $listing->status->value  // passes the actual current status
-            ));
-        }
-
-        return back()->with('success', 'Listing status updated.');
-    }
-
     public function approve(Location $listing): RedirectResponse
     {
+        // A rejected listing is terminal and cannot be re-approved.
+        if ($listing->status === ListingStatus::Rejected) {
+            return back()->with('error', 'A rejected listing cannot be approved.');
+        }
+
+        if ($listing->status === ListingStatus::Approved) {
+            return back()->with('success', 'Listing is already approved.');
+        }
+
         $listing->status = ListingStatus::Approved;
         $listing->save();
 
@@ -97,6 +100,11 @@ class ListingController extends Controller
 
     public function reject(Location $listing): RedirectResponse
     {
+        // Already rejected — nothing to do (rejection is terminal).
+        if ($listing->status === ListingStatus::Rejected) {
+            return back()->with('success', 'Listing is already rejected.');
+        }
+
         $listing->status = ListingStatus::Rejected;
         $listing->save();
 

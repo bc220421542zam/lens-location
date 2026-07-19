@@ -17,6 +17,10 @@ class BookingController extends Controller
 {
     public function index(Request $request): View
     {
+        $request->validate([
+            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+        ]);
+
         $bookings = Booking::with('location.owner')
             ->where('customer_id', auth()->id())
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))

@@ -1,5 +1,11 @@
+@if ($errors->any())
+    <div class="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 <form method="GET" action="{{ route('customer.payments') }}"
-      class="flex flex-col md:flex-row md:items-center gap-3 card chart-transition mb-4 justify-between rounded-2xl border-l-3 border-indigo-400">
+      class="flex flex-col md:flex-row md:items-end gap-3 card chart-transition mb-4 justify-between rounded-2xl border-l-3 border-indigo-400">
 
     {{-- Search --}}
     <div class="flex-1">

@@ -15,8 +15,10 @@ class NotificationController extends Controller
 
     public function unread(Request $request)
     {
+        // Return recent notifications (read AND unread) so reading them does not
+        // remove them from the dropdown; the unread badge is derived client-side.
         $notifications = $request->user()
-            ->unreadNotifications()
+            ->notifications()
             ->latest()
             ->take(15)
             ->get()
@@ -28,6 +30,17 @@ class NotificationController extends Controller
             ]);
 
         return response()->json($notifications);
+    }
+
+    public function read(Request $request, string $id)
+    {
+        $request->user()
+            ->notifications()
+            ->where('id', $id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['success' => true]);
     }
 
     public function readAll(Request $request)
