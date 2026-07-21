@@ -183,5 +183,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments');
 
     });
+   // Route::match(['get', 'post'], '/jazzcash/callback', [PaymentController::class, 'callback'])->name('payments.callback');
 
 });

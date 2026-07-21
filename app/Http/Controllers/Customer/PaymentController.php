@@ -66,7 +66,7 @@ class PaymentController extends Controller
 
     private function buildJazzCashPayload(Booking $booking, string $orderRef): array
     {
-        $now = now();
+        $now = now('Asia/Karachi');
         $txnDateTime = $now->format('YmdHis');
         $expiry = $now->copy()->addHours(2)->format('YmdHis');
         $amount = (int) round($booking->total_price * 100);
@@ -125,6 +125,8 @@ class PaymentController extends Controller
 
     public function callback(Request $request): RedirectResponse
     {
+        \Illuminate\Support\Facades\Log::info('JazzCash Callback Data: ' . json_encode($request->all()));
+
         $orderRef = $request->input('pp_TxnRefNo');
         $success = $request->input('pp_ResponseCode') === '000';
 
