@@ -66,13 +66,26 @@ class PaymentController extends Controller
 
     private function buildJazzCashPayload(Booking $booking, string $orderRef): array
     {
-        $txnDateTime = now()->format('YmdHis');
-        $expiry = now()->addMinutes(30)->format('YmdHis');
-        $amount = (string) (int) round($booking->total_price * 100);
+        $now = now();
+        $txnDateTime = $now->format('YmdHis');
+        $expiry = $now->copy()->addHours(2)->format('YmdHis');
+        $amount = (int) round($booking->total_price * 100);
+
+        $booking->loadMissing('customer');
+        $mobileNumber = $booking->customer->phone ?? '03123456789';
+        $mobileNumber = preg_replace('/\D/', '', $mobileNumber);
+        
+        if (str_starts_with($mobileNumber, '92') && strlen($mobileNumber) === 12) {
+            $mobileNumber = '0' . substr($mobileNumber, 2);
+        }
+        
+        if (!str_starts_with($mobileNumber, '03') || strlen($mobileNumber) !== 11) {
+            $mobileNumber = '03123456789';
+        }
 
         $data = [
             'pp_Version'           => '1.1',
-            'pp_TxnType'           => '',
+            'pp_TxnType'           => 'MWALLET',
             'pp_Language'          => 'EN',
             'pp_MerchantID'        => config('services.jazzcash.merchant_id'),
             'pp_SubMerchantID'     => '',
@@ -86,7 +99,9 @@ class PaymentController extends Controller
             'pp_BillReference'     => $orderRef,
             'pp_Description'       => 'Booking payment #' . $booking->id,
             'pp_TxnExpiryDateTime' => $expiry,
-            'pp_ReturnURL'         => route('customer.payments.callback'),
+            'pp_ReturnURL'         => config('services.jazzcash.return_url') ?: route('customer.payments.callback'),
+            'pp_MobileNumber'      => $mobileNumber,
+            'pp_CNIC'              => '345678',
             'ppmpf_1'              => '',
             'ppmpf_2'              => '',
             'ppmpf_3'              => '',
@@ -94,8 +109,15 @@ class PaymentController extends Controller
             'ppmpf_5'              => '',
         ];
 
-        ksort($data);
-        $stringToHash = config('services.jazzcash.salt') . '&' . implode('&', $data);
+        $hashData = [];
+        foreach ($data as $key => $value) {
+            if ((str_starts_with($key, 'pp_') || str_starts_with($key, 'ppmpf_')) && $key !== 'pp_SecureHash') {
+                $hashData[$key] = $value;
+            }
+        }
+        ksort($hashData, SORT_STRING);
+
+        $stringToHash = config('services.jazzcash.salt') . '&' . implode('&', $hashData);
         $data['pp_SecureHash'] = strtoupper(hash_hmac('sha256', $stringToHash, config('services.jazzcash.salt')));
 
         return $data;
