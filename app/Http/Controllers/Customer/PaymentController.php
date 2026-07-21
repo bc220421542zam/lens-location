@@ -68,7 +68,7 @@ class PaymentController extends Controller
     {
         $txnDateTime = now()->format('YmdHis');
         $expiry = now()->addMinutes(30)->format('YmdHis');
-        $amount = (int) round($booking->total_price * 100);
+        $amount = (string) (int) round($booking->total_price * 100);
 
         $data = [
             'pp_Version'           => '1.1',
@@ -83,7 +83,7 @@ class PaymentController extends Controller
             'pp_Amount'            => $amount,
             'pp_TxnCurrency'       => 'PKR',
             'pp_TxnDateTime'       => $txnDateTime,
-            'pp_BillReference'     => 'billRef',
+            'pp_BillReference'     => $orderRef,
             'pp_Description'       => 'Booking payment #' . $booking->id,
             'pp_TxnExpiryDateTime' => $expiry,
             'pp_ReturnURL'         => route('customer.payments.callback'),
@@ -96,7 +96,7 @@ class PaymentController extends Controller
 
         ksort($data);
         $stringToHash = config('services.jazzcash.salt') . '&' . implode('&', $data);
-        $data['pp_SecureHash'] = hash_hmac('sha256', $stringToHash, config('services.jazzcash.salt'));
+        $data['pp_SecureHash'] = strtoupper(hash_hmac('sha256', $stringToHash, config('services.jazzcash.salt')));
 
         return $data;
     }
