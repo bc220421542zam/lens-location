@@ -19,6 +19,7 @@ class Location extends Model
         'category_id',
         'price_per_hour',
         'image',
+        'images',
         'status',
     ];
 
@@ -27,7 +28,19 @@ class Location extends Model
         return [
             'price_per_hour' => 'decimal:2',
             'status'         => ListingStatus::class,
+            'images'         => 'array',
         ];
+    }
+
+    /**
+     * Every image of the listing, cover first. Falls back to the legacy
+     * single `image` column for listings created before galleries existed.
+     *
+     * @return array<int, string>
+     */
+    public function gallery(): array
+    {
+        return array_values(array_filter($this->images ?: [$this->image]));
     }
 
     public function owner(): BelongsTo

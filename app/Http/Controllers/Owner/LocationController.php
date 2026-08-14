@@ -38,7 +38,8 @@ class LocationController extends Controller
         $data            = $request->validated();
         $data['user_id'] = auth()->id();
         $data['status']  = ListingStatus::Pending;
-        $data['image']   = $this->storeImage($request);
+        $data['images']  = $this->storeImages($request);
+        $data['image']   = $data['images'][0] ?? null;   // first upload doubles as the cover
 
         $listing = Location::create($data);
 
@@ -63,8 +64,29 @@ class LocationController extends Controller
     {
         $this->authorizeOwnership($location);
 
-        $data          = $request->validated();
-        $data['image'] = $this->storeImage($request, replacing: $location->image) ?? $location->image;
+        $data = $request->validated();
+
+        if ($request->hasFile('images')) {
+            // A new gallery replaces the old one entirely.
+            $this->deleteImages($location->gallery());
+            $data['images'] = $this->storeImages($request);
+            $data['image']  = $data['images'][0] ?? null;
+        } else {
+            unset($data['images']);
+            $cover = $this->storeImage($request);
+
+            if ($cover) {
+                $gallery = $location->gallery();
+                if ($location->image) {
+                    $this->deleteImages([$location->image]);
+                    $gallery = array_values(array_diff($gallery, [$location->image]));
+                }
+                $data['image']  = $cover;
+                $data['images'] = array_merge([$cover], $gallery);
+            } else {
+                $data['image'] = $location->image;
+            }
+        }
 
         $location->update($data);
 
@@ -77,14 +99,20 @@ class LocationController extends Controller
     {
         $this->authorizeOwnership($location);
 
-        if ($location->image) {
-            Storage::disk(self::IMAGE_DISK)->delete($location->image);
-        }
+        $this->deleteImages($location->gallery());
         $location->delete();
 
         return redirect()
             ->route('owner.listings')
             ->with('success', 'Location deleted successfully.');
+    }
+
+    /** @return array<int, string> */
+    private function storeImages($request): array
+    {
+        return collect($request->file('images', []))
+            ->map(fn($file) => $file->store(self::IMAGE_FOLDER, self::IMAGE_DISK))
+            ->all();
     }
 
     private function storeImage($request, ?string $replacing = null): ?string
@@ -98,6 +126,14 @@ class LocationController extends Controller
         }
 
         return $request->file('image')->store(self::IMAGE_FOLDER, self::IMAGE_DISK);
+    }
+
+    /** @param array<int, string> $paths */
+    private function deleteImages(array $paths): void
+    {
+        foreach (array_filter($paths) as $path) {
+            Storage::disk(self::IMAGE_DISK)->delete($path);
+        }
     }
 
     private function authorizeOwnership(Location $location): void

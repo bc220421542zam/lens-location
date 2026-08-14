@@ -41,6 +41,20 @@
             @endif
         </div>
 
+        {{-- GALLERY --}}
+        @php($gallery = $location->gallery())
+        @if(count($gallery) > 1)
+            <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 border-b border-gray-100">
+                @foreach($gallery as $path)
+                    <a href="{{ Storage::url($path) }}" target="_blank" rel="noopener">
+                        <img src="{{ Storage::url($path) }}"
+                             alt="{{ $location->title }}"
+                             class="w-full h-16 object-cover rounded-lg hover:opacity-80 transition-opacity">
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold text-indigo-900">{{ $location->title }}</h1>
