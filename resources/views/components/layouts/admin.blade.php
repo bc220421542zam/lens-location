@@ -15,7 +15,7 @@
 
     <x-nav />
 
-    <div class="flex flex-1 overflow-hidden">
+    <div class="relative flex flex-1 overflow-hidden">
         <x-adminComponents.sidebar-admin />
 
         {{-- MAIN CONTENT --}}
