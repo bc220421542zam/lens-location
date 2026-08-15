@@ -23,10 +23,36 @@
         @endif
 
         <div class="shade card card-transition bg-[#EEEFF7] p-6 rounded-2xl">
-            @if ($listing->image)
-                <img src="{{ asset('storage/'.$listing->image) }}"
-                     alt="{{ $listing->title }}"
-                     class="w-full h-64 object-cover rounded-xl mb-6">
+            {{-- GALLERY --}}
+            @php($gallery = $listing->gallery())
+            @if (count($gallery))
+                {{-- Thumbnails swap the image above them, all in place --}}
+                <div class="mb-6" x-data="{ active: '{{ asset('storage/'.$gallery[0]) }}' }">
+                    <img :src="active"
+                         src="{{ asset('storage/'.$gallery[0]) }}"
+                         alt="{{ $listing->title }}"
+                         class="w-full h-64 sm:h-80 object-cover rounded-xl">
+
+                    @if (count($gallery) > 1)
+                        <div class="flex gap-2 mt-2 overflow-x-auto pb-1">
+                            @foreach ($gallery as $path)
+                                @php($url = asset('storage/'.$path))
+                                <button type="button"
+                                    @click="active = '{{ $url }}'"
+                                    class="shrink-0 rounded-lg overflow-hidden border-2 transition-colors"
+                                    :class="active === '{{ $url }}' ? 'border-indigo-600' : 'border-transparent hover:border-indigo-300'"
+                                    aria-label="Show photo {{ $loop->iteration }}">
+                                    <img src="{{ $url }}"
+                                         alt="{{ $listing->title }} photo {{ $loop->iteration }}"
+                                         class="h-16 w-24 object-cover">
+                                </button>
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {{ count($gallery) }} photos &middot; first is the cover
+                        </p>
+                    @endif
+                </div>
             @endif
 
             <div class="flex items-start justify-between gap-4 mb-2">

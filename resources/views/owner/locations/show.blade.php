@@ -17,43 +17,53 @@
 
     <div class="card chart-transition p-0 overflow-hidden max-w-3xl rounded-2xl ">
 
-        {{-- IMAGE --}}
-        <div class="relative h-64 sm:h-72 bg-gray-100">
-            @if($location->image)
-                <img src="{{ Storage::url($location->image) }}"
-                     alt="{{ $location->title }}"
-                     class="w-full h-full object-cover">
-            @else
-                <div class="w-full h-full flex items-center justify-center bg-gray-50">
-                    <span class="text-5xl text-gray-300">
-                        <i class="fa-solid fa-camera"></i>
-                    </span>
+        {{-- GALLERY — thumbnails swap the image above them, all in place --}}
+        @php($gallery = $location->gallery())
+        <div @if(count($gallery)) x-data="{ active: '{{ Storage::url($gallery[0]) }}' }" @endif>
+
+            {{-- COVER --}}
+            <div class="relative h-64 sm:h-72 bg-gray-100">
+                @if(count($gallery))
+                    <img :src="active"
+                         src="{{ Storage::url($gallery[0]) }}"
+                         alt="{{ $location->title }}"
+                         class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                        <span class="text-5xl text-gray-300">
+                            <i class="fa-solid fa-camera"></i>
+                        </span>
+                    </div>
+                @endif
+
+                {{-- STATUS BADGE --}}
+                @if($location->status->value === 'approved')
+                    <span class="badge badge-active">Approved</span>
+                @elseif($location->status->value === 'pending')
+                    <span class="badge badge-draft">Pending</span>
+                @elseif($location->status->value === 'rejected')
+                    <span class="badge badge-rejected">Rejected</span>
+                @endif
+            </div>
+
+            {{-- THUMBNAILS --}}
+            @if(count($gallery) > 1)
+                <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 border-b border-gray-100">
+                    @foreach($gallery as $path)
+                        @php($url = Storage::url($path))
+                        <button type="button"
+                            @click="active = '{{ $url }}'"
+                            class="rounded-lg overflow-hidden border-2 transition-colors"
+                            :class="active === '{{ $url }}' ? 'border-indigo-600' : 'border-transparent hover:border-indigo-300'"
+                            aria-label="Show photo {{ $loop->iteration }}">
+                            <img src="{{ $url }}"
+                                 alt="{{ $location->title }} photo {{ $loop->iteration }}"
+                                 class="w-full h-16 object-cover">
+                        </button>
+                    @endforeach
                 </div>
             @endif
-
-            {{-- STATUS BADGE --}}
-            @if($location->status->value === 'approved')
-                <span class="badge badge-active">Approved</span>
-            @elseif($location->status->value === 'pending')
-                <span class="badge badge-draft">Pending</span>
-            @elseif($location->status->value === 'rejected')
-                <span class="badge badge-rejected">Rejected</span>
-            @endif
         </div>
-
-        {{-- GALLERY --}}
-        @php($gallery = $location->gallery())
-        @if(count($gallery) > 1)
-            <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 border-b border-gray-100">
-                @foreach($gallery as $path)
-                    <a href="{{ Storage::url($path) }}" target="_blank" rel="noopener">
-                        <img src="{{ Storage::url($path) }}"
-                             alt="{{ $location->title }}"
-                             class="w-full h-16 object-cover rounded-lg hover:opacity-80 transition-opacity">
-                    </a>
-                @endforeach
-            </div>
-        @endif
 
         <div class="p-6">
             <div class="flex items-center justify-between">
