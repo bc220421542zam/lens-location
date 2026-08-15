@@ -34,7 +34,8 @@
                 <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
-                             alt="" class="w-full h-full object-cover">
+                             alt="" loading="lazy" decoding="async"
+                             class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
                             <i class="fa-solid fa-camera text-gray-300"></i>

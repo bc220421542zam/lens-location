@@ -41,7 +41,14 @@ class BrowseController extends Controller
             ->orderBy('category')
             ->pluck('category');
 
-        return view('customer.listings', compact('locations', 'categories'));
+        // Only the ids are needed to render the favorite toggle. The view used
+        // to hydrate a full Location model for every listing this customer had
+        // ever favorited; flipping to an id lookup keeps it O(1) per card.
+        $favoriteIds = array_flip(
+            auth()->user()->favorites()->pluck('locations.id')->all()
+        );
+
+        return view('customer.listings', compact('locations', 'categories', 'favoriteIds'));
     }
 
     public function show(Location $location): View

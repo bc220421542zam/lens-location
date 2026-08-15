@@ -1,7 +1,12 @@
+/* Font Awesome is bundled rather than fetched from cdnjs: it was a
+   render-blocking stylesheet on a third-party origin, so every page paid a DNS
+   lookup and TLS handshake before it could paint. */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* Tailwind v4: this single import already pulls in base, components and
+   utilities, so the legacy `@tailwind base/components/utilities` directives
+   that used to sit here were redundant. */
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 @variant dark (&:where(.dark, .dark *));
 
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {

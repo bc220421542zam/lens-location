@@ -5,7 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // `charts.js` is a separate entry so the charting library loads only
+            // on the dashboards that draw charts.
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/js/charts.js',
+            ],
             refresh: true,
         }),
         tailwindcss(),
