@@ -17,14 +17,13 @@
     {{-- LISTINGS GRID --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($locations as $location)
-            @php
-                $isFavorited = auth()->user()->favorites->contains($location->id);
-            @endphp
+            @php($isFavorited = isset($favoriteIds[$location->id]))
             <div class="card card-transition rounded-2xl flex flex-col p-0 overflow-hidden">
                 <div class="relative h-36 sm:h-40 bg-gray-100 shrink-0">
                     @if($location->image)
                         <img src="{{ Storage::url($location->image) }}"
                             alt="{{ $location->title }}"
+                            loading="lazy" decoding="async"
                             class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gray-50">

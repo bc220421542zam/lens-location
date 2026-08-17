@@ -6,14 +6,12 @@
     <title>Owner Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0"
     x-data="{ sidebarOpen: false }">
 
     <x-nav/>
-    <div class="flex flex-1 overflow-hidden">
+    <div class="relative flex flex-1 overflow-hidden">
 
     {{-- Sidebar --}}
     <x-ownerComp.sidebar-owner/>

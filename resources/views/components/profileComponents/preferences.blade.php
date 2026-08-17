@@ -205,16 +205,38 @@ function navbarActions() {
             }
         },
 
+        async fetchNotifications() {
+            const res = await fetch(this.unreadRouteUrl, {
+                headers: { 'Accept': 'application/json' },
+            });
+
+            return res.ok ? res.json() : null;
+        },
+
+        /** Pull the latest list and surface anything we have not seen yet. */
+        async syncNotifications() {
+            try {
+                const data = await this.fetchNotifications();
+                if (! data) return;
+
+                const knownIds = new Set(this.notifications.map(n => n.id));
+                data.forEach(n => {
+                    if (! knownIds.has(n.id)) {
+                        this.addNotification(n.data.type, n.data.title, n.data.body);
+                        this.notifications[0].id   = n.id;
+                        this.notifications[0].time = n.created_at_human;
+                    }
+                });
+            } catch (e) {}
+        },
+
         async init() {
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
             try {
-                const res = await fetch(this.unreadRouteUrl, {
-                    headers: { 'Accept': 'application/json' },
-                });
-                if (res.ok) {
-                    const data = await res.json();
+                const data = await this.fetchNotifications();
+                if (data) {
                     this.notifications = data.map(n => ({
                         id:    n.id,
                         type:  n.data.type,
@@ -226,23 +248,21 @@ function navbarActions() {
                 }
             } catch (e) {}
 
-            setInterval(async () => {
-                try {
-                    const res = await fetch(this.unreadRouteUrl, {
-                        headers: { 'Accept': 'application/json' },
-                    });
-                    if (!res.ok) return;
-                    const data = await res.json();
-                    const knownIds = new Set(this.notifications.map(n => n.id));
-                    data.forEach(n => {
-                        if (!knownIds.has(n.id)) {
-                            this.addNotification(n.data.type, n.data.title, n.data.body);
-                            this.notifications[0].id   = n.id;
-                            this.notifications[0].time = n.created_at_human;
-                        }
-                    });
-                } catch (e) {}
+            // Poll only while the tab is actually visible. A backgrounded tab
+            // used to keep hitting this endpoint every 30s forever, costing a
+            // database round trip per user per poll for updates nobody could see.
+            setInterval(() => {
+                if (! document.hidden) {
+                    this.syncNotifications();
+                }
             }, 30000);
+
+            // Catch up straight away when the user returns to the tab.
+            document.addEventListener('visibilitychange', () => {
+                if (! document.hidden) {
+                    this.syncNotifications();
+                }
+            });
         },
     };
 }

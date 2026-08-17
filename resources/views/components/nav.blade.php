@@ -34,9 +34,14 @@
         <img src="/images/Logo.png" alt="Logo" class="h-7 md:h-10">
 
         {{-- HAMBURGER only on mobile devices --}}
-        <button @click="sidebarOpen = !sidebarOpen"
+        <button type="button"
+            @click="sidebarOpen = !sidebarOpen"
+            :aria-expanded="sidebarOpen ? 'true' : 'false'"
+            aria-controls="app-sidebar"
+            aria-label="Toggle navigation"
             class="lg:hidden text-indigo-900 hover:text-indigo-700 p-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
-            <i class="fa-solid fa-bars text-lg"></i>
+            <i class="fa-solid fa-bars text-lg"
+               :class="{ 'fa-bars': ! sidebarOpen, 'fa-xmark': sidebarOpen }"></i>
         </button>
     </div>
 

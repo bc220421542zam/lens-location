@@ -5,75 +5,81 @@ namespace App\Http\Controllers\Customer;
 use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Support\TimeSeriesCounts;
 use Illuminate\View\View;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    private const CHART_MONTHS = 6;
+
+    private const UPCOMING_LIMIT = 5;
+
     public function index(): View
-{
-    $bookings = Booking::where('customer_id', auth()->id())->get();
+    {
+        $customerId = auth()->id();
 
-    $stats = [
-        'total'     => $bookings->count(),
-        'upcoming'  => $bookings
-            ->where('status', BookingStatus::Confirmed)
+        // Previously every booking row was hydrated into memory just to count
+        // and sum them; the database does both in a single pass now.
+        $totals = Booking::where('customer_id', $customerId)
+            ->selectRaw(
+                'COUNT(*) as total_count,
+                 COUNT(CASE WHEN status = ? AND booking_date >= ? THEN 1 END) as upcoming_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as pending_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as cancelled_count,
+                 COALESCE(SUM(CASE WHEN status = ? THEN total_price END), 0) as completed_spend',
+                [
+                    BookingStatus::Confirmed->value, now()->toDateTimeString(),
+                    BookingStatus::Completed->value,
+                    BookingStatus::Pending->value,
+                    BookingStatus::Cancelled->value,
+                    BookingStatus::Completed->value,
+                ]
+            )
+            ->first();
+
+        $stats = [
+            'total'     => (int) $totals->total_count,
+            'upcoming'  => (int) $totals->upcoming_count,
+            'completed' => (int) $totals->completed_count,
+            'pending'   => (int) $totals->pending_count,
+            'cancelled' => (int) $totals->cancelled_count,
+            'spent'     => (float) $totals->completed_spend,
+        ];
+
+        $upcoming = Booking::with('location.owner')
+            ->where('customer_id', $customerId)
+            ->whereIn('status', [BookingStatus::Pending, BookingStatus::Confirmed])
             ->where('booking_date', '>=', now())
-            ->count(),
-        'completed' => $bookings->where('status', BookingStatus::Completed)->count(),
-        'pending'   => $bookings->where('status', BookingStatus::Pending)->count(),
-        'cancelled' => $bookings->where('status', BookingStatus::Cancelled)->count(),
-        'spent'     => $bookings
-            ->where('status', BookingStatus::Completed)
-            ->sum('total_price'),
-    ];
-
-    $upcoming = Booking::with('location.owner')
-        ->where('customer_id', auth()->id())
-        ->whereIn('status', [BookingStatus::Pending, BookingStatus::Confirmed])
-        ->where('booking_date', '>=', now())
-        ->orderBy('booking_date')
-        ->take(5)
-        ->get();
-
-    $months = collect(range(5, 0))->map(function ($i) {
-        return Carbon::now()->subMonths($i);
-    });
-
-    $labels = [];
-    $totalArr = [];
-    $upcomingArr = [];
-    $completedArr = [];
-    $cancelledArr = [];
-
-    foreach ($months as $month) {
-        $labels[] = $month->format('M');
-
-        $monthBookings = Booking::where('customer_id', auth()->id())
-            ->whereYear('created_at', $month->year)
-            ->whereMonth('created_at', $month->month)
+            ->orderBy('booking_date')
+            ->take(self::UPCOMING_LIMIT)
             ->get();
 
-        $totalArr[]     = $monthBookings->count();
-        $upcomingArr[]  = $monthBookings->where('status', BookingStatus::Confirmed)->count();
-        $completedArr[] = $monthBookings->where('status', BookingStatus::Completed)->count();
-        $cancelledArr[] = $monthBookings->where('status', BookingStatus::Cancelled)->count();
+        // One grouped query instead of six month-by-month fetches.
+        $monthly = TimeSeriesCounts::monthly(
+            Booking::where('customer_id', $customerId),
+            self::CHART_MONTHS,
+            [
+                'upcoming'  => ['status', BookingStatus::Confirmed->value],
+                'completed' => ['status', BookingStatus::Completed->value],
+                'cancelled' => ['status', BookingStatus::Cancelled->value],
+            ]
+        );
+
+        $chartData = [
+            'labels'    => $monthly['labels'],
+            'total'     => $monthly['series']['total'],
+            'upcoming'  => $monthly['series']['upcoming'],
+            'completed' => $monthly['series']['completed'],
+            'cancelled' => $monthly['series']['cancelled'],
+            'stats'     => [
+                'total'     => $stats['total'],
+                'upcoming'  => $stats['upcoming'],
+                'completed' => $stats['completed'],
+                'cancelled' => $stats['cancelled'],
+            ],
+        ];
+
+        return view('customer.dashboard', compact('stats', 'upcoming', 'chartData'));
     }
-
-    $chartData = [
-        'labels'    => $labels,
-        'total'     => $totalArr,
-        'upcoming'  => $upcomingArr,
-        'completed' => $completedArr,
-        'cancelled' => $cancelledArr,
-        'stats' => [
-            'total'     => $stats['total'],
-            'upcoming'  => $stats['upcoming'],
-            'completed' => $stats['completed'],
-            'cancelled' => $stats['cancelled'],
-        ],
-    ];
-
-    return view('customer.dashboard', compact('stats', 'upcoming', 'chartData'));
-}
 }

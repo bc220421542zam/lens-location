@@ -9,10 +9,32 @@
     </div>
 
     <div class="card p-0 overflow-hidden">
-        @if ($location->image)
-            <img src="{{ asset('storage/'.$location->image) }}"
-                 alt="{{ $location->title }}"
-                 class="w-full h-72 object-cover">
+        {{-- GALLERY — thumbnails swap the image above them, all in place --}}
+        @php($gallery = $location->gallery())
+        @if (count($gallery))
+            <div x-data="{ active: '{{ asset('storage/'.$gallery[0]) }}' }">
+                <img :src="active"
+                     src="{{ asset('storage/'.$gallery[0]) }}"
+                     alt="{{ $location->title }}"
+                     class="w-full h-72 object-cover">
+
+                @if (count($gallery) > 1)
+                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 border-b border-gray-100">
+                        @foreach ($gallery as $path)
+                            @php($url = asset('storage/'.$path))
+                            <button type="button"
+                                @click="active = '{{ $url }}'"
+                                class="rounded-lg overflow-hidden border-2 transition-colors"
+                                :class="active === '{{ $url }}' ? 'border-indigo-600' : 'border-transparent hover:border-indigo-300'"
+                                aria-label="Show photo {{ $loop->iteration }}">
+                                <img src="{{ $url }}"
+                                     alt="{{ $location->title }} photo {{ $loop->iteration }}"
+                                     class="w-full h-16 object-cover">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         @endif
 
         <div class="p-6">

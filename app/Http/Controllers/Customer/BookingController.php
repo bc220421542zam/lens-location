@@ -36,16 +36,26 @@ class BookingController extends Controller
             $booking->has_review = $reviewedLocationIds->contains($booking->location_id);
         });
 
-        $allBookings = Booking::where('customer_id', auth()->id())->get();
+        // Counted in the database rather than by hydrating every booking again.
+        $totals = Booking::where('customer_id', auth()->id())
+            ->selectRaw(
+                'COUNT(*) as total_count,
+                 COUNT(CASE WHEN status = ? AND booking_date >= ? THEN 1 END) as upcoming_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as cancelled_count',
+                [
+                    BookingStatus::Confirmed->value, now()->toDateTimeString(),
+                    BookingStatus::Completed->value,
+                    BookingStatus::Cancelled->value,
+                ]
+            )
+            ->first();
 
         $stats = [
-            'total'     => $allBookings->count(),
-            'upcoming'  => $allBookings
-                ->where('status', BookingStatus::Confirmed)
-                ->where('booking_date', '>=', now())
-                ->count(),
-            'completed' => $allBookings->where('status', BookingStatus::Completed)->count(),
-            'cancelled' => $allBookings->where('status', BookingStatus::Cancelled)->count(),
+            'total'     => (int) $totals->total_count,
+            'upcoming'  => (int) $totals->upcoming_count,
+            'completed' => (int) $totals->completed_count,
+            'cancelled' => (int) $totals->cancelled_count,
         ];
 
         return view('customer.bookings', compact('bookings', 'stats'));

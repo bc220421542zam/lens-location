@@ -19,7 +19,9 @@ class BookingController extends Controller
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
         ]);
 
-        $ownerLocationIds = Location::where('user_id', auth()->id())->pluck('id');
+        // A subquery keeps the owner's listing ids in the database instead of
+        // round-tripping them into PHP and back out as a giant IN (...) list.
+        $ownerLocationIds = Location::select('id')->where('user_id', auth()->id());
 
         $bookings = Booking::with(['location', 'customer'])
             ->whereIn('location_id', $ownerLocationIds)
@@ -27,13 +29,26 @@ class BookingController extends Controller
             ->latest()
             ->get();
 
-        $allBookings = Booking::whereIn('location_id', $ownerLocationIds)->get();
+        // Counted in the database rather than by hydrating every booking again.
+        $totals = Booking::whereIn('location_id', $ownerLocationIds)
+            ->selectRaw(
+                'COUNT(*) as total_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as pending_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as confirmed_count,
+                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count',
+                [
+                    BookingStatus::Pending->value,
+                    BookingStatus::Confirmed->value,
+                    BookingStatus::Completed->value,
+                ]
+            )
+            ->first();
 
         $stats = [
-            'total'     => $allBookings->count(),
-            'pending'   => $allBookings->where('status', BookingStatus::Pending)->count(),
-            'confirmed' => $allBookings->where('status', BookingStatus::Confirmed)->count(),
-            'completed' => $allBookings->where('status', BookingStatus::Completed)->count(),
+            'total'     => (int) $totals->total_count,
+            'pending'   => (int) $totals->pending_count,
+            'confirmed' => (int) $totals->confirmed_count,
+            'completed' => (int) $totals->completed_count,
         ];
 
         return view('owner.bookings', compact('bookings', 'stats'));
