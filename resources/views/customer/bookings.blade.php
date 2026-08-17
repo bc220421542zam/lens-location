@@ -53,7 +53,7 @@
                 </div>
                 <div class="text-left md:text-right shrink-0 flex flex-col gap-2 items-start md:items-end">
                     <p class="text-sm text-gray-400">{{ $booking->booking_date->format('M d, Y · g:i A') }}</p>
-                    <p class="font-semibold text-gray-900">PKR {{ number_format((float) $booking->total_price) }}</p>
+                    <p class="font-semibold text-indigo-900">PKR {{ number_format((float) $booking->total_price) }}</p>
                     @php
                         $badge = match ($booking->status->value) {
                             'pending'   => 'bg-yellow-100 text-yellow-700',
