@@ -18,7 +18,7 @@
     @endif
 
     {{-- FORM --}}
-    <form action="{{ route('owner.locations.update', $location->id) }}" method="POST" enctype="multipart/form-data">
+    <form id="location-form" action="{{ route('owner.locations.update', $location->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -125,52 +125,69 @@
             </div>
         </div>
 
-        {{-- Image Upload --}}
+        {{-- Images --}}
+        @php
+            $minImages = \App\Http\Requests\Owner\StoreLocationRequest::MIN_IMAGES;
+            $maxImages = \App\Http\Requests\Owner\StoreLocationRequest::MAX_IMAGES;
+            $gallery   = $location->gallery();
+
+            // Older listings can hold fewer photos than a new one requires;
+            // their owners only have to keep what they already had.
+            $minRequired = min($minImages, max(count($gallery), 1));
+
+            // After a failed submit, restore the arrangement the owner had made.
+            $current = old('image_order') === null
+                ? $gallery
+                : array_values(array_filter(
+                    (array) old('image_order'),
+                    fn($token) => in_array($token, $gallery, true)
+                ));
+        @endphp
+
         <div class="card chart-transition mb-6">
-            <h3 class="font-semibold text-indigo-900 mb-4">Image</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-indigo-900">Images</h3>
+                <span id="image-counter" class="text-xs text-gray-400"></span>
+            </div>
 
-            {{-- Current Image --}}
-            @if($location->image)
-                <div class="mb-4">
-                    <p class="text-xs text-indigo-900 mb-2">Current Image</p>
-                    <img src="{{ asset('storage/' . $location->image) }}"
-                        alt="Current listing image"
-                        class="w-full h-48 object-cover rounded-xl shade">
-                    <p class="text-xs text-gray-400 mt-1">Upload a new image below to replace it</p>
-                </div>
-            @endif
-
-            {{-- New Image Upload --}}
             <div
+                id="image-dropzone"
                 class="border-2 border-dashed border-indigo-200 rounded-lg p-8 text-center
-                       cursor-pointer hover:border-indigo-400 transition-colors"
-                onclick="document.getElementById('imageInput').click()">
-
-                {{-- Preview --}}
-                <div id="preview-wrap" class="hidden mb-3">
-                    <img id="image-preview" src="#" alt="Preview"
-                         class="mx-auto max-h-40 rounded-lg object-cover">
-                    <p class="text-xs text-gray-400 mt-2">Click to change image</p>
-                </div>
-
-                {{-- Placeholder --}}
-                <div id="upload-placeholder">
-                    <p class="text-3xl mb-2"><i class="icon fa-solid fa-upload"></i></p>
-                    <p class="text-sm text-gray-400">Click to upload new image (optional)</p>
-                    <p class="text-xs text-gray-300 mt-1">PNG, JPEG, WEBP — max 4MB</p>
-                </div>
+                       cursor-pointer hover:border-indigo-400 transition-colors">
+                <p class="text-3xl mb-2"><i class="icon fa-solid fa-upload"></i></p>
+                <p class="text-sm text-gray-400">Click to add photos — or drag &amp; drop</p>
+                <p class="text-xs text-gray-300 mt-1">
+                    PNG, JPEG, WEBP — max 4MB each · at least {{ $minRequired }}, up to {{ $maxImages }} images
+                </p>
 
                 <input
                     type="file"
                     id="imageInput"
-                    name="image"
+                    name="images[]"
                     accept=".png,.jpg,.jpeg,.webp"
-                    hidden
-                    onchange="previewImage(event)">
+                    multiple
+                    hidden>
             </div>
-            @error('image')
+
+            {{-- Current gallery and new uploads, in the order they will be saved --}}
+            <div id="image-previews" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4"></div>
+            <div id="image-order-fields"></div>
+
+            <p id="image-hint" class="text-xs text-gray-400 mt-2 hidden">
+                The first image is the cover photo — use &ldquo;Make cover&rdquo; to promote another one,
+                or &times; to remove one.
+            </p>
+
+            <p id="image-client-error" class="text-red-500 text-xs mt-2 hidden"></p>
+
+            @error('images')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
+            @foreach ($errors->get('images.*') as $messages)
+                @foreach ($messages as $message)
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @endforeach
+            @endforeach
         </div>
 
         {{-- Action Buttons --}}
@@ -188,18 +205,187 @@
     </form>
 </div>
 
+@push('scripts')
 <script>
-function previewImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('image-preview').src = e.target.result;
-        document.getElementById('preview-wrap').classList.remove('hidden');
-        document.getElementById('upload-placeholder').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-}
-</script>
+(function () {
+    const MIN_IMAGES = {{ $minRequired }};
+    const MAX_IMAGES = {{ $maxImages }};
+    const MAX_BYTES  = 4 * 1024 * 1024;
+    const ALLOWED    = ['image/png', 'image/jpeg', 'image/webp'];
 
+    const input     = document.getElementById('imageInput');
+    const dropzone  = document.getElementById('image-dropzone');
+    const previews  = document.getElementById('image-previews');
+    const orderBox  = document.getElementById('image-order-fields');
+    const counter   = document.getElementById('image-counter');
+    const hint      = document.getElementById('image-hint');
+    const errorBox  = document.getElementById('image-client-error');
+    const form      = document.getElementById('location-form');
+
+    // One list holds both the photos already on the listing and the new picks,
+    // so removing and reordering works the same way for either kind.
+    let items = [
+        @foreach ($current as $path)
+        { kind: 'existing', path: @json($path), url: @json(Storage::url($path)) },
+        @endforeach
+    ];
+
+    function showError(message) {
+        errorBox.textContent = message;
+        errorBox.classList.toggle('hidden', !message);
+    }
+
+    // The input's FileList is read-only, so we rebuild it from our own list.
+    // Its order decides which `new:<index>` token points at which upload.
+    function syncInput() {
+        const transfer = new DataTransfer();
+        items.filter(item => item.kind === 'new').forEach(item => transfer.items.add(item.file));
+        input.files = transfer.files;
+    }
+
+    function syncOrderFields() {
+        orderBox.innerHTML = '';
+        let newIndex = 0;
+
+        items.forEach(item => {
+            const field = document.createElement('input');
+            field.type  = 'hidden';
+            field.name  = 'image_order[]';
+            field.value = item.kind === 'existing' ? item.path : 'new:' + (newIndex++);
+            orderBox.appendChild(field);
+        });
+    }
+
+    function render() {
+        previews.innerHTML = '';
+
+        items.forEach((item, index) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'relative group rounded-lg overflow-hidden border border-gray-200';
+
+            const img = document.createElement('img');
+            img.className = 'w-full h-24 object-cover';
+            img.alt = item.kind === 'existing' ? 'Listing photo' : item.file.name;
+            if (item.kind === 'existing') {
+                img.src = item.url;
+            } else {
+                img.src = URL.createObjectURL(item.file);
+                img.onload = () => URL.revokeObjectURL(img.src);
+            }
+            wrap.appendChild(img);
+
+            if (index === 0) {
+                const badge = document.createElement('span');
+                badge.className = 'absolute top-1 left-1 bg-indigo-900 text-white text-[10px] px-2 py-0.5 rounded-full';
+                badge.textContent = 'Cover';
+                wrap.appendChild(badge);
+            } else {
+                const promote = document.createElement('button');
+                promote.type = 'button';
+                promote.className = 'absolute bottom-1 left-1 bg-white/90 text-indigo-900 text-[10px] px-2 py-0.5 rounded-full';
+                promote.textContent = 'Make cover';
+                promote.addEventListener('click', () => {
+                    items.unshift(items.splice(index, 1)[0]);
+                    sync();
+                });
+                wrap.appendChild(promote);
+            }
+
+            if (item.kind === 'new') {
+                const tag = document.createElement('span');
+                tag.className = 'absolute bottom-1 right-1 bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full';
+                tag.textContent = 'New';
+                wrap.appendChild(tag);
+            }
+
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'absolute top-1 right-1 bg-white/90 text-red-500 text-xs w-5 h-5 rounded-full leading-none';
+            remove.innerHTML = '&times;';
+            remove.title = 'Remove image';
+            remove.addEventListener('click', () => {
+                items.splice(index, 1);
+                sync();
+            });
+            wrap.appendChild(remove);
+
+            previews.appendChild(wrap);
+        });
+
+        previews.classList.toggle('hidden', items.length === 0);
+        hint.classList.toggle('hidden', items.length === 0);
+        counter.textContent = items.length + ' / ' + MAX_IMAGES + ' images';
+        counter.classList.toggle('text-red-500', items.length < MIN_IMAGES);
+    }
+
+    function sync() {
+        syncInput();
+        syncOrderFields();
+        render();
+    }
+
+    function addFiles(incoming) {
+        const rejected = [];
+
+        Array.from(incoming).forEach(file => {
+            if (items.length >= MAX_IMAGES) {
+                rejected.push('You can have a maximum of ' + MAX_IMAGES + ' images.');
+                return;
+            }
+            if (!ALLOWED.includes(file.type)) {
+                rejected.push(file.name + ' is not a PNG, JPG or WEBP image.');
+                return;
+            }
+            if (file.size > MAX_BYTES) {
+                rejected.push(file.name + ' is larger than 4MB.');
+                return;
+            }
+            const duplicate = items.some(item =>
+                item.kind === 'new' && item.file.name === file.name && item.file.size === file.size);
+            if (duplicate) {
+                rejected.push(file.name + ' was already added.');
+                return;
+            }
+            items.push({ kind: 'new', file: file });
+        });
+
+        sync();
+        showError(rejected.length ? rejected[0] : '');
+    }
+
+    dropzone.addEventListener('click', () => input.click());
+
+    // Only user picks fire this — assigning input.files in syncInput() does not.
+    input.addEventListener('change', event => addFiles(event.target.files));
+
+    ['dragenter', 'dragover'].forEach(name =>
+        dropzone.addEventListener(name, event => {
+            event.preventDefault();
+            dropzone.classList.add('border-indigo-400');
+        })
+    );
+
+    ['dragleave', 'drop'].forEach(name =>
+        dropzone.addEventListener(name, event => {
+            event.preventDefault();
+            dropzone.classList.remove('border-indigo-400');
+        })
+    );
+
+    dropzone.addEventListener('drop', event => addFiles(event.dataTransfer.files));
+
+    form.addEventListener('submit', event => {
+        if (items.length < MIN_IMAGES) {
+            event.preventDefault();
+            showError(MIN_IMAGES === 1
+                ? 'A listing needs at least one image.'
+                : 'Please keep or upload at least ' + MIN_IMAGES + ' images of the location.');
+            dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    sync();
+})();
+</script>
+@endpush
 </x-layouts.owner>
