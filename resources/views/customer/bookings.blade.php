@@ -30,8 +30,24 @@
     {{-- BOOKINGS LIST --}}
     <div class="flex flex-col gap-3">
         @forelse ($bookings as $booking)
-            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400 flex flex-col md:flex-row md:items-start gap-4">
-                <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+            @php
+                $status = $booking->status->value;
+                $badge  = match ($status) {
+                    'pending'   => 'bg-yellow-100 text-yellow-700',
+                    'confirmed' => 'bg-green-100 text-green-700',
+                    'completed' => 'bg-indigo-100 text-indigo-700',
+                    'cancelled' => 'bg-red-100 text-red-600',
+                };
+                $canPay    = $status === 'confirmed';
+                $canCancel = $status === 'pending';
+                $canReview = $status === 'completed';
+            @endphp
+
+            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400
+                        flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+
+                {{-- THUMBNAIL --}}
+                <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
                              alt="" loading="lazy" decoding="async"
@@ -42,9 +58,13 @@
                         </div>
                     @endif
                 </div>
+
+                {{-- LOCATION --}}
                 <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-indigo-900">{{ $booking->location?->title ?? 'Deleted location' }}</p>
-                    <p class="text-sm text-gray-500">
+                    <p class="font-semibold text-indigo-900 truncate">
+                        {{ $booking->location?->title ?? 'Deleted location' }}
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1 truncate">
                         {{ $booking->hours }} hr{{ $booking->hours > 1 ? 's' : '' }}
                         @if ($booking->shoot_type) &middot; {{ $booking->shoot_type }} @endif
                         @if ($booking->location?->owner)
@@ -52,45 +72,51 @@
                         @endif
                     </p>
                 </div>
-                <div class="text-left md:text-right shrink-0 flex flex-col gap-2 items-start md:items-end">
-                    <p class="text-sm text-gray-400">{{ $booking->booking_date->format('M d, Y · g:i A') }}</p>
-                    <p class="font-semibold text-gray-900">PKR {{ number_format((float) $booking->total_price) }}</p>
-                    @php
-                        $badge = match ($booking->status->value) {
-                            'pending'   => 'bg-yellow-100 text-yellow-700',
-                            'confirmed' => 'bg-green-100 text-green-700',
-                            'completed' => 'bg-indigo-100 text-indigo-700',
-                            'cancelled' => 'bg-red-100 text-red-600',
-                        };
-                    @endphp
-                    <span class="text-xs font-semibold px-2 py-1 rounded-full {{ $badge }}">
-                        {{ ucfirst($booking->status->value) }}
+
+                {{-- WHEN, PRICE, STATUS --}}
+                <div class="shrink-0 flex flex-wrap items-center gap-x-3 gap-y-1
+                            sm:flex-col sm:items-end sm:text-right sm:gap-1">
+                    <p class="text-sm text-gray-400 whitespace-nowrap">
+                        {{ $booking->booking_date->format('M d, Y · g:i A') }}
+                    </p>
+                    <p class="font-semibold text-indigo-900 whitespace-nowrap">
+                        PKR {{ number_format((float) $booking->total_price) }}
+                    </p>
+                    <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
+                        {{ ucfirst($status) }}
                     </span>
-
-                    @if ($booking->status->value === 'confirmed')
-                        <a href="{{ route('customer.bookings.pay', $booking->id) }}"
-                           class="action-btn shade text-center">
-                            Pay with JazzCash
-                        </a>
-                    @endif
                 </div>
 
-                <div class="flex flex-col gap-2 shrink-0">
-                    @if ($booking->status->value === 'pending')
-                        <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
-                              onsubmit="return confirm('Cancel this booking?')">
-                            @csrf
-                            <button type="submit" class="action-btn danger w-full">Cancel</button>
-                        </form>
-                    @endif
+                {{-- ACTIONS — only rendered when there is one, so the row keeps its spacing --}}
+                @if ($canPay || $canCancel || $canReview)
+                    <div class="shrink-0 flex flex-col gap-2 w-full sm:w-40">
+                        @if ($canPay)
+                            <a href="{{ route('customer.bookings.pay', $booking->id) }}"
+                               class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
+                                Pay with JazzCash
+                            </a>
+                        @endif
 
-                    @if ($booking->status->value === 'completed')
-                        <a href="{{ route('customer.bookings.review', $booking->id) }}"
-                           class="action-btn shade text-center">
-                            {{ $booking->has_review ? 'Edit Review' : 'Leave a Review' }}
-                        </a>
-                    @endif
-                </div>
+                        @if ($canCancel)
+                            <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
+                                  class="w-full"
+                                  onsubmit="return confirm('Cancel this booking?')">
+                                @csrf
+                                <button type="submit"
+                                        class="action-btn danger grow-0 basis-auto w-full whitespace-nowrap">
+                                    Cancel
+                                </button>
+                            </form>
+                        @endif
+
+                        @if ($canReview)
+                            <a href="{{ route('customer.bookings.review', $booking->id) }}"
+                               class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
+                                {{ $booking->has_review ? 'Edit Review' : 'Leave a Review' }}
+                            </a>
+                        @endif
+                    </div>
+                @endif
             </div>
         @empty
             <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400">
