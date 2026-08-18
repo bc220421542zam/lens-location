@@ -43,7 +43,7 @@
             @endphp
 
             {{-- h-full keeps every tile in a row the same height --}}
-            <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400
+            <div class="card chart-transition rounded-2xl border border-indigo-400
                         h-full flex flex-col gap-3">
 
                 {{-- COVER --}}
