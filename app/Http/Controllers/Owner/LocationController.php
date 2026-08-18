@@ -64,29 +64,16 @@ class LocationController extends Controller
     {
         $this->authorizeOwnership($location);
 
-        $data = $request->validated();
+        $data     = $request->validated();
+        $existing = $location->gallery();
+        $uploaded = $this->storeImages($request);
+        $gallery  = $this->arrangeGallery($request, $existing, $uploaded);
 
-        if ($request->hasFile('images')) {
-            // A new gallery replaces the old one entirely.
-            $this->deleteImages($location->gallery());
-            $data['images'] = $this->storeImages($request);
-            $data['image']  = $data['images'][0] ?? null;
-        } else {
-            unset($data['images']);
-            $cover = $this->storeImage($request);
+        // Whatever the owner dropped from the gallery is gone for good.
+        $this->deleteImages(array_diff($existing, $gallery));
 
-            if ($cover) {
-                $gallery = $location->gallery();
-                if ($location->image) {
-                    $this->deleteImages([$location->image]);
-                    $gallery = array_values(array_diff($gallery, [$location->image]));
-                }
-                $data['image']  = $cover;
-                $data['images'] = array_merge([$cover], $gallery);
-            } else {
-                $data['image'] = $location->image;
-            }
-        }
+        $data['images'] = $gallery;
+        $data['image']  = $gallery[0] ?? null;   // the first image is the cover
 
         $location->update($data);
 
@@ -115,17 +102,45 @@ class LocationController extends Controller
             ->all();
     }
 
-    private function storeImage($request, ?string $replacing = null): ?string
+    /**
+     * Rebuild the gallery from the arrangement posted by the edit form. Each
+     * token is either a path already on the listing or `new:<index>` pointing
+     * at one of this request's uploads; anything else is ignored so the form
+     * cannot make the listing reference arbitrary files.
+     *
+     * @param  array<int, string> $existing
+     * @param  array<int, string> $uploaded
+     * @return array<int, string>
+     */
+    private function arrangeGallery($request, array $existing, array $uploaded): array
     {
-        if (! $request->hasFile('image')) {
-            return null;
+        $order = $request->input('image_order');
+
+        if (! is_array($order)) {
+            // No arrangement posted (e.g. JavaScript disabled): keep it all.
+            return array_values(array_unique(array_merge($existing, $uploaded)));
         }
 
-        if ($replacing) {
-            Storage::disk(self::IMAGE_DISK)->delete($replacing);
+        $gallery = [];
+
+        foreach ($order as $token) {
+            if (! is_string($token)) {
+                continue;
+            }
+
+            if (str_starts_with($token, 'new:')) {
+                $index = (int) substr($token, 4);
+
+                if (isset($uploaded[$index])) {
+                    $gallery[] = $uploaded[$index];
+                }
+            } elseif (in_array($token, $existing, true)) {
+                $gallery[] = $token;
+            }
         }
 
-        return $request->file('image')->store(self::IMAGE_FOLDER, self::IMAGE_DISK);
+        // Never orphan an upload the arrangement failed to mention.
+        return array_values(array_unique(array_merge($gallery, array_diff($uploaded, $gallery))));
     }
 
     /** @param array<int, string> $paths */
