@@ -11,14 +11,14 @@
     class="flex items-center gap-0.5 md:gap-1"
 >
     {{-- Role badge --}}
-    <div class="hidden sm:flex items-center mr-1 md:mr-2">
+    <!-- <div class="hidden sm:flex items-center mr-1 md:mr-2">
         <span class="text-xs font-medium text-indigo-900 dark:text-indigo-200
                      bg-indigo-200 dark:bg-indigo-900/60
                      border border-indigo-300 dark:border-indigo-700
                      shadow-sm rounded-xl px-3 py-1 capitalize">
             {{ auth()->user()->role ?? 'User' }}
         </span>
-    </div>
+    </div> -->
 
 
     {{-- Notifications bell --}}
