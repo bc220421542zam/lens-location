@@ -26,9 +26,8 @@
 
     {{-- FILTER TABS --}}
     <x-customerComp.booking-filter />
-
-    {{-- BOOKINGS LIST --}}
-    <div class="flex flex-col gap-3">
+    {{-- BOOKINGS GRID --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
         @forelse ($bookings as $booking)
             @php
                 $status = $booking->status->value;
@@ -43,28 +42,30 @@
                 $canReview = $status === 'completed';
             @endphp
 
+            {{-- h-full keeps every tile in a row the same height --}}
             <div class="card chart-transition rounded-2xl border border-l-3 border-indigo-400
-                        flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+                        h-full flex flex-col gap-3">
 
-                {{-- THUMBNAIL --}}
-                <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                {{-- COVER --}}
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-gray-100 shrink-0">
                     @if ($booking->location?->image)
                         <img src="{{ asset('storage/'.$booking->location->image) }}"
                              alt="" loading="lazy" decoding="async"
                              class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
-                            <i class="fa-solid fa-camera text-gray-300"></i>
+                            <i class="fa-solid fa-camera text-3xl text-gray-300"></i>
                         </div>
                     @endif
                 </div>
 
                 {{-- LOCATION --}}
-                <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-indigo-900 truncate">
+                <div class="min-w-0">
+                    <p class="font-semibold text-indigo-900 truncate"
+                       title="{{ $booking->location?->title }}">
                         {{ $booking->location?->title ?? 'Deleted location' }}
                     </p>
-                    <p class="text-sm text-gray-500 mt-1 truncate">
+                    <p class="text-sm text-gray-500 mt-1 line-clamp-2">
                         {{ $booking->hours }} hr{{ $booking->hours > 1 ? 's' : '' }}
                         @if ($booking->shoot_type) &middot; {{ $booking->shoot_type }} @endif
                         @if ($booking->location?->owner)
@@ -74,12 +75,11 @@
                 </div>
 
                 {{-- WHEN, PRICE, STATUS --}}
-                <div class="shrink-0 flex flex-wrap items-center gap-x-3 gap-y-1
-                            sm:flex-col sm:items-end sm:text-right sm:gap-1">
-                    <p class="text-sm text-gray-400 whitespace-nowrap">
+                <div class="flex flex-col gap-1">
+                    <p class="text-sm text-gray-400">
                         {{ $booking->booking_date->format('M d, Y · g:i A') }}
                     </p>
-                    <p class="font-semibold text-indigo-900 whitespace-nowrap">
+                    <p class="font-semibold text-indigo-900">
                         PKR {{ number_format((float) $booking->total_price) }}
                     </p>
                     <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
@@ -87,9 +87,9 @@
                     </span>
                 </div>
 
-                {{-- ACTIONS — only rendered when there is one, so the row keeps its spacing --}}
+                {{-- ACTIONS — mt-auto pins them to the bottom so buttons line up across a row --}}
                 @if ($canPay || $canCancel || $canReview)
-                    <div class="shrink-0 flex flex-col gap-2 w-full sm:w-40">
+                    <div class="mt-auto pt-1 flex flex-col gap-2">
                         @if ($canPay)
                             <a href="{{ route('customer.bookings.pay', $booking->id) }}"
                                class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
@@ -119,7 +119,8 @@
                 @endif
             </div>
         @empty
-            <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400">
+            <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400
+                        sm:col-span-2 xl:col-span-3">
                 <i class="fa-solid fa-calendar text-2xl mb-2"></i>
                 <p class="font-medium">No bookings yet</p>
                 <a href="{{ route('customer.listings') }}"
