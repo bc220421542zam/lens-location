@@ -24,23 +24,30 @@
 
         {{-- Category --}}
     <div class="w-full md:w-48">
-        <label for="filter-category"
-            class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
-            <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                d="M4 6h12M4 10h8M4 14h5"/>
-            </svg>    
-            Category
-        </label>
-            <select name="category" class="input text-indigo-800 pr-3">
-                <option value="" class="text-indigo-900">All</option>
-                    @foreach ($categories as $cat)
-                        <option value="{{ $cat }}" @selected(request('category') === $cat) class="text-indigo-900">{{ $cat }}</option>
-                    @endforeach
-            </select>
+    <label for="filter-category" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
+        <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            d="M4 6h12M4 10h8M4 14h5"/>
+        </svg>
+        Category
+    </label>
+    <div class="relative">
+        <select name="category" id="filter-category" class="input text-indigo-800 w-full appearance-none pr-8">
+            <option value="" class="text-indigo-900">All</option>
+            @foreach ($categories as $cat)
+                <option value="{{ $cat }}" @selected(request('category') === $cat) class="text-indigo-900">{{ $cat }}</option>
+            @endforeach
+        </select>
+        <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+        </div>
     </div>
 
-        {{-- Status --}}
+    {{-- Status --}}
     <div class="w-full md:w-48">
         <label for="filter-status" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -49,12 +56,20 @@
             </svg>
             Status
         </label>
-            <select name="status" id="filter-status" class="input text-indigo-800">
+        <div class="relative">
+            <select name="status" id="filter-status" class="input text-indigo-800 w-full appearance-none pr-8">
                 <option value="" class="text-indigo-900">All</option>
-                <option value="pending" @selected(request('status') === 'pending') class="text-indigo-900">Pending</option>
+                <option value="pending"  @selected(request('status') === 'pending')  class="text-indigo-900">Pending</option>
                 <option value="approved" @selected(request('status') === 'approved') class="text-indigo-900">Approved</option>
                 <option value="rejected" @selected(request('status') === 'rejected') class="text-indigo-900">Rejected</option>
             </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
     </div>
                 
         {{--price/hr--}}

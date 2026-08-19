@@ -69,6 +69,7 @@
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold text-indigo-900">{{ $location->title }}</h1>
                 <span class="badge-inline badge-active">{{ ucfirst($location->category) }}</span>
+                
             </div>
 
             <p class="text-sm text-gray-500 mt-1">

@@ -49,7 +49,7 @@
               class="input text-indigo-800">
     </div>
 
-    {{-- Status --}}
+   {{-- Status --}}
     <div class="w-full md:w-48">
         <label for="filter-status" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -58,12 +58,20 @@
             </svg>
             Status
         </label>
-        <select name="status" id="filter-status" class="input text-indigo-800">
-            <option value="">All</option>
-            <option value="paid"    @selected(request('status') === 'paid')>Paid</option>
-            <option value="pending" @selected(request('status') === 'pending')>Pending</option>
-            <option value="failed"  @selected(request('status') === 'failed')>Failed</option>
-        </select>
+        <div class="relative">
+            <select name="status" id="filter-status" class="input text-indigo-800 w-full appearance-none pr-8">
+                <option value="">All</option>
+                <option value="paid"    @selected(request('status') === 'paid')>Paid</option>
+                <option value="pending" @selected(request('status') === 'pending')>Pending</option>
+                <option value="failed"  @selected(request('status') === 'failed')>Failed</option>
+            </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
     </div>
 
     {{-- Buttons --}}

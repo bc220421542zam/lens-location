@@ -16,23 +16,31 @@
                   class="input text-indigo-800">
     </div>
         {{-- Role --}}
-    <div class="w-full md:w-48">
+        <div class="w-full md:w-48">
         <label for="filter-role" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                 d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 3.58-7 8-7s8 3 8 7"/>
+                d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 3.58-7 8-7s8 3 8 7"/>
             </svg>
             Role
         </label>
-            <select name="role" id="filter-role" class="input text-indigo-800">
+        <div class="relative">
+            <select name="role" id="filter-role" class="input text-indigo-800 w-full appearance-none pr-8">
                 <option value="">All</option>
-                    <option value="admin"        @selected(request('role') === 'admin')>Admin</option>
-                    <option value="owner"        @selected(request('role') === 'owner')>Owner</option>
-                    <option value="customer" @selected(request('role') === 'customer')>Customer</option>
+                <option value="admin"    @selected(request('role') === 'admin')>Admin</option>
+                <option value="owner"    @selected(request('role') === 'owner')>Owner</option>
+                <option value="customer" @selected(request('role') === 'customer')>Customer</option>
             </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
     </div>
 
-        {{-- Status --}}
+    {{-- Status --}}
     <div class="w-full md:w-48">
         <label for="filter-status" class="flex items-center gap-1.5 text-indigo-900 mb-1 text-sm">
             <svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -41,13 +49,19 @@
             </svg>
             Status
         </label>
-            <select name="status" id="filter-status" class="input text-indigo-800">
-                 <option value="">All</option>
-                    <option value="active"  @selected(request('status') === 'active')>Active</option>
-                    <option value="blocked" @selected(request('status') === 'blocked')>Blocked</option>
-                </select>
-
+        <div class="relative">
+            <select name="status" id="filter-status" class="input text-indigo-800 w-full appearance-none pr-8">
+                <option value="">All</option>
+                <option value="active"  @selected(request('status') === 'active')>Active</option>
+                <option value="blocked" @selected(request('status') === 'blocked')>Blocked</option>
             </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
     </div>
 
         {{--filter buttons--}}

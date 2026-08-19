@@ -42,18 +42,29 @@
                     @enderror
                 </div>
                 <div class="w-44">
-                    <label for="category" class="text-xs text-indigo-900 mb-1 block">Category</label>
-                    <select
-                        name="category"
-                        class="input-field shade w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-                               @error('category') border-red-400 @enderror">
-                        <option value="">Category</option>
-                        <option value="studio"  {{ old('category', $location->category) == 'studio'  ? 'selected' : '' }}>Studio</option>
-                        <option value="outdoor" {{ old('category', $location->category) == 'outdoor' ? 'selected' : '' }}>Outdoor</option>
-                        <option value="rooftop" {{ old('category', $location->category) == 'rooftop' ? 'selected' : '' }}>Rooftop</option>
-                        <option value="indoor"  {{ old('category', $location->category) == 'indoor'  ? 'selected' : '' }}>Indoor</option>
-                        <option value="garden"  {{ old('category', $location->category) == 'garden'  ? 'selected' : '' }}>Garden</option>
-                    </select>
+                    <label class="text-xs text-indigo-900 mb-1 block">Category</label>
+
+                    <div class="relative">
+                        <select
+                            name="category"
+                            class="input-field shade w-full appearance-none border border-gray-200 rounded-lg px-3 py-2 pr-8 text-sm
+                                @error('category') border-red-400 @enderror">
+                            <option value="">Category</option>
+                            <option value="studio"  {{ old('category', $location->category) == 'studio'  ? 'selected' : '' }}>Studio</option>
+                            <option value="outdoor" {{ old('category', $location->category) == 'outdoor' ? 'selected' : '' }}>Outdoor</option>
+                            <option value="rooftop" {{ old('category', $location->category) == 'rooftop' ? 'selected' : '' }}>Rooftop</option>
+                            <option value="indoor"  {{ old('category', $location->category) == 'indoor'  ? 'selected' : '' }}>Indoor</option>
+                            <option value="garden"  {{ old('category', $location->category) == 'garden'  ? 'selected' : '' }}>Garden</option>
+                        </select>
+
+                        <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+
                     @error('category')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror

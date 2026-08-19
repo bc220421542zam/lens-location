@@ -171,17 +171,26 @@
                         </div>
                     </div>
               <!-- Role Dropdown -->
-            <div class="w-133 mt-5 gap-2 text-indigo-900">
+           <div class="w-133 mt-5 gap-2 text-indigo-900">
                 <label for="role" class="block text-sm font-medium text-indigo-900 mb-1">Role</label>
-                <select id="role" name="role" form="registerForm"
-                    onblur="validateField(this)"
-                    class="field {{ $errors->has('role') ? 'border-red-400' : 'border-indigo-300' }} field-transition">
-                    <option value="">Select Role</option>
-                    <option value="customer" {{ old('role') == 'customer' ? 'selected' : '' }}>Customer</option>
-                    <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Location Owner</option>
-                </select>
+                <div class="relative">
+                    <select id="role" name="role" form="registerForm"
+                        onblur="validateField(this)"
+                        class="field {{ $errors->has('role') ? 'border-red-400' : 'border-indigo-300' }} field-transition
+                            w-full appearance-none pr-8">
+                        <option value="">Select Role</option>
+                        <option value="customer" {{ old('role') == 'customer' ? 'selected' : '' }}>Customer</option>
+                        <option value="owner" {{ old('role') == 'owner' ? 'selected' : '' }}>Location Owner</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </div>
                 @error('role')
-                    <p class=" text-red-500 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @else
                     <p class="text-red-500 text-xs mt-1 hidden" data-error="role"></p>
                 @enderror
