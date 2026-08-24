@@ -4,57 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51d7b1c33906659821b4d721ded82453",
+    "content-hash": "e32afb6224cb19ad32ab29c1a91b961d",
     "packages": [
-        {
-            "name": "akcybex/laravel-jazzcash",
-            "version": "1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/akcybex/laravel-jazzcash.git",
-                "reference": "74cebf9362e3437c39ac2a20d7e94e2d9f289060"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/akcybex/laravel-jazzcash/zipball/74cebf9362e3437c39ac2a20d7e94e2d9f289060",
-                "reference": "74cebf9362e3437c39ac2a20d7e94e2d9f289060",
-                "shasum": ""
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "JazzCash": "AKCybex\\JazzCash\\Facades\\JazzCash"
-                    },
-                    "providers": [
-                        "AKCybex\\JazzCash\\AKJazzCashServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "App\\": "app/",
-                    "AKCybex\\JazzCash\\": "src/"
-                },
-                "classmap": []
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Rana Tayyab",
-                    "email": "akcybex@gmail.com"
-                }
-            ],
-            "description": "Jazzcash - Laravel Jazzcash Payment Gateway Integration",
-            "support": {
-                "issues": "https://github.com/akcybex/laravel-jazzcash/issues",
-                "source": "https://github.com/akcybex/laravel-jazzcash/tree/1.0"
-            },
-            "time": "2021-12-26T15:42:25+00:00"
-        },
         {
             "name": "brick/math",
             "version": "0.14.8",
@@ -4992,6 +4943,68 @@
                 }
             ],
             "time": "2024-06-11T12:45:25+00:00"
+        },
+        {
+            "name": "stripe/stripe-php",
+            "version": "v21.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "da798f6224c5ff6f89d8d78025044f418ee27db8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/da798f6224c5ff6f89d8d78025044f418ee27db8",
+                "reference": "da798f6224c5ff6f89d8d78025044f418ee27db8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=7.2.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.94.0",
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^8.0 || ^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/version_check.php"
+                ],
+                "psr-4": {
+                    "Stripe\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+            "support": {
+                "issues": "https://github.com/stripe/stripe-php/issues",
+                "source": "https://github.com/stripe/stripe-php/tree/v21.2.1"
+            },
+            "time": "2026-08-20T21:06:13+00:00"
         },
         {
             "name": "symfony/clock",

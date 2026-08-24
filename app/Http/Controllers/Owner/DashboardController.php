@@ -36,7 +36,9 @@ class DashboardController extends Controller
             'active'         => (int) $listingTotals->approved_count,
             'pending'        => (int) $listingTotals->pending_count,
             'bookings'       => $this->ownerBookings($ownerId)->count(),
-            'pending_payout' => Transaction::where('owner_id', $ownerId)
+            // Destination charges transfer automatically, so anything still
+            // 'unpaid' is in flight rather than awaiting a manual payout.
+            'in_transit' => Transaction::where('owner_id', $ownerId)
                 ->where('status', 'paid')
                 ->where('payout_status', 'unpaid')
                 ->sum('owner_earning'),

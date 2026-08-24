@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('locations', 'images')) {
+            return;
+        }
+
         Schema::table('locations', function (Blueprint $table) {
             // All gallery images; `image` stays the cover (first of these).
             $table->json('images')->nullable()->after('image');

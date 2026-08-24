@@ -2,22 +2,28 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Transaction;
+use App\Support\StripeGateway;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Stripe\Exception\ApiErrorException;
 
 class PaymentController extends Controller
 {
-    private const COMMISSION_RATE = 0.10;
+    public function __construct(private StripeGateway $stripe) {}
 
     public function index(Request $request): View
     {
         $request->validate([
             'search'     => 'nullable|string|max:255',
-            'status'     => 'nullable|in:paid,pending,failed',
+            'status'     => 'nullable|in:paid,pending,failed,refunded',
             'min_amount' => 'nullable|numeric|min:0',
             'max_amount' => 'nullable|numeric|min:0|gte:min_amount',
         ]);
@@ -26,7 +32,8 @@ class PaymentController extends Controller
             ->with('booking.location')
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q) use ($request) {
                 $term = '%'.$request->string('search').'%';
-                $q->where('jazzcash_txn_ref', 'like', $term)
+                $q->where('gateway_ref', 'like', $term)
+                    ->orWhere('stripe_payment_intent_id', 'like', $term)
                     ->orWhereHas('booking.location', fn ($q) => $q->where('title', 'like', $term));
             }))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
@@ -39,107 +46,104 @@ class PaymentController extends Controller
         return view('customer.payments', compact('transactions'));
     }
 
-    public function pay(Booking $booking): View
+    /**
+     * Start a hosted Checkout Session for a confirmed booking.
+     *
+     * POST, not GET: this creates a Stripe session and a database row, so it
+     * must not be reachable by a prefetched link.
+     */
+    public function pay(Booking $booking): RedirectResponse
     {
         abort_unless($booking->customer_id === auth()->id(), 403);
 
-        $orderRef = 'ORD' . now()->format('YmdHis') . $booking->id;
-        $amount = $booking->total_price;
+        $booking->loadMissing('location.owner', 'customer');
 
-        Transaction::create([
-            'booking_id'       => $booking->id,
-            'customer_id'      => $booking->customer_id,
-            'owner_id'         => $booking->location->user_id,
-            'amount'           => $amount,
-            'owner_earning'    => $amount * (1 - self::COMMISSION_RATE),
-            'jazzcash_txn_ref' => $orderRef,
-            'status'           => 'pending',
-        ]);
+        if ($booking->status !== BookingStatus::Confirmed) {
+            return back()->with('error', 'Only confirmed bookings can be paid.');
+        }
 
-        $data = $this->buildJazzCashPayload($booking, $orderRef);
+        if ($booking->transactions()->where('status', PaymentStatus::Paid)->exists()) {
+            return back()->with('error', 'This booking is already paid.');
+        }
 
-        return view('customer.payments.redirect', [
-            'data' => $data,
-            'url'  => config('services.jazzcash.url'),
-        ]);
+        $owner = $booking->location?->owner;
+
+        if (! $owner?->canReceivePayouts()) {
+            return back()->with(
+                'error',
+                'This owner has not finished setting up payouts yet, so payment is unavailable. Please try again later.',
+            );
+        }
+
+        // Reuse an existing pending transaction rather than inserting a new row
+        // on every click - the idempotency key is derived from its id.
+        $transaction = DB::transaction(function () use ($booking, $owner) {
+            $split = $this->stripe->split((float) $booking->total_price);
+
+            return Transaction::firstOrCreate(
+                [
+                    'booking_id' => $booking->id,
+                    'status'     => PaymentStatus::Pending,
+                ],
+                [
+                    'customer_id'   => $booking->customer_id,
+                    'owner_id'      => $owner->id,
+                    'amount'        => $split['amount_minor'] / 100,
+                    'platform_fee'  => $split['fee_minor'] / 100,
+                    'owner_earning' => $split['owner_minor'] / 100,
+                    'currency'      => strtoupper($this->stripe->currency()),
+                ],
+            );
+        });
+
+        try {
+            $session = $this->stripe->checkoutSession(
+                $booking,
+                $transaction,
+                $owner->stripe_account_id,
+                route('customer.payments.success'),
+                route('customer.bookings'),
+            );
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe checkout session failed', [
+                'booking_id' => $booking->id,
+                'message'    => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'We could not start the payment. Please try again.');
+        }
+
+        $transaction->update(['stripe_checkout_session_id' => $session->id]);
+
+        return redirect()->away($session->url);
     }
 
-    private function buildJazzCashPayload(Booking $booking, string $orderRef): array
+    /**
+     * Landing page after Checkout.
+     *
+     * Deliberately read-only: the customer may never reach this page, so the
+     * webhook is the only thing that marks a transaction paid.
+     */
+    public function success(Request $request): RedirectResponse
     {
-        $now = now('Asia/Karachi');
-        $txnDateTime = $now->format('YmdHis');
-        $expiry = $now->copy()->addHours(2)->format('YmdHis');
-        $amount = (int) round($booking->total_price * 100);
+        $sessionId = $request->string('session_id')->toString();
 
-        $booking->loadMissing('customer');
-        $mobileNumber = $booking->customer->phone ?? '03123456789';
-        $mobileNumber = preg_replace('/\D/', '', $mobileNumber);
-        
-        if (str_starts_with($mobileNumber, '92') && strlen($mobileNumber) === 12) {
-            $mobileNumber = '0' . substr($mobileNumber, 2);
-        }
-        
-        if (!str_starts_with($mobileNumber, '03') || strlen($mobileNumber) !== 11) {
-            $mobileNumber = '03123456789';
+        if ($sessionId === '') {
+            return redirect()->route('customer.bookings');
         }
 
-        $data = [
-            'pp_Version'           => '1.1',
-            'pp_TxnType'           => 'MWALLET',
-            'pp_Language'          => 'EN',
-            'pp_MerchantID'        => config('services.jazzcash.merchant_id'),
-            'pp_SubMerchantID'     => '',
-            'pp_Password'          => config('services.jazzcash.password'),
-            'pp_BankID'            => '',
-            'pp_ProductID'         => '',
-            'pp_TxnRefNo'          => $orderRef,
-            'pp_Amount'            => $amount,
-            'pp_TxnCurrency'       => 'PKR',
-            'pp_TxnDateTime'       => $txnDateTime,
-            'pp_BillReference'     => $orderRef,
-            'pp_Description'       => 'Booking payment #' . $booking->id,
-            'pp_TxnExpiryDateTime' => $expiry,
-            'pp_ReturnURL'         => config('services.jazzcash.return_url') ?: route('customer.payments.callback'),
-            'pp_MobileNumber'      => $mobileNumber,
-            'pp_CNIC'              => '345678',
-            'ppmpf_1'              => '',
-            'ppmpf_2'              => '',
-            'ppmpf_3'              => '',
-            'ppmpf_4'              => '',
-            'ppmpf_5'              => '',
-        ];
+        $transaction = Transaction::where('stripe_checkout_session_id', $sessionId)
+            ->where('customer_id', auth()->id())
+            ->first();
 
-        $hashData = [];
-        foreach ($data as $key => $value) {
-            if ((str_starts_with($key, 'pp_') || str_starts_with($key, 'ppmpf_')) && $key !== 'pp_SecureHash') {
-                $hashData[$key] = $value;
-            }
-        }
-        ksort($hashData, SORT_STRING);
-
-        $stringToHash = config('services.jazzcash.salt') . '&' . implode('&', $hashData);
-        $data['pp_SecureHash'] = strtoupper(hash_hmac('sha256', $stringToHash, config('services.jazzcash.salt')));
-
-        return $data;
-    }
-
-    public function callback(Request $request): RedirectResponse
-    {
-        \Illuminate\Support\Facades\Log::info('JazzCash Callback Data: ' . json_encode($request->all()));
-
-        $orderRef = $request->input('pp_TxnRefNo');
-        $success = $request->input('pp_ResponseCode') === '000';
-
-        $transaction = Transaction::where('jazzcash_txn_ref', $orderRef)->first();
-
-        if ($transaction) {
-            $transaction->update(['status' => $success ? 'paid' : 'failed']);
-            if ($success) {
-                $transaction->booking->update(['status' => 'confirmed']);
-            }
+        if (! $transaction) {
+            return redirect()->route('customer.bookings');
         }
 
-        return redirect()->route('customer.bookings')
-            ->with($success ? 'success' : 'error', $success ? 'Payment successful!' : 'Payment failed.');
+        $message = $transaction->status === PaymentStatus::Paid
+            ? 'Payment successful. Your booking is confirmed.'
+            : 'Payment received - we are confirming it with Stripe now.';
+
+        return redirect()->route('customer.bookings')->with('success', $message);
     }
 }

@@ -6,7 +6,6 @@ use App\Enums\Role;
 use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPasswordNotification;
@@ -16,6 +15,12 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+
+    /**
+     * Accounts v2 capability status meaning the owner can receive transfers.
+     * The deprecated v1 charges_enabled/payouts_enabled flags are not used.
+     */
+    public const TRANSFERS_ACTIVE = 'active';
 
     protected $fillable = [
         'role',
@@ -31,6 +36,9 @@ class User extends Authenticatable
         'profile_picture',
         'status',
         'google_id',
+        'stripe_account_id',
+        'stripe_transfers_status',
+        'stripe_onboarded_at',
         'notif_new_booking',
         'notif_new_user',
         'notif_new_listing',
@@ -61,6 +69,7 @@ class User extends Authenticatable
             'notif_push'         => 'boolean',
             'notif_email'        => 'boolean',
             'notif_sms'          => 'boolean',
+            'stripe_onboarded_at' => 'datetime',
         ];
     }
 
@@ -94,9 +103,23 @@ class User extends Authenticatable
     return $this->belongsToMany(Location::class, 'favorites')->withTimestamps();
 }
 
-    public function payment(): HasOne
+    /**
+     * Whether Stripe will accept a transfer to this owner's connected account.
+     * Gates the customer-facing Pay button.
+     */
+    public function canReceivePayouts(): bool
     {
-        return $this->hasOne(Payment::class);
+        return $this->stripe_account_id !== null
+            && $this->stripe_transfers_status === self::TRANSFERS_ACTIVE;
     }
 
+    public function hasStartedStripeOnboarding(): bool
+    {
+        return $this->stripe_account_id !== null;
+    }
+
+    public function transactionsAsOwner(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'owner_id');
+    }
 }

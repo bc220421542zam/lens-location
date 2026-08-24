@@ -3,6 +3,8 @@
     <x-topbar title="Earnings" description="Your income from bookings"></x-topbar>
 
     {{-- Stats --}}
+    <x-ownerComp.stripe-payouts />
+
     <x-ownerComp.earning-stats :stats="$stats" />
 
     {{-- FILTERS --}}
@@ -92,22 +94,15 @@
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->owner_earning, 2) }}</td>
                             <td class="px-2 text-sm">
-                                @php
-                                    $badge = match($t->status) {
-                                        'paid' => 'bg-green-100 text-green-700',
-                                        'failed' => 'bg-red-100 text-red-600',
-                                        default => 'bg-yellow-100 text-yellow-700',
-                                    };
-                                @endphp
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $badge }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status === 'paid' ? 'bg-green-600' : ($t->status === 'failed' ? 'bg-red-600' : 'bg-yellow-600') }}"></span>
-                                    {{ ucfirst($t->status) }}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>
+                                    {{ $t->status->label() }}
                                 </span>
                             </td>
                             <td class="px-2 text-sm">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->payout_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->payout_status === 'paid' ? 'bg-green-600' : 'bg-gray-500' }}"></span>
-                                    {{ ucfirst($t->payout_status) }}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->payout_status->badgeClasses() }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->payout_status->dotClasses() }}"></span>
+                                    {{ $t->payout_status->label() }}
                                 </span>
                             </td>
                         </tr>

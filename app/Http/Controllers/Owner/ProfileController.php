@@ -3,30 +3,18 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\ProfileController as BaseProfileController;
-use App\Http\Requests\Owner\UpdatePaymentRequest;
-use App\Models\Payment;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class ProfileController extends BaseProfileController
 {
+    /**
+     * Payout details used to live in a `payments` table that had no migration,
+     * so this method threw on every request. Stripe Connect owns payout details
+     * now - the view renders the connect card from the authenticated user.
+     */
     public function show(): View
     {
-        $payment = Payment::where('user_id', auth()->id())->first();
-
-        return view('owner.profile', compact('payment'));
-    }
-
-    public function updatePayment(UpdatePaymentRequest $request): RedirectResponse
-    {
-        Payment::updateOrCreate(
-            ['user_id' => $request->user()->id],
-            $request->validated(),
-        );
-
-        return redirect()
-            ->route('owner.profile')
-            ->with('success', 'Payment info saved successfully.');
+        return view('owner.profile');
     }
 
     protected function profileRouteName(): string

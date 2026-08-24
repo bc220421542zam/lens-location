@@ -47,9 +47,9 @@
                             @endphp
 
                             <th class="px-2 font-medium">
-                                <a href="{{ $sortLink('jazzcash_txn_ref') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
+                                <a href="{{ $sortLink('gateway_ref') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
                                     Ref
-                                    @if($currentSort === 'jazzcash_txn_ref')
+                                    @if($currentSort === 'gateway_ref')
                                         <i class="fa-solid fa-sort-{{ $currentDirection === 'asc' ? 'up' : 'down' }} text-[10px]"></i>
                                     @else
                                         <i class="fa-solid fa-sort text-[10px] text-indigo-300"></i>
@@ -73,6 +73,7 @@
                             </th>
 
                             <th class="px-2 font-medium">Owner Earning</th>
+                            <th class="px-2 font-medium">Commission</th>
 
                             <th class="px-2 font-medium">
                                 <a href="{{ $sortLink('status') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
@@ -94,23 +95,17 @@
                             <td class="py-3 px-4 text-sm text-indigo-700">
                                 {{ $transactions->firstItem() + $loop->index }}
                             </td>
-                            <td class="px-2 text-sm text-indigo-700">{{ $t->jazzcash_txn_ref }}</td>
+                            <td class="px-2 text-sm text-indigo-700">{{ $t->reference() }}</td>
                             <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
                             <td class="px-2 text-sm text-indigo-700">{{ $t->customer->first_name ?? '—' }}</td>
                             <td class="px-2 text-sm text-indigo-700">{{ $t->owner->first_name ?? '—' }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->owner_earning, 2) }}</td>
+                            <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->platform_fee, 2) }}</td>
                             <td class="px-2 text-sm">
-                                @php
-                                    $badge = match($t->status) {
-                                        'paid' => 'bg-green-100 text-green-700',
-                                        'failed' => 'bg-red-100 text-red-600',
-                                        default => 'bg-yellow-100 text-yellow-700',
-                                    };
-                                @endphp
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $badge }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status === 'paid' ? 'bg-green-600' : ($t->status === 'failed' ? 'bg-red-600' : 'bg-yellow-600') }}"></span>
-                                    {{ ucfirst($t->status) }}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>
+                                    {{ $t->status->label() }}
                                 </span>
                             </td>
                             <td class="px-2 py-3">
@@ -125,7 +120,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="py-6 text-center text-indigo-400 text-sm">No transactions found.</td>
+                            <td colspan="10" class="py-6 text-center text-indigo-400 text-sm">No transactions found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -159,7 +154,7 @@
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
                         <span class="text-indigo-900 text-sm">Ref</span>
-                        <span class="text-indigo-900 text-sm font-medium break-all ml-4" x-text="selectedTxn.jazzcash_txn_ref"></span>
+                        <span class="text-indigo-900 text-sm font-medium break-all ml-4" x-text="selectedTxn.stripe_payment_intent_id || selectedTxn.gateway_ref || '—'"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
@@ -175,7 +170,7 @@
                     <div class="flex justify-between pb-2">
                         <span class="text-indigo-900 text-sm">Status</span>
                         <span class="text-sm font-medium"
-                            :class="selectedTxn.status === 'paid' ? 'text-green-500' : (selectedTxn.status === 'failed' ? 'text-red-500' : 'text-yellow-500')"
+                            :class="selectedTxn.status === 'paid' ? 'text-green-500' : (selectedTxn.status === 'failed' ? 'text-red-500' : (selectedTxn.status === 'refunded' ? 'text-gray-500' : 'text-yellow-500'))"
                             x-text="selectedTxn.status ?? 'N/A'">
                         </span>
                     </div>

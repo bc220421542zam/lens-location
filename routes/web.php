@@ -19,6 +19,8 @@ use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\PaymentController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Owner\EarningController;
+use App\Http\Controllers\Owner\StripeConnectController;
+use App\Http\Controllers\StripeWebhookController;
 
 
 
@@ -43,9 +45,10 @@ Route::controller(SocialiteController::class)->group(function () {
     Route::get('/auth/google-callback', 'handleGoogleCallback')->name('auth.google.callback');
 });
 
-// JazzCash callback — must sit outside auth/role middleware since JazzCash's
-// server hits this directly and isn't logged in as any of your users.
-Route::post('/jazzcash/callback', [PaymentController::class, 'callback'])->name('customer.payments.callback');
+// Stripe webhook — must sit outside auth/role middleware since Stripe's servers
+// hit this directly and aren't logged in as any of your users. Safe only
+// because the handler verifies the signature before reading the payload.
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -129,6 +132,12 @@ Route::middleware('auth')->group(function () {
         // Earnings
         Route::get('/earnings', [EarningController::class, 'index'])->name('earnings');
 
+        // Stripe Connect payouts
+        Route::post('/stripe/connect',   [StripeConnectController::class, 'onboard'])->name('stripe.connect');
+        Route::get('/stripe/return',     [StripeConnectController::class, 'callbackReturn'])->name('stripe.return');
+        Route::post('/stripe/refresh',   [StripeConnectController::class, 'refresh'])->name('stripe.refresh');
+        Route::post('/stripe/dashboard', [StripeConnectController::class, 'dashboard'])->name('stripe.dashboard');
+
         // Profile
         Route::get('/profile',                [Owner\ProfileController::class, 'show'])->name('profile');
         Route::post('/profile/update',        [Owner\ProfileController::class, 'updateProfile'])->name('profile.update');
@@ -178,11 +187,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/password',      [Customer\ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::post('/profile/notifications', [Customer\ProfileController::class, 'updateNotifications'])->name('profile.notifications');
 
-        //payment-Jazzcash
-        Route::get('/bookings/{booking}/pay', [PaymentController::class, 'pay'])->name('bookings.pay');
+        // Payments (Stripe Checkout). POST because it creates a Stripe session
+        // and a transaction row, so it must not be prefetchable.
+        Route::post('/bookings/{booking}/pay', [PaymentController::class, 'pay'])->name('bookings.pay');
+        Route::get('/payments/success', [PaymentController::class, 'success'])->name('payments.success');
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments');
 
     });
-   // Route::match(['get', 'post'], '/jazzcash/callback', [PaymentController::class, 'callback'])->name('payments.callback');
 
 });

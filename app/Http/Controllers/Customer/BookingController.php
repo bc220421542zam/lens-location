@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Enums\BookingStatus;
 use App\Enums\ListingStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreBookingRequest;
 use App\Models\Booking;
@@ -22,6 +23,9 @@ class BookingController extends Controller
         ]);
 
         $bookings = Booking::with('location.owner')
+            // Drives the Paid badge and hides the Pay button, without an extra
+            // query per booking.
+            ->withExists(['transactions as paid_transaction_exists' => fn ($q) => $q->where('status', PaymentStatus::Paid)])
             ->where('customer_id', auth()->id())
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->latest('booking_date')

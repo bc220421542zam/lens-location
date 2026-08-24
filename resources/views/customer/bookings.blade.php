@@ -37,7 +37,8 @@
                     'completed' => 'bg-indigo-100 text-indigo-700',
                     'cancelled' => 'bg-red-100 text-red-600',
                 };
-                $canPay    = $status === 'confirmed';
+                $isPaid    = (bool) $booking->paid_transaction_exists;
+                $canPay    = $status === 'confirmed' && ! $isPaid;
                 $canCancel = $status === 'pending';
                 $canReview = $status === 'completed';
             @endphp
@@ -82,19 +83,30 @@
                     <p class="font-semibold text-indigo-900">
                         PKR {{ number_format((float) $booking->total_price) }}
                     </p>
-                    <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
-                        {{ ucfirst($status) }}
-                    </span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
+                            {{ ucfirst($status) }}
+                        </span>
+                        @if ($isPaid)
+                            <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+                                <i class="fa-solid fa-circle-check mr-1"></i>Paid
+                            </span>
+                        @endif
+                    </div>
                 </div>
 
                 {{-- ACTIONS — mt-auto pins them to the bottom so buttons line up across a row --}}
                 @if ($canPay || $canCancel || $canReview)
                     <div class="mt-auto pt-1 flex flex-col gap-2">
                         @if ($canPay)
-                            <a href="{{ route('customer.bookings.pay', $booking->id) }}"
-                               class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
-                                Pay with JazzCash
-                            </a>
+                            <form method="POST" action="{{ route('customer.bookings.pay', $booking->id) }}"
+                                  class="w-full">
+                                @csrf
+                                <button type="submit"
+                                        class="action-btn shade grow-0 basis-auto w-full whitespace-nowrap">
+                                    <i class="fa-solid fa-credit-card mr-1"></i>Pay with Card
+                                </button>
+                            </form>
                         @endif
 
                         @if ($canCancel)

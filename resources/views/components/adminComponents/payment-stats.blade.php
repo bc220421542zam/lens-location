@@ -23,12 +23,12 @@
 
     <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-green-700/60">
         <div class="flex justify-between items-start">
-            <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Pending Payouts</h3>
+            <h3 class="text-xs md:text-sm text-indigo-900 mb-2 md:mb-3">Paid to Owners</h3>
             <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-700">
                 <i class="fa-solid fa-clock text-sm"></i>
             </div>
         </div>
-        <p class="text-xl md:text-2xl font-bold text-green-700">Rs. {{ number_format($stats['pending_payouts'], 2) }}</p>
+        <p class="text-xl md:text-2xl font-bold text-green-700">Rs. {{ number_format($stats['owner_payouts'], 2) }}</p>
     </div>
 
     <div class="card card-transition shade bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border-l-3 border-red-500/60">

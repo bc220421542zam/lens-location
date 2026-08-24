@@ -64,19 +64,12 @@
                                 {{ $transactions->firstItem() + $loop->index }}
                             </td>
                             <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
-                            <td class="px-2 text-sm text-indigo-700">{{ $t->jazzcash_txn_ref }}</td>
+                            <td class="px-2 text-sm text-indigo-700">{{ $t->reference() }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm">
-                                @php
-                                    $badge = match($t->status) {
-                                        'paid' => 'bg-green-100 text-green-700',
-                                        'failed' => 'bg-red-100 text-red-600',
-                                        default => 'bg-yellow-100 text-yellow-700',
-                                    };
-                                @endphp
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $badge }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status === 'paid' ? 'bg-green-600' : ($t->status === 'failed' ? 'bg-red-600' : 'bg-yellow-600') }}"></span>
-                                    {{ ucfirst($t->status) }}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>
+                                    {{ $t->status->label() }}
                                 </span>
                             </td>
                         </tr>

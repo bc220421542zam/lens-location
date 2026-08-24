@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Stripe\StripeClient;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -11,7 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bound as a singleton so feature tests can swap in a fake client.
+        $this->app->singleton(StripeClient::class, fn () => new StripeClient(
+            config('services.stripe.secret'),
+        ));
     }
 
     /**

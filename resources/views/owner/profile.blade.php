@@ -122,6 +122,8 @@
                     profileVisible: true
                 }">
 
+        {{-- STRIPE PAYOUTS --}}
+            <x-ownerComp.stripe-payouts />
         {{-- NOTIFICATIONS --}}
             <x-profileComponents.notifications prefix="owner" />
         {{--Account Details--}}

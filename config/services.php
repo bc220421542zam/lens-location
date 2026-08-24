@@ -41,12 +41,18 @@ return [
     'redirect'      => env('GOOGLE_REDIRECT'),
 ],
 
-'jazzcash' => [
-    'merchant_id' => env('JAZZCASH_MERCHANT_ID'),
-    'password'    => env('JAZZCASH_PASSWORD'),
-    'salt'        => env('JAZZCASH_INTEGRITY_SALT'),
-    'url'         => env('JAZZCASH_URL', 'https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform'),
-    'return_url'  => env('JAZZCASH_RETURN_URL'),
+'stripe' => [
+    'key'             => env('STRIPE_KEY'),
+    'secret'          => env('STRIPE_SECRET'),
+    'webhook_secret'  => env('STRIPE_WEBHOOK_SECRET'),
+    'currency'        => env('STRIPE_CURRENCY', 'pkr'),
+    'commission_rate' => (float) env('PLATFORM_COMMISSION_RATE', 0.10),
+    'connect_country' => env('STRIPE_CONNECT_COUNTRY', 'US'),
+
+    // The Accounts v2 / AccountLinks v2 endpoints are only available on a
+    // preview API version. v1 calls (Checkout, PaymentIntents) use the SDK
+    // default and must NOT send this.
+    'preview_version' => env('STRIPE_PREVIEW_VERSION', '2026-07-29.preview'),
 ],
 
 ];

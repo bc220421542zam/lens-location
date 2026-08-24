@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('locations', function (Blueprint $table) {
-        $table->json('images')->nullable();
-        });
+        // Was inverted - it ADDED `images` on rollback, which then collided
+        // with the earlier migration's own down(). This migration is a no-op
+        // in both directions.
     }
 };

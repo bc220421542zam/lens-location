@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,11 +10,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'owner', 'photographer', 'customer') NOT NULL DEFAULT 'admin'");
+        // MySQL stores `role` as a native ENUM, so widening it to admit
+        // 'customer' and then narrowing it again needs DDL. SQLite (used by the
+        // test suite) has no ENUM type - the column is already a plain string,
+        // so only the data migration applies there.
+        $this->setRoleEnum(['admin', 'owner', 'photographer', 'customer']);
+
         DB::table('users')->where('role', 'photographer')->update(['role' => 'customer']);
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'owner', 'customer') NOT NULL DEFAULT 'admin'");
-        
+
+        $this->setRoleEnum(['admin', 'owner', 'customer']);
     }
 
     /**
@@ -23,8 +26,21 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'owner', 'photographer', 'customer') NOT NULL DEFAULT 'admin'");
+        $this->setRoleEnum(['admin', 'owner', 'photographer', 'customer']);
+
         DB::table('users')->where('role', 'customer')->update(['role' => 'photographer']);
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'owner', 'photographer') NOT NULL DEFAULT 'admin'");
+
+        $this->setRoleEnum(['admin', 'owner', 'photographer']);
+    }
+
+    private function setRoleEnum(array $values): void
+    {
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
+        $list = implode(', ', array_map(fn ($v) => "'".$v."'", $values));
+
+        DB::statement("ALTER TABLE users MODIFY role ENUM({$list}) NOT NULL DEFAULT 'admin'");
     }
 };
