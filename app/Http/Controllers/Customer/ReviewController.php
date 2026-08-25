@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
@@ -14,8 +15,7 @@ class ReviewController extends Controller
 {
     public function create(Booking $booking): View
     {
-        abort_unless($booking->user_id === Auth::id(), 403);
-        abort_unless($booking->status->value === 'completed', 403, 'You can only review completed bookings.');
+        $this->authorizeReview($booking);
 
         $userReview = Review::where('user_id', Auth::id())
             ->where('location_id', $booking->location_id)
@@ -26,8 +26,7 @@ class ReviewController extends Controller
 
     public function store(Request $request, Booking $booking): RedirectResponse
     {
-        abort_unless($booking->user_id === Auth::id(), 403);
-        abort_unless($booking->status->value === 'completed', 403, 'You can only review completed bookings.');
+        $this->authorizeReview($booking);
 
         $request->validate([
             'rating'  => 'required|integer|min:1|max:5',
@@ -46,5 +45,22 @@ class ReviewController extends Controller
         return redirect()
             ->route('customer.bookings')
             ->with('success', 'Thanks for your review!');
+    }
+
+    /**
+     * Bookings are owned via `customer_id` - there is no `user_id` column on the
+     * table, so comparing against one always yielded null and 403'd every
+     * request, including the rightful customer's.
+     *
+     * Matches authorizeOwnership() in the sibling Customer controllers.
+     */
+    private function authorizeReview(Booking $booking): void
+    {
+        abort_unless($booking->customer_id === Auth::id(), 403);
+        abort_unless(
+            $booking->status === BookingStatus::Completed,
+            403,
+            'You can only review completed bookings.',
+        );
     }
 }
