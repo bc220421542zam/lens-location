@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Support\BookingCompleter;
 use App\Support\TimeSeriesCounts;
 use Illuminate\View\View;
 
@@ -17,6 +18,8 @@ class DashboardController extends Controller
     public function index(): View
     {
         $customerId = auth()->id();
+
+        BookingCompleter::forCustomer($customerId);
 
         // Previously every booking row was hydrated into memory just to count
         // and sum them; the database does both in a single pass now.

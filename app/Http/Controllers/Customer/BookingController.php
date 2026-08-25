@@ -10,6 +10,7 @@ use App\Http\Requests\Customer\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\Review;
+use App\Support\BookingCompleter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,6 +22,10 @@ class BookingController extends Controller
         $request->validate([
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
         ]);
+
+        // Backstop for paid bookings the webhook never completed (e.g. the
+        // Stripe CLI wasn't running locally). Normally a no-op.
+        BookingCompleter::forCustomer(auth()->id());
 
         $bookings = Booking::with('location.owner')
             // Drives the Paid badge and hides the Pay button, without an extra
