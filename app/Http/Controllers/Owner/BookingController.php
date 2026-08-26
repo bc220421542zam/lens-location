@@ -6,6 +6,7 @@ use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Location;
+use App\Support\BookingCompleter;
 use App\Notifications\BookingStatusNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ class BookingController extends Controller
         $request->validate([
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
         ]);
+
+        BookingCompleter::forOwner(auth()->id());
 
         // A subquery keeps the owner's listing ids in the database instead of
         // round-tripping them into PHP and back out as a giant IN (...) list.

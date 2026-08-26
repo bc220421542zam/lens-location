@@ -164,6 +164,37 @@ class StripeWebhookTest extends TestCase
         $this->assertNotNull($transaction->paid_at);
     }
 
+    public function test_paid_session_completes_the_booking(): void
+    {
+        $transaction = $this->transaction();
+
+        $this->send($this->completedEvent())->assertOk();
+
+        $this->assertSame(BookingStatus::Completed, $transaction->booking->fresh()->status);
+    }
+
+    public function test_cancelled_booking_is_not_completed_by_payment(): void
+    {
+        $transaction = $this->transaction();
+        $transaction->booking->update(['status' => BookingStatus::Cancelled]);
+
+        $this->send($this->completedEvent())->assertOk();
+
+        // The transaction still records the payment, but a booking cancelled
+        // mid-checkout must not be revived.
+        $this->assertSame(PaymentStatus::Paid, $transaction->fresh()->status);
+        $this->assertSame(BookingStatus::Cancelled, $transaction->booking->fresh()->status);
+    }
+
+    public function test_amount_mismatch_does_not_complete_the_booking(): void
+    {
+        $transaction = $this->transaction();
+
+        $this->send($this->completedEvent(['amount_total' => 100]))->assertOk();
+
+        $this->assertSame(BookingStatus::Confirmed, $transaction->booking->fresh()->status);
+    }
+
     public function test_replayed_event_is_a_noop(): void
     {
         $transaction = $this->transaction();
