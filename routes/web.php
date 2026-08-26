@@ -24,7 +24,7 @@ use App\Http\Controllers\StripeWebhookController;
 
 
 
-Route::redirect('/', '/login');
+Route::redirect('/', '/register');
 
 Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
