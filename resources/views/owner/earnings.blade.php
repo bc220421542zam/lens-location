@@ -37,6 +37,8 @@
                                 };
                             @endphp
 
+                            <th class="px-2 font-medium">Booking</th>
+
                             <th class="px-2 font-medium">Listing</th>
 
                             <th class="px-2 font-medium">
@@ -90,6 +92,16 @@
                             <td class="py-3 px-4 text-sm text-indigo-700">
                                 {{ $transactions->firstItem() + $loop->index }}
                             </td>
+                            <td class="px-2 text-sm">
+                                @if ($t->booking)
+                                    <a href="{{ route('owner.bookings.show', $t->booking_id) }}"
+                                       class="text-indigo-700 hover:underline">
+                                        #{{ $t->booking_id }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
                             <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->owner_earning, 2) }}</td>
@@ -108,7 +120,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-6 text-center text-indigo-400 text-sm">No earnings yet.</td>
+                            <td colspan="7" class="py-6 text-center text-indigo-400 text-sm">No earnings yet.</td>
                         </tr>
                         @endforelse
                     </tbody>

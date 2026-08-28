@@ -12,6 +12,7 @@ class UserStatusNotification extends Notification
 
     public function __construct(
         public string $status,
+        public ?string $reason = null,
     ) {}
 
     public function via($notifiable): array
@@ -32,10 +33,16 @@ class UserStatusNotification extends Notification
         $name = $notifiable->first_name ?: 'there';
 
         if ($this->status === 'blocked') {
-            return (new MailMessage)
+            $mail = (new MailMessage)
                 ->subject('Your account has been blocked')
                 ->greeting("Hello {$name},")
-                ->line('Your account on '.config('app.name').' has been blocked by an administrator.')
+                ->line('Your account on '.config('app.name').' has been blocked by an administrator.');
+
+            if ($this->reason) {
+                $mail->line('Reason: '.$this->reason);
+            }
+
+            return $mail
                 ->line('While your account is blocked you will not be able to sign in or use the platform.')
                 ->line('If you believe this was a mistake, please contact our support team.')
                 ->salutation('Regards, '.config('app.name').' Team');
@@ -56,7 +63,8 @@ class UserStatusNotification extends Notification
             'type'  => 'user_status',
             'title' => $this->status === 'blocked' ? 'Account Blocked' : 'Account Activated',
             'body'  => $this->status === 'blocked'
-                ? 'Your account has been blocked by the admin. Contact support for help.'
+                ? 'Your account has been blocked by the admin.'
+                    .($this->reason ? ' Reason: '.$this->reason : ' Contact support for help.')
                 : 'Your account has been activated by the admin.',
         ];
     }

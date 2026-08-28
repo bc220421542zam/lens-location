@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\UserStatusNotification;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -46,9 +46,11 @@ class UserController extends Controller
         return view('admin.users', compact('users'));
     }
 
-    public function show(User $user): JsonResponse
+    public function show(User $user): View
     {
-        return response()->json($user);
+        return view('admin.users.show', [
+            'user' => $user->loadCount(['locations', 'transactionsAsOwner']),
+        ]);
     }
 
     public function destroy(User $user): RedirectResponse
@@ -58,16 +60,36 @@ class UserController extends Controller
         return back()->with('success', 'User deleted successfully.');
     }
 
-    public function toggleStatus(User $user): RedirectResponse
+    public function toggleStatus(Request $request, User $user): RedirectResponse
     {
-        $user->status = $user->status->toggle();
-        $user->save();
+        // Read BEFORE toggling: active -> blocked requires a reason,
+        // blocked -> active ignores it. The direction is derived server-side,
+        // never trusted from the form, so a hand-crafted POST can't block
+        // without one.
+        $blocking = $user->status === UserStatus::Active;
 
-        //  Notify the user about their new status
+        $data = $request->validate([
+            'reason' => $blocking
+                ? 'required|string|max:500'
+                : 'nullable|string|max:500',
+        ]);
+
+        $user->update($blocking ? [
+            'status'       => UserStatus::Blocked,
+            'block_reason' => $data['reason'],
+            'blocked_at'   => now(),
+        ] : [
+            'status'       => UserStatus::Active,
+            'block_reason' => null,
+            'blocked_at'   => null,
+        ]);
+
+        // Notify the user about their new status
         $user->notify(new UserStatusNotification(
-            $user->status->value  // passes 'blocked' or 'active'/'approved'
+            $user->status->value,
+            $data['reason'] ?? null,
         ));
 
-        return back()->with('success', 'User status updated.');
+        return back()->with('success', $blocking ? 'User blocked.' : 'User activated.');
     }
 }

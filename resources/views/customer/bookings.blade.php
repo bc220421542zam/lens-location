@@ -30,17 +30,18 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
         @forelse ($bookings as $booking)
             @php
-                $status = $booking->status->value;
-                $badge  = match ($status) {
-                    'pending'   => 'bg-yellow-100 text-yellow-700',
-                    'confirmed' => 'bg-green-100 text-green-700',
-                    'completed' => 'bg-indigo-100 text-indigo-700',
-                    'cancelled' => 'bg-red-100 text-red-600',
-                };
-                $isPaid    = (bool) $booking->paid_transaction_exists;
-                $canPay    = $status === 'confirmed' && ! $isPaid;
+                $status   = $booking->status->value;
+                $isPaid   = (bool) $booking->paid_transaction_exists;
+                $hasEnded = $booking->hasEnded();
+
+                $canPay    = $status === 'confirmed' && ! $isPaid && ! $hasEnded;
                 $canCancel = $status === 'pending';
-                $canReview = $status === 'completed';
+                $canReview = $status === 'completed' && $hasEnded;
+
+                // Confirmed but never paid, and the shoot has been and gone.
+                // Nothing left to do with it, so say so instead of offering a
+                // Pay button that would only bounce.
+                $isExpired = $status === 'confirmed' && ! $isPaid && $hasEnded;
             @endphp
 
             {{-- h-full keeps every tile in a row the same height --}}
@@ -84,51 +85,65 @@
                         PKR {{ number_format((float) $booking->total_price) }}
                     </p>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
-                            {{ ucfirst($status) }}
+                        <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full {{ $booking->status->badgeClasses() }}">
+                            {{ $booking->status->label() }}
                         </span>
                         @if ($isPaid)
                             <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
                                 <i class="fa-solid fa-circle-check mr-1"></i>Paid
                             </span>
                         @endif
+                        @if ($isExpired)
+                            <span class="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+                                <i class="fa-regular fa-clock mr-1"></i>Expired
+                            </span>
+                        @endif
                     </div>
                 </div>
 
                 {{-- ACTIONS — mt-auto pins them to the bottom so buttons line up across a row --}}
-                @if ($canPay || $canCancel || $canReview)
-                    <div class="mt-auto pt-1 flex flex-col gap-2">
-                        @if ($canPay)
-                            <form method="POST" action="{{ route('customer.bookings.pay', $booking->id) }}"
-                                  class="w-full">
-                                @csrf
-                                <button type="submit"
-                                        class="action-btn shade grow-0 basis-auto w-full whitespace-nowrap">
-                                    <i class="fa-solid fa-credit-card mr-1"></i>Pay with Card
-                                </button>
-                            </form>
-                        @endif
+                <div class="mt-auto pt-1 flex flex-col gap-2">
+                    @if ($isExpired)
+                        <p class="text-xs text-gray-500">This booking has expired — the payment window closed when the shoot ended.</p>
+                    @endif
 
-                        @if ($canCancel)
-                            <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
-                                  class="w-full"
-                                  onsubmit="return confirm('Cancel this booking?')">
-                                @csrf
-                                <button type="submit"
-                                        class="action-btn danger grow-0 basis-auto w-full whitespace-nowrap">
-                                    Cancel
-                                </button>
-                            </form>
-                        @endif
+                    @if ($canPay)
+                        <form method="POST" action="{{ route('customer.bookings.pay', $booking->id) }}"
+                              class="w-full">
+                            @csrf
+                            <button type="submit"
+                                    class="action-btn shade grow-0 basis-auto w-full whitespace-nowrap">
+                                <i class="fa-solid fa-credit-card mr-1"></i>Pay with Card
+                            </button>
+                        </form>
+                    @endif
 
-                        @if ($canReview)
-                            <a href="{{ route('customer.bookings.review', $booking->id) }}"
-                               class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
-                                {{ $booking->has_review ? 'Edit Review' : 'Leave a Review' }}
-                            </a>
-                        @endif
-                    </div>
-                @endif
+                    @if ($canCancel)
+                        <form method="POST" action="{{ route('customer.bookings.cancel', $booking->id) }}"
+                              class="w-full"
+                              onsubmit="return confirm('Cancel this booking?')">
+                            @csrf
+                            <button type="submit"
+                                    class="action-btn danger grow-0 basis-auto w-full whitespace-nowrap">
+                                Cancel
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($canReview)
+                        <a href="{{ route('customer.bookings.review', $booking->id) }}"
+                           class="action-btn shade grow-0 basis-auto w-full text-center whitespace-nowrap">
+                            {{ $booking->has_review ? 'Edit Review' : 'Leave a Review' }}
+                        </a>
+                    @endif
+
+                    {{-- Always visible: every status, including cancelled, still
+                         has details worth seeing. --}}
+                    <a href="{{ route('customer.bookings.show', $booking->id) }}"
+                       class="action-btn grow-0 basis-auto w-full text-center whitespace-nowrap">
+                        <i class="fa-regular fa-eye mr-1"></i>View
+                    </a>
+                </div>
             </div>
         @empty
             <div class="card chart-transition rounded-2xl text-center py-10 text-gray-400

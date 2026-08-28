@@ -62,5 +62,13 @@ class ReviewController extends Controller
             403,
             'You can only review completed bookings.',
         );
+
+        // Completion already implies the shoot is over, but a booking moved to
+        // `completed` by hand would otherwise be reviewable before it happens.
+        abort_unless(
+            $booking->hasEnded(),
+            403,
+            'You can only review a shoot that has already taken place.',
+        );
     }
 }

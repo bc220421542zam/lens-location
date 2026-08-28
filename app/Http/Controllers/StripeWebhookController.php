@@ -137,11 +137,14 @@ class StripeWebhookController extends Controller
                 'paid_at'                  => now(),
             ]);
 
-            // Payment settles the booking. Guarded on Confirmed so a booking
-            // cancelled between checkout and this webhook isn't resurrected.
+            // Payment alone doesn't settle the booking - the shoot still has to
+            // happen. Guarded on Confirmed so a booking cancelled between
+            // checkout and this webhook isn't resurrected, and on hasEnded() so
+            // a future shoot stays `confirmed`; BookingCompleter promotes it on
+            // the first page load after its end time.
             $booking = $transaction->booking;
 
-            if ($booking && $booking->status === BookingStatus::Confirmed) {
+            if ($booking && $booking->status === BookingStatus::Confirmed && $booking->hasEnded()) {
                 $booking->update(['status' => BookingStatus::Completed]);
             }
         });

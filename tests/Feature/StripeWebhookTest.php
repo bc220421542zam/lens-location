@@ -11,6 +11,7 @@ use App\Models\Location;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +28,7 @@ class StripeWebhookTest extends TestCase
         config(['services.stripe.webhook_secret' => self::SECRET]);
     }
 
-    private function transaction(array $overrides = []): Transaction
+    private function transaction(array $overrides = [], ?Carbon $bookingDate = null): Transaction
     {
         $owner = User::create([
             'role' => 'owner', 'first_name' => 'O', 'last_name' => 'Wner',
@@ -49,7 +50,9 @@ class StripeWebhookTest extends TestCase
 
         $booking = Booking::create([
             'location_id' => $location->id, 'customer_id' => $customer->id,
-            'booking_date' => now()->addDay(), 'hours' => 4,
+            // Defaults to an already-finished shoot so the inline completion
+            // path stays exercised.
+            'booking_date' => $bookingDate ?? now()->subDay(), 'hours' => 4,
             'total_price' => 10000, 'status' => BookingStatus::Confirmed,
         ]);
 
@@ -171,6 +174,18 @@ class StripeWebhookTest extends TestCase
         $this->send($this->completedEvent())->assertOk();
 
         $this->assertSame(BookingStatus::Completed, $transaction->booking->fresh()->status);
+    }
+
+    public function test_paid_session_does_not_complete_a_future_booking(): void
+    {
+        $transaction = $this->transaction(bookingDate: now()->addDay());
+
+        $this->send($this->completedEvent())->assertOk();
+
+        // Payment landed, but the shoot hasn't happened yet - BookingCompleter
+        // promotes it on a later page load once the end time passes.
+        $this->assertSame(PaymentStatus::Paid, $transaction->fresh()->status);
+        $this->assertSame(BookingStatus::Confirmed, $transaction->booking->fresh()->status);
     }
 
     public function test_cancelled_booking_is_not_completed_by_payment(): void

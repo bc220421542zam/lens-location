@@ -57,6 +57,24 @@ class BookingController extends Controller
         return view('owner.bookings', compact('bookings', 'stats'));
     }
 
+    /**
+     * Booking details from the owner's side - who booked, when, and the
+     * payment rows, for every status.
+     */
+    public function show(Booking $booking): View
+    {
+        $this->authorizeOwnership($booking);
+
+        // Same backstop the index runs, so a directly opened page still sees
+        // an up-to-date status.
+        BookingCompleter::forOwner(auth()->id());
+        $booking->refresh();
+
+        $booking->load(['location', 'customer', 'transactions']);
+
+        return view('owner.bookings.show', compact('booking'));
+    }
+
     public function accept(Booking $booking): RedirectResponse
     {
         $this->authorizeOwnership($booking);

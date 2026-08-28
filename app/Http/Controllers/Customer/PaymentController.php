@@ -62,6 +62,10 @@ class PaymentController extends Controller
             return back()->with('error', 'Only confirmed bookings can be paid.');
         }
 
+        if ($booking->hasEnded()) {
+            return back()->with('error', 'This booking has expired - the payment window closed when the shoot ended.');
+        }
+
         if ($booking->transactions()->where('status', PaymentStatus::Paid)->exists()) {
             return back()->with('error', 'This booking is already paid.');
         }

@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\BookingCompleter;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -38,7 +39,7 @@ class BookingCompletionTest extends TestCase
         ]);
     }
 
-    private function booking(BookingStatus $status): Booking
+    private function booking(BookingStatus $status, ?Carbon $bookingDate = null): Booking
     {
         $location = Location::create([
             'user_id' => $this->owner->id, 'title' => 'Studio', 'description' => 'd',
@@ -49,7 +50,9 @@ class BookingCompletionTest extends TestCase
         return Booking::create([
             'location_id'  => $location->id,
             'customer_id'  => $this->customer->id,
-            'booking_date' => now()->addDay(),
+            // Defaults to an already-finished shoot: completion should only
+            // ever happen after the service window has closed.
+            'booking_date' => $bookingDate ?? now()->subDay(),
             'hours'        => 4,
             'total_price'  => 5200,
             'status'       => $status,
@@ -177,5 +180,24 @@ class BookingCompletionTest extends TestCase
             ->assertOk();
 
         $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+    }
+
+    public function test_paid_future_booking_stays_confirmed_until_the_shoot_ends(): void
+    {
+        $booking = $this->booking(BookingStatus::Confirmed, now()->addDay());
+        $this->paidTransaction($booking);
+
+        BookingCompleter::forCustomer($this->customer->id);
+
+        // Paid, but the shoot hasn't happened yet - no early review.
+        $this->assertSame(BookingStatus::Confirmed, $booking->fresh()->status);
+
+        Carbon::setTestNow(now()->addDays(2));
+
+        BookingCompleter::forCustomer($this->customer->id);
+
+        $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+
+        Carbon::setTestNow();
     }
 }

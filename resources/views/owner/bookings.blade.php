@@ -66,9 +66,9 @@
                 @endif
             </div>
 
-            {{-- ACTIONS (only for pending) --}}
-            @if($booking->status->value === 'pending')
+            {{-- ACTIONS --}}
             <div class="flex flex-col gap-1 shrink-0">
+                @if($booking->status->value === 'pending')
                 <form action="{{ route('owner.bookings.accept', $booking->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="action-btn publish w-full">Accept</button>
@@ -78,8 +78,14 @@
                     @csrf
                     <button type="submit" class="action-btn danger w-full">Reject</button>
                 </form>
+                @endif
+
+                {{-- Always visible: every status has details worth seeing --}}
+                <a href="{{ route('owner.bookings.show', $booking->id) }}"
+                   class="action-btn w-full text-center whitespace-nowrap">
+                    <i class="fa-regular fa-eye mr-1"></i>View
+                </a>
             </div>
-            @endif
 
         </div>
         @empty

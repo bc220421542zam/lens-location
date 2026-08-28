@@ -83,6 +83,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 
+        // Bookings
+        Route::get('/bookings',                 [Admin\BookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings/{booking}',       [Admin\BookingController::class, 'show'])->name('bookings.show');
+
         // Categories
         Route::get('/categories',               [CategoryController::class, 'index'])->name('categories');
         Route::post('/categories',              [CategoryController::class, 'store'])->name('categories.store');
@@ -96,6 +100,10 @@ Route::middleware('auth')->group(function () {
 
         // Payments
         Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments');
+
+        // Payouts
+        Route::get('/payouts',                     [Admin\PayoutController::class, 'index'])->name('payouts');
+        Route::post('/payouts/{transaction}/mark', [Admin\PayoutController::class, 'mark'])->name('payouts.mark');
     });
 
     // ==================== OWNER ====================
@@ -105,6 +113,7 @@ Route::middleware('auth')->group(function () {
 
         // Bookings
         Route::get('/bookings',                   [Owner\BookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings/{booking}',         [Owner\BookingController::class, 'show'])->name('bookings.show');
         Route::post('/bookings/{booking}/accept', [Owner\BookingController::class, 'accept'])->name('bookings.accept');
         Route::post('/bookings/{booking}/reject', [Owner\BookingController::class, 'reject'])->name('bookings.reject');
 
@@ -159,6 +168,7 @@ Route::middleware('auth')->group(function () {
 
         // My bookings
         Route::get('/bookings',                   [Customer\BookingController::class, 'index'])->name('bookings');
+        Route::get('/bookings/{booking}',         [Customer\BookingController::class, 'show'])->name('bookings.show');
         Route::post('/bookings/{booking}/cancel', [Customer\BookingController::class, 'cancel'])->name('bookings.cancel');
 
         // Favorites

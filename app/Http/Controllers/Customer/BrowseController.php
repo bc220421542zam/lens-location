@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Enums\ListingStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,17 +30,21 @@ class BrowseController extends Controller
                     ->orWhere('city', 'like', $term)
                     ->orWhere('description', 'like', $term);
             }))
-            ->when($request->filled('category'), fn ($q) => $q->where('category', $request->string('category')))
+            // Matched case-insensitively: the categories table holds `Studio`
+            // while listings were saved with the lowercase form.
+            ->when($request->filled('category'), fn ($q) => $q->whereRaw(
+                'LOWER(category) = ?',
+                [strtolower($request->string('category'))],
+            ))
             ->when($request->filled('max_price'), fn ($q) => $q->where('price_per_hour', '<=', $request->integer('max_price')))
             ->latest()
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
-        $categories = Location::where('status', ListingStatus::Approved)
-            ->select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        // The admin-managed list, not the distinct values already on listings -
+        // otherwise a newly created category is invisible until someone happens
+        // to publish a listing under it.
+        $categories = Category::orderBy('name')->pluck('name');
 
         // Only the ids are needed to render the favorite toggle. The view used
         // to hydrate a full Location model for every listing this customer had

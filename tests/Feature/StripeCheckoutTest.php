@@ -10,6 +10,7 @@ use App\Models\Location;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\StripeGateway;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -43,7 +44,7 @@ class StripeCheckoutTest extends TestCase
         ]);
     }
 
-    private function booking(User $customer, User $owner, BookingStatus $status): Booking
+    private function booking(User $customer, User $owner, BookingStatus $status, ?Carbon $bookingDate = null): Booking
     {
         $location = Location::create([
             'user_id'        => $owner->id,
@@ -59,7 +60,7 @@ class StripeCheckoutTest extends TestCase
         return Booking::create([
             'location_id'  => $location->id,
             'customer_id'  => $customer->id,
-            'booking_date' => now()->addDay(),
+            'booking_date' => $bookingDate ?? now()->addDay(),
             'hours'        => 4,
             'total_price'  => 10000,
             'status'       => $status,
@@ -165,6 +166,22 @@ class StripeCheckoutTest extends TestCase
         $owner    = $this->owner();
         $customer = $this->customer();
         $booking  = $this->booking($customer, $owner, BookingStatus::Pending);
+
+        $this->actingAs($customer)
+            ->from(route('customer.bookings'))
+            ->post(route('customer.bookings.pay', $booking))
+            ->assertRedirect(route('customer.bookings'))
+            ->assertSessionHas('error');
+
+        $this->assertSame(0, Transaction::count());
+    }
+
+    public function test_ended_booking_cannot_be_paid(): void
+    {
+        $this->fakeGateway();
+        $owner    = $this->owner();
+        $customer = $this->customer();
+        $booking  = $this->booking($customer, $owner, BookingStatus::Confirmed, now()->subDay());
 
         $this->actingAs($customer)
             ->from(route('customer.bookings'))

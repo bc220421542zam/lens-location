@@ -57,6 +57,7 @@
                                 </a>
                             </th>
 
+                            <th class="px-2 font-medium">Booking</th>
                             <th class="px-2 font-medium">Listing</th>
                             <th class="px-2 font-medium">Customer</th>
                             <th class="px-2 font-medium">Owner</th>
@@ -96,9 +97,31 @@
                                 {{ $transactions->firstItem() + $loop->index }}
                             </td>
                             <td class="px-2 text-sm text-indigo-700">{{ $t->reference() }}</td>
+                            <td class="px-2 text-sm">
+                                @if($t->booking)
+                                    <a href="{{ route('admin.bookings.show', $t->booking_id) }}"
+                                       class="text-indigo-700 hover:underline">#{{ $t->booking_id }}</a>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
                             <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
-                            <td class="px-2 text-sm text-indigo-700">{{ $t->customer->first_name ?? '—' }}</td>
-                            <td class="px-2 text-sm text-indigo-700">{{ $t->owner->first_name ?? '—' }}</td>
+                            <td class="px-2 text-sm text-indigo-700">
+                                @if($t->customer)
+                                    <a href="{{ route('admin.users.detail', $t->customer->id) }}"
+                                       class="hover:text-indigo-900 hover:underline">{{ $t->customer->first_name }}</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="px-2 text-sm text-indigo-700">
+                                @if($t->owner)
+                                    <a href="{{ route('admin.users.detail', $t->owner->id) }}"
+                                       class="hover:text-indigo-900 hover:underline">{{ $t->owner->first_name }}</a>
+                                @else
+                                    —
+                                @endif
+                            </td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->owner_earning, 2) }}</td>
                             <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->platform_fee, 2) }}</td>
@@ -120,7 +143,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="py-6 text-center text-indigo-400 text-sm">No transactions found.</td>
+                            <td colspan="11" class="py-6 text-center text-indigo-400 text-sm">No transactions found.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -151,6 +174,11 @@
 
             <template x-if="selectedTxn">
                 <div class="space-y-2">
+
+                    <div class="flex justify-between border-b border-indigo-100 pb-2">
+                        <span class="text-indigo-900 text-sm">Booking</span>
+                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedTxn.booking_id ? '#' + selectedTxn.booking_id : '—'"></span>
+                    </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
                         <span class="text-indigo-900 text-sm">Ref</span>

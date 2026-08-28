@@ -5,6 +5,18 @@
     openUser(user) {
         this.selectedUser = user;
         this.showModal = true;
+    },
+    showBlockModal: false,
+    blockUser: null,
+    blockReason: '',
+    openBlockModal(user) {
+        this.blockUser = user;
+        this.blockReason = '';
+        this.showBlockModal = true;
+    },
+    closeBlockModal() {
+        this.showBlockModal = false;
+        this.blockUser = null;
     }
 }">
     {{--Top bar--}}
@@ -19,6 +31,11 @@
     <div class="shade card chart-transition bg-[#EEEFF7] p-4 rounded-2xl border-l-3 border-indigo-400">
     <x-success class="mb-4" />
     <x-error class="mb-4" />
+    @if ($errors->any())
+        <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+            {{ $errors->first() }}
+        </div>
+    @endif
     
         <div class="flex flex-col gap-3 mb-4">
             <h2 class="font-bold text-indigo-900 text-lg">All Users</h2>
@@ -108,6 +125,10 @@
                             <span class="w-1.5 h-1.5 rounded-full {{ $user->status?->value === 'active' ? 'bg-green-600' : 'bg-red-600' }}"></span>
                             {{ ucfirst($user->status?->value ?? 'N/A') }}
                         </span>
+                        @if($user->status?->value === 'blocked' && $user->block_reason)
+                            <span class="block mt-1 text-[11px] text-red-500 max-w-[200px] truncate"
+                                  title="{{ $user->block_reason }}">{{ $user->block_reason }}</span>
+                        @endif
                     </td>
                     <td class="px-2 py-3">
                         <div class="flex items-center justify-center gap-2">
@@ -121,24 +142,31 @@
 
                             {{-- ACTIVATE / DEACTIVATE TOGGLE --}}
                             @if(auth()->id() !== $user->id)
-                                <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
-                                    @csrf
-                                    <button type="submit"
-                                            title="{{ $user->status->value === 'active' ? 'Deactivate User' : 'Activate User' }}"
+                                @if($user->status->value === 'active')
+                                    {{-- Blocking needs a reason: open the block modal --}}
+                                    <button type="button"
+                                            @click="openBlockModal({{ $user->toJson() }})"
+                                            title="Block User"
                                             class="w-8 h-8 flex items-center justify-center transition hover:opacity-80">
-                                        @if($user->status->value === 'active')
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
-                                                <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
-                                                <circle cx="26" cy="10" r="7" fill="white"/>
-                                            </svg>
-                                        @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
+                                            <rect x="0" y="0" width="36" height="20" rx="10" fill="#09913b"/>
+                                            <circle cx="26" cy="10" r="7" fill="white"/>
+                                        </svg>
+                                    </button>
+                                @else
+                                    {{-- Unblocking needs no reason: direct POST --}}
+                                    <form method="POST" action="{{ route('admin.users.toggle', $user->id) }}">
+                                        @csrf
+                                        <button type="submit"
+                                                title="Activate User"
+                                                class="w-8 h-8 flex items-center justify-center transition hover:opacity-80">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" class="w-7 h-4">
                                                 <rect x="0" y="0" width="36" height="20" rx="10" fill="#e73636"/>
                                                 <circle cx="10" cy="10" r="7" fill="white"/>
                                             </svg>
-                                        @endif
-                                    </button>
-                                </form>
+                                        </button>
+                                    </form>
+                                @endif
                             @else
                                 {{-- CURRENT LOGGED-IN USER --}}
                                 <span title="This is your account"
@@ -207,10 +235,15 @@
                 <div class="space-y-2">
 
                     <div class="flex justify-center mb-4">
-                        <img :src="selectedUser.profile_picture
-                            ? '/storage/' + selectedUser.profile_picture
-                            : '/images/default-avatar.png'"
-                            class="w-20 h-20 rounded-full object-cover border border-indigo-200 card-transition shade">
+                        <template x-if="selectedUser.profile_picture">
+                            <img :src="'/storage/' + selectedUser.profile_picture"
+                                 class="w-20 h-20 rounded-full object-cover border border-indigo-200 card-transition shade">
+                        </template>
+                        <template x-if="!selectedUser.profile_picture">
+                            <div class="w-20 h-20 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center">
+                                <i class="fa-solid fa-user text-3xl text-indigo-400"></i>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
@@ -246,6 +279,19 @@
                         </span>
                     </div>
 
+                    <template x-if="selectedUser.block_reason">
+                        <div class="flex justify-between border-b border-indigo-100 pb-2">
+                            <span class="text-indigo-900 text-sm">Block Reason</span>
+                            <span class="text-indigo-900 text-sm font-medium break-all ml-4" x-text="selectedUser.block_reason"></span>
+                        </div>
+                    </template>
+                    <template x-if="selectedUser.blocked_at">
+                        <div class="flex justify-between pb-2">
+                            <span class="text-indigo-900 text-sm">Blocked On</span>
+                            <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.blocked_at"></span>
+                        </div>
+                    </template>
+
                 </div>
             </template>
 
@@ -255,6 +301,46 @@
                     Close
                 </button>
             </div>
+
+        </div>
+    </div>
+
+    {{-- BLOCK MODAL --}}
+    <div x-show="showBlockModal"
+        class="fixed inset-0 z-50 flex items-center justify-center px-4"
+        style="display:none">
+
+        <div class="absolute inset-0 bg-black opacity-50" @click="closeBlockModal()"></div>
+
+        <div class="relative card card-transition bg-white rounded-2xl shadow-xl p-6 w-full max-w-md z-10 max-h-[90vh] overflow-y-auto">
+
+            <button @click="closeBlockModal()"
+                class="absolute btn-trnasition top-3 right-4 text-indigo-900 text-xl hover:opacity-75">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h2 class="text-lg font-bold text-indigo-900 mb-1">Block User</h2>
+            <p class="text-sm text-gray-500 mb-4" x-text="blockUser ? (blockUser.first_name + ' ' + (blockUser.last_name || '')) : ''"></p>
+
+            <form method="POST"
+                  :action="blockUser ? '/admin/users/' + blockUser.id + '/toggle' : ''">
+                @csrf
+                <label for="block-reason" class="block text-sm text-indigo-900 mb-1 font-medium">Reason (required)</label>
+                <textarea id="block-reason" name="reason" x-model="blockReason" rows="3"
+                          maxlength="500" required placeholder="e.g. Fraudulent booking, policy violation ..."
+                          class="input text-indigo-800 w-full"></textarea>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <button type="button" @click="closeBlockModal()"
+                            class="px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" @click="showBlockModal = false"
+                            class="px-4 py-2 rounded-lg text-sm bg-red-600 text-white hover:bg-red-700 transition">
+                        Block User
+                    </button>
+                </div>
+            </form>
 
         </div>
     </div>

@@ -35,6 +35,8 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'status',
+        'block_reason',
+        'blocked_at',
         'google_id',
         'stripe_account_id',
         'stripe_transfers_status',
@@ -58,6 +60,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at'  => 'datetime',
+            'blocked_at'         => 'datetime',
             'password'           => 'hashed',
             'role'               => Role::class,
             'status'             => UserStatus::class,

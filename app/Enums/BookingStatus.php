@@ -8,4 +8,19 @@ enum BookingStatus: string
     case Confirmed = 'confirmed';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
+
+    public function label(): string
+    {
+        return ucfirst($this->value);
+    }
+
+    public function badgeClasses(): string
+    {
+        return match ($this) {
+            self::Pending   => 'bg-yellow-100 text-yellow-700',
+            self::Confirmed => 'bg-green-100 text-green-700',
+            self::Completed => 'bg-indigo-100 text-indigo-700',
+            self::Cancelled => 'bg-red-100 text-red-600',
+        };
+    }
 }

@@ -70,6 +70,28 @@ class BookingController extends Controller
         return view('customer.bookings', compact('bookings', 'stats'));
     }
 
+    /**
+     * Booking details. Reachable for every status - a cancelled or expired
+     * booking still needs to be inspectable.
+     */
+    public function show(Booking $booking): View
+    {
+        $this->authorizeOwnership($booking);
+
+        // Same backstop the index runs, so opening this page directly still
+        // sees an up-to-date status rather than a stale `confirmed`.
+        BookingCompleter::forCustomer(auth()->id());
+        $booking->refresh();
+
+        $booking->load(['location.owner', 'transactions']);
+
+        $booking->has_review = Review::where('user_id', auth()->id())
+            ->where('location_id', $booking->location_id)
+            ->exists();
+
+        return view('customer.bookings.show', compact('booking'));
+    }
+
     public function create(Location $location): View
     {
         abort_unless($location->status === ListingStatus::Approved, 404);
