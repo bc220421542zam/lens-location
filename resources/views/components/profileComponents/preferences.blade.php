@@ -104,11 +104,12 @@
                         <div class="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full
                                     flex items-center justify-center text-white text-xs"
                              :class="{
-                                 'bg-emerald-500': n.type === 'listing',
+                                 'bg-emerald-500': n.type === 'listing' || n.type === 'payment_success' || n.type === 'payment_received',
                                  'bg-violet-500':  n.type === 'user',
                                  'bg-blue-500':    n.type === 'listing_status',
                                  'bg-orange-500':  n.type === 'user_status',
-                                 'bg-indigo-500':  n.type === 'booking_status',
+                                 'bg-indigo-500':  n.type === 'booking_status' || n.type === 'new_message',
+                                 'bg-amber-500':   n.type === 'booking_request',
                              }">
                             <template x-if="n.type === 'listing' || n.type === 'listing_status'">
                                 <i class="fa-solid fa-location-dot"></i>
@@ -118,6 +119,15 @@
                             </template>
                             <template x-if="n.type === 'booking_status'">
                                 <i class="fa-solid fa-calendar-check"></i>
+                            </template>
+                            <template x-if="n.type === 'booking_request'">
+                                <i class="fa-solid fa-calendar-plus"></i>
+                            </template>
+                            <template x-if="n.type === 'new_message'">
+                                <i class="fa-solid fa-message"></i>
+                            </template>
+                            <template x-if="n.type === 'payment_success' || n.type === 'payment_received'">
+                                <i class="fa-solid fa-credit-card"></i>
                             </template>
                         </div>
 

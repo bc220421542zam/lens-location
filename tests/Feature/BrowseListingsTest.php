@@ -71,6 +71,42 @@ class BrowseListingsTest extends TestCase
             ->assertDontSee($garden->title);
     }
 
+    public function test_search_matches_the_address(): void
+    {
+        $studio = Location::create([
+            'user_id' => $this->owner->id, 'title' => 'The Studio', 'description' => 'd',
+            'address' => '12 Gulberg Boulevard', 'city' => 'Lahore', 'category' => 'studio',
+            'price_per_hour' => 1300, 'status' => ListingStatus::Approved,
+        ]);
+
+        $garden = Location::create([
+            'user_id' => $this->owner->id, 'title' => 'The Garden', 'description' => 'd',
+            'address' => 'b', 'city' => 'Karachi', 'category' => 'garden',
+            'price_per_hour' => 1300, 'status' => ListingStatus::Approved,
+        ]);
+
+        $this->actingAs($this->customer)
+            ->get(route('customer.listings', ['search' => 'Gulberg']))
+            ->assertOk()
+            ->assertSee($studio->title)
+            ->assertDontSee($garden->title);
+    }
+
+    public function test_search_no_longer_matches_the_description(): void
+    {
+        $studio = Location::create([
+            'user_id' => $this->owner->id, 'title' => 'The Studio',
+            'description' => 'quiet lakeside hideaway',
+            'address' => 'a', 'city' => 'Lahore', 'category' => 'studio',
+            'price_per_hour' => 1300, 'status' => ListingStatus::Approved,
+        ]);
+
+        $this->actingAs($this->customer)
+            ->get(route('customer.listings', ['search' => 'hideaway']))
+            ->assertOk()
+            ->assertDontSee($studio->title);
+    }
+
     public function test_payments_pages_reference_the_booking(): void
     {
         $location = Location::create([

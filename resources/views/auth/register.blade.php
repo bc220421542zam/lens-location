@@ -138,6 +138,7 @@
                                     </svg>
                                 </button>
                             </div>
+                            <p class="text-[11px] text-gray-400 mt-1">8+ characters with upper &amp; lower case, a number, and a symbol — e.g. <span class="font-mono text-indigo-700">Lens@2026</span></p>
                             @error('password')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @else
@@ -289,7 +290,7 @@ function validateField(field) {
             if (!/[a-z]/.test(val)) { showError(field, 'Must contain at least one lowercase letter.'); return false; }
             if (!/[A-Z]/.test(val)) { showError(field, 'Must contain at least one uppercase letter.'); return false; }
             if (!/[0-9]/.test(val)) { showError(field, 'Must contain at least one number.'); return false; }
-            if (!/[@$!%*#?&._\-]/.test(val)) { showError(field, 'Must contain at least one special character (@$!%*#?&._-).'); return false; }
+            if (!/[@$!%*#?&._\-]/.test(val)) { showError(field, 'Must contain at least one special character (@$!%*#?&._-). Example: Lens@2026'); return false; }
             validateField(getField({name: 'password_confirmation'}));
             break;
         case 'password_confirmation':

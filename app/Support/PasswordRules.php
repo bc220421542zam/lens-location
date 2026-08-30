@@ -25,8 +25,9 @@ class PasswordRules
     public static function messages(): array
     {
         return [
-            'password.min'   => 'Password must be at least 8 characters.',
-            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+            'password.min'       => 'Password must be at least 8 characters.',
+            'password.regex'     => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character. Example: Lens@2026',
+            'password.confirmed' => 'Passwords do not match.',
         ];
     }
 }

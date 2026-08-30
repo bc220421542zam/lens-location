@@ -49,6 +49,8 @@ class OwnerLocationGalleryTest extends TestCase
             'city'           => 'Lahore',
             'category'       => 'studio',
             'price_per_hour' => 3000,
+            'latitude'       => 31.5204,
+            'longitude'      => 74.3587,
         ], $overrides);
     }
 

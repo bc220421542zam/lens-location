@@ -28,7 +28,7 @@ class BrowseController extends Controller
                 $term = '%'.$request->string('search').'%';
                 $q->where('title', 'like', $term)
                     ->orWhere('city', 'like', $term)
-                    ->orWhere('description', 'like', $term);
+                    ->orWhere('address', 'like', $term);
             }))
             // Matched case-insensitively: the categories table holds `Studio`
             // while listings were saved with the lowercase form.

@@ -10,6 +10,7 @@ use App\Http\Requests\Customer\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\Review;
+use App\Notifications\BookingRequestNotification;
 use App\Support\BookingCompleter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -105,7 +106,7 @@ class BookingController extends Controller
 
         $hours = $request->integer('hours');
 
-        Booking::create([
+        $booking = Booking::create([
             'location_id' => $location->id,
             'customer_id' => auth()->id(),
             'booking_date' => $request->date('booking_date'),
@@ -114,6 +115,12 @@ class BookingController extends Controller
             'shoot_type' => $request->input('shoot_type'),
             'status' => BookingStatus::Pending,
         ]);
+
+        // Notify the owner of the new request unless they turned the
+        // new-booking preference off in their profile.
+        if ($location->owner && ($location->owner->notif_new_booking ?? true)) {
+            $location->owner->notify(new BookingRequestNotification($booking));
+        }
 
         return redirect()
             ->route('customer.bookings')

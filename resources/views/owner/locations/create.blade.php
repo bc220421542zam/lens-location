@@ -123,6 +123,11 @@
             </div>
         </div>
 
+        {{-- Map Location --}}
+        <x-ownerComp.location-map-picker
+            :latitude="old('latitude', 0)"
+            :longitude="old('longitude', 0)" />
+
         {{-- Image Upload --}}
         @php
             $minImages = \App\Http\Requests\Owner\StoreLocationRequest::MIN_IMAGES;

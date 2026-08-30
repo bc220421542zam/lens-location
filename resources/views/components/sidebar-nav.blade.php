@@ -62,6 +62,10 @@
                 : 'text-[#EEEFF7] hover:bg-[#2C3399] hover:text-white' }}">
             <i class="fa-solid {{ $link['icon'] }} w-5 text-center shrink-0 text-base"></i>
             <span class="text-sm font-medium">{{ $link['label'] }}</span>
+            @if(!empty($link['unread']))
+                <span class="unread-dot ml-auto w-2 h-2 rounded-full bg-indigo-300"
+                      title="Unseen updates"></span>
+            @endif
         </a>
     @endforeach
 </aside>

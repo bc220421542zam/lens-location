@@ -134,6 +134,8 @@ Route::middleware('auth')->group(function () {
         //Messages
         Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
         Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+        Route::put('/messages/{message}',       [MessageController::class, 'update'])->name('messages.update');
+        Route::delete('/messages/{message}',    [MessageController::class, 'destroy'])->name('messages.destroy');
 
         // Reviews
         Route::get('/reviews', [OwnerReviewController::class, 'index'])->name('reviews');
@@ -182,6 +184,8 @@ Route::middleware('auth')->group(function () {
         // Messages
         Route::get('/messages/{conversation?}', [MessageController::class, 'index'])->name('messages');
         Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+        Route::put('/messages/{message}',       [MessageController::class, 'update'])->name('messages.update');
+        Route::delete('/messages/{message}',    [MessageController::class, 'destroy'])->name('messages.destroy');
         Route::post('/listings/{location}/message', [MessageController::class, 'startWithOwner'])->name('listings.message');
 
         // Notifications

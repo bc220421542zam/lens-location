@@ -8,6 +8,8 @@ use App\Enums\PayoutStatus;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\PaymentReceivedNotification;
+use App\Notifications\PaymentSuccessNotification;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -136,6 +138,28 @@ class StripeWebhookController extends Controller
                 'gateway_ref'              => $session->payment_intent,
                 'paid_at'                  => now(),
             ]);
+
+            // A mailer outage must not roll the payment back - Stripe would
+            // retry the event forever while the mail stays down. Log and move
+            // on; the database notification row is part of this transaction
+            // and rolls back atomically with the payment itself.
+            try {
+                $transaction->customer?->notify(new PaymentSuccessNotification($transaction));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to notify customer of payment', [
+                    'transaction' => $transaction->id,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+
+            try {
+                $transaction->owner?->notify(new PaymentReceivedNotification($transaction));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to notify owner of payment', [
+                    'transaction' => $transaction->id,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
 
             // Payment alone doesn't settle the booking - the shoot still has to
             // happen. Guarded on Confirmed so a booking cancelled between

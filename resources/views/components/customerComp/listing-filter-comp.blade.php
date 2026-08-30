@@ -17,7 +17,7 @@
             Search
         </label>
             <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Title, city, description ..."
+                   placeholder="Title, city, address ..."
                    class="input text-indigo-800">
     </div>
 

@@ -20,6 +20,8 @@ class Location extends Model
         'price_per_hour',
         'image',
         'images',
+        'latitude',
+        'longitude',
         'status',
     ];
 
@@ -27,6 +29,8 @@ class Location extends Model
     {
         return [
             'price_per_hour' => 'decimal:2',
+            'latitude'       => 'decimal:7',
+            'longitude'      => 'decimal:7',
             'status'         => ListingStatus::class,
             'images'         => 'array',
         ];

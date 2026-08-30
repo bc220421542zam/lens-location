@@ -136,6 +136,11 @@
             </div>
         </div>
 
+        {{-- Map Location --}}
+        <x-ownerComp.location-map-picker
+            :latitude="old('latitude', $location->latitude)"
+            :longitude="old('longitude', $location->longitude)" />
+
         {{-- Images --}}
         @php
             $minImages = \App\Http\Requests\Owner\StoreLocationRequest::MIN_IMAGES;

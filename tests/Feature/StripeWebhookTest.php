@@ -11,8 +11,10 @@ use App\Models\Location;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\PaymentSuccessNotification;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class StripeWebhookTest extends TestCase
@@ -165,6 +167,53 @@ class StripeWebhookTest extends TestCase
         $this->assertSame('pi_test_abc', $transaction->stripe_payment_intent_id);
         $this->assertSame('pi_test_abc', $transaction->gateway_ref);
         $this->assertNotNull($transaction->paid_at);
+    }
+
+    public function test_paid_session_notifies_the_customer(): void
+    {
+        $transaction = $this->transaction();
+
+        $this->send($this->completedEvent())->assertOk();
+
+        $notification = $transaction->customer->notifications()->sole();
+
+        $this->assertSame('payment_success', $notification->data['type']);
+        $this->assertSame('Payment Successful', $notification->data['title']);
+        $this->assertStringContainsString('Studio', $notification->data['body']);
+        $this->assertStringContainsString('10,000.00', $notification->data['body']);
+    }
+
+    public function test_payment_email_is_sent_when_email_notifications_are_enabled(): void
+    {
+        Notification::fake();
+
+        $transaction = $this->transaction();
+
+        $this->send($this->completedEvent())->assertOk();
+
+        Notification::assertSentTo(
+            $transaction->customer,
+            PaymentSuccessNotification::class,
+            fn ($notification, array $channels) => in_array('mail', $channels, true),
+        );
+    }
+
+    public function test_payment_email_is_not_sent_when_email_notifications_are_disabled(): void
+    {
+        Notification::fake();
+
+        $transaction = $this->transaction();
+        $transaction->customer->update(['notif_email' => false]);
+
+        $this->send($this->completedEvent())->assertOk();
+
+        // The in-app notification still goes out - only the mail channel is
+        // suppressed by the preference.
+        Notification::assertSentTo(
+            $transaction->customer,
+            PaymentSuccessNotification::class,
+            fn ($notification, array $channels) => ! in_array('mail', $channels, true),
+        );
     }
 
     public function test_paid_session_completes_the_booking(): void
