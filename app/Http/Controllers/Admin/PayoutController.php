@@ -20,6 +20,9 @@ class PayoutController extends Controller
      */
     public function index(Request $request): View
     {
+        // Visiting clears the Payouts sidebar dot until the next payout owed.
+        $request->user()->markSectionViewed('admin.payouts');
+
         $request->validate([
             'search'        => 'nullable|string|max:255',
             'payout_status' => 'nullable|in:unpaid,paid',

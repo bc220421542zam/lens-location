@@ -16,6 +16,9 @@ class UserController extends Controller
 
     public function index(Request $request): View
     {
+        // Visiting clears the Users sidebar dot until the next registration.
+        $request->user()->markSectionViewed('admin.users');
+
         $sort = $request->get('sort', 'first_name');
         $direction = $request->get('direction', 'asc');
 

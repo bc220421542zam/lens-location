@@ -12,7 +12,9 @@ class Review extends Model
     protected function casts(): array
     {
         return [
-            'is_visible' => 'boolean',
+            'is_visible'        => 'boolean',
+            'admin_reviewed_at' => 'datetime',
+            'owner_reviewed_at' => 'datetime',
         ];
     }
 

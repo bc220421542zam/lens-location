@@ -16,6 +16,9 @@ class ListingController extends Controller
 
     public function index(Request $request): View
     {
+        // Visiting clears the Listings sidebar dot until the next submission.
+        $request->user()->markSectionViewed('admin.listings');
+
         $request->validate([
             'search'    => 'nullable|string|max:255',
             'status'    => 'nullable|in:pending,approved,rejected',

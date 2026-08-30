@@ -1,32 +1,6 @@
 <x-layouts.customer>
 <div x-data="messagesPage()" x-init="init()" class="flex gap-4" style="height: 80vh;">
 
-    {{-- MESSAGE CONTEXT MENU (right-click on your own message). Lives at the
-         root scope because the chat panel scales on hover, and a CSS transform
-         on an ancestor makes position:fixed track that panel instead of the
-         viewport. --}}
-    <div x-show="contextMenuId" x-cloak
-         @click.outside="closeContextMenu()"
-         @keydown.escape.window="closeContextMenu()"
-         @scroll.window="closeContextMenu()"
-         class="fixed z-50 bg-white rounded-lg shadow-lg border border-indigo-100 py-1 text-sm"
-         :style="`left: ${contextMenuX}px; top: ${contextMenuY}px`">
-        <button type="button"
-                @click="editingId = contextMenuId; editText = contextMenuBody; closeContextMenu()"
-                class="block w-full text-left px-4 py-1.5 text-indigo-700 hover:bg-indigo-50">
-            <i class="fa-solid fa-pen text-xs mr-1.5"></i>Edit
-        </button>
-        <form method="POST" :action="contextMenuDeleteUrl"
-              onsubmit="return confirm('Delete this message?')">
-            @csrf
-            @method('DELETE')
-            <button type="submit"
-                    class="block w-full text-left px-4 py-1.5 text-red-600 hover:bg-red-50">
-                <i class="fa-solid fa-trash text-xs mr-1.5"></i>Delete
-            </button>
-        </form>
-    </div>
-
     {{-- CONVERSATION LIST --}}
     <div class="w-full sm:w-80 shrink-0 card chart-transition rounded-2xl border-l-3 border-indigo-400 chart-transition rounded-2xl border-l-3 border-indigo-400 p-0 overflow-hidden flex flex-col {{ $conversation ? 'hidden sm:flex' : 'flex' }}">
         <div class="px-5 py-4 border-b border-indigo-100">
@@ -97,14 +71,46 @@
                         $prevSender = $message->sender_id;
                     @endphp
 
-                    <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }} {{ $isNewGroup ? 'mt-5' : 'mt-1' }}"
-                         @contextmenu="openContextMenu($event, {{ $isMine ? $message->id : 'null' }}, @json(route('customer.messages.destroy', $message->id)), @json($message->body))">
+                    <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }} {{ $isNewGroup ? 'mt-5' : 'mt-1' }}">
                         <div class="flex {{ $isMine ? 'flex-row-reverse' : 'flex-row' }} items-start gap-2 max-w-[75%]">
                             <div class="w-8 h-8 shrink-0 {{ $isNewGroup ? '' : 'invisible' }}">
                                 <div class="w-8 h-8 rounded-full {{ $isMine ? 'bg-indigo-800' : 'bg-indigo-200' }} flex items-center justify-center text-[11px] font-semibold {{ $isMine ? 'text-white' : 'text-indigo-800' }}">
                                     {{ strtoupper(substr($message->sender->first_name ?? 'U', 0, 2)) }}
                                 </div>
                             </div>
+
+                            @if($isMine)
+                                {{-- 3-dots action menu (own messages only). The row is
+                                     flex-row-reverse for own messages, so this sits
+                                     between the bubble and the avatar. --}}
+                                <div class="relative shrink-0" @click.outside="menuId = null"
+                                     @keydown.escape.window="menuId = null">
+                                    <button type="button"
+                                            @click="menuId = (menuId === {{ $message->id }} ? null : {{ $message->id }})"
+                                            class="w-7 h-7 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-700 hover:bg-indigo-50 transition"
+                                            title="Message actions" aria-label="Message actions">
+                                        <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                                    </button>
+
+                                    <div x-show="menuId === {{ $message->id }}" x-cloak
+                                         class="absolute z-20 top-8 right-0 w-32 bg-white rounded-lg shadow-lg border border-indigo-100 py-1 text-sm">
+                                        <button type="button"
+                                                @click="editingId = {{ $message->id }}; editText = @js($message->body); menuId = null"
+                                                class="block w-full text-left px-4 py-1.5 text-indigo-700 hover:bg-indigo-50">
+                                            <i class="fa-solid fa-pen text-xs mr-1.5"></i>Edit
+                                        </button>
+                                        <form method="POST" action="{{ route('customer.messages.destroy', $message->id) }}"
+                                              onsubmit="return confirm('Delete this message?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="block w-full text-left px-4 py-1.5 text-red-600 hover:bg-red-50">
+                                                <i class="fa-solid fa-trash text-xs mr-1.5"></i>Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="flex flex-col {{ $isMine ? 'items-end' : 'items-start' }}">
                                 @if($isNewGroup)
@@ -240,11 +246,7 @@ function messagesPage() {
         sending: false,
         editingId: null,
         editText: '',
-        contextMenuId: null,
-        contextMenuX: 0,
-        contextMenuY: 0,
-        contextMenuBody: '',
-        contextMenuDeleteUrl: '',
+        menuId: null,
         attachmentName: '',
         attachmentPreviewUrl: null,
 
@@ -271,28 +273,6 @@ function messagesPage() {
             this.attachmentName = '';
             this.attachmentPreviewUrl = null;
         },
-
-        openContextMenu(event, messageId, deleteUrl, body) {
-            if (!messageId) {
-                // Not the viewer's own message - leave the native menu alone.
-                this.closeContextMenu();
-                return;
-            }
-
-            event.preventDefault();
-
-            this.contextMenuId = messageId;
-            this.contextMenuBody = body;
-            this.contextMenuDeleteUrl = deleteUrl;
-            this.contextMenuX = Math.min(event.clientX, window.innerWidth - 170);
-            this.contextMenuY = Math.min(event.clientY, window.innerHeight - 100);
-        },
-
-        closeContextMenu() {
-            this.contextMenuId = null;
-            this.contextMenuBody = '';
-            this.contextMenuDeleteUrl = '';
-        }
     }
 }
 </script>

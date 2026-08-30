@@ -14,6 +14,13 @@ class ReviewController extends Controller
 
     public function index(Request $request): View
     {
+        // Opening the page counts as reviewing everything, which clears the
+        // sidebar's unread dot. toBase() skips Eloquent's updated_at bump -
+        // a read receipt is not an edit.
+        Review::whereNull('admin_reviewed_at')
+            ->toBase()
+            ->update(['admin_reviewed_at' => now()]);
+
         $reviews = Review::query()
             ->with(['customer', 'location'])
             ->when($request->filled('rating'), fn ($q) => $q->where('rating', $request->integer('rating')))

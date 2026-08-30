@@ -21,6 +21,9 @@ class PaymentController extends Controller
 
     public function index(Request $request): View
     {
+        // Visiting clears the Payments sidebar dot until the next checkout.
+        $request->user()->markSectionViewed('customer.payments');
+
         $request->validate([
             'search'     => 'nullable|string|max:255',
             'status'     => 'nullable|in:paid,pending,failed,refunded',

@@ -13,6 +13,9 @@ class EarningController extends Controller
 {
     public function index(Request $request): View
     {
+        // Visiting clears the Earnings sidebar dot until the next new payment.
+        $request->user()->markSectionViewed('owner.earnings');
+
         $request->validate([
             'search'        => 'nullable|string|max:255',
             'status'        => 'nullable|in:paid,pending,failed,refunded',

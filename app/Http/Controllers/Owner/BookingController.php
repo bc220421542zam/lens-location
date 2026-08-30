@@ -16,6 +16,9 @@ class BookingController extends Controller
 {
     public function index(Request $request): View
     {
+        // Visiting clears the Bookings sidebar dot until the next new request.
+        $request->user()->markSectionViewed('owner.bookings');
+
         $request->validate([
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
         ]);

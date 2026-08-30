@@ -20,6 +20,12 @@ class BookingController extends Controller
 {
     public function index(Request $request): View
     {
+        // Visiting clears the My Bookings dot: the owner's status updates are
+        // now seen.
+        $request->user()->unreadNotifications()
+            ->where('data->type', 'booking_status')
+            ->update(['read_at' => now()]);
+
         $request->validate([
             'status' => 'nullable|in:pending,confirmed,completed,cancelled',
         ]);

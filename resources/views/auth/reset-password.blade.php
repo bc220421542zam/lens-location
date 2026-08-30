@@ -43,8 +43,9 @@
                 <div class="w-full">
                     {{-- Logo --}}
                     <div class="flex justify-center mb-6">
-                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="h-8 md:h-10">
+                        <img src="{{ asset('images/reset-password.jpg') }}" alt="Logo" class="h-8 md:h-10">
                     </div>
+                    
 
                     <h1 class="text-xl sm:text-2xl text-center font-bold text-indigo-900 mb-1">Reset your password</h1>
                     <p class="text-sm text-gray-500 text-center mb-5 sm:mb-8">Choose a strong new password for your account</p>

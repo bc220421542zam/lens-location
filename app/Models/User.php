@@ -125,4 +125,33 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'owner_id');
     }
+
+    public function sectionViews(): HasMany
+    {
+        return $this->hasMany(SectionView::class);
+    }
+
+    /**
+     * When this user last opened the given section page, if ever. Sections use
+     * route-like keys ('admin.payouts', 'owner.earnings', ...). Prefer the
+     * eager-loaded relation (see the sidebar components) to avoid per-tab
+     * queries.
+     */
+    public function sectionViewedAt(string $section): ?\Carbon\Carbon
+    {
+        return $this->sectionViews->firstWhere('section', $section)?->viewed_at;
+    }
+
+    /**
+     * Stamp "just opened this section". Called at the top of the matching page
+     * controller so the sidebar rendered in the same request already shows no
+     * dot.
+     */
+    public function markSectionViewed(string $section): void
+    {
+        $this->sectionViews()->updateOrCreate(
+            ['section' => $section],
+            ['viewed_at' => now()],
+        );
+    }
 }
