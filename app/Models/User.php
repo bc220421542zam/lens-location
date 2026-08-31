@@ -81,6 +81,15 @@ class User extends Authenticatable
         return $this->status === UserStatus::Blocked;
     }
 
+    /**
+     * Human-readable block timestamp — day, date, and time — for the admin
+     * UI wherever a user's blocked status is shown.
+     */
+    public function blockedAtDisplay(): ?string
+    {
+        return $this->blocked_at?->format('l, d M Y \a\t g:i A');
+    }
+
     public function getNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

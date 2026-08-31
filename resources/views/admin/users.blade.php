@@ -125,16 +125,12 @@
                             <span class="w-1.5 h-1.5 rounded-full {{ $user->status?->value === 'active' ? 'bg-green-600' : 'bg-red-600' }}"></span>
                             {{ ucfirst($user->status?->value ?? 'N/A') }}
                         </span>
-                        @if($user->status?->value === 'blocked' && $user->block_reason)
-                            <span class="block mt-1 text-[11px] text-red-500 max-w-[200px] truncate"
-                                  title="{{ $user->block_reason }}">{{ $user->block_reason }}</span>
-                        @endif
                     </td>
                     <td class="px-2 py-3">
                         <div class="flex items-center justify-center gap-2">
 
                             {{-- VIEW --}}
-                            <button @click="openUser({{ $user->toJson() }})"
+                            <button @click="openUser({{ Js::from($user->toArray() + ['blocked_at_display' => $user->blockedAtDisplay()]) }})"
                                 title="View"
                                 class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">
                                 <i class="fa-regular fa-eye text-xs"></i>
@@ -288,7 +284,7 @@
                     <template x-if="selectedUser.blocked_at">
                         <div class="flex justify-between pb-2">
                             <span class="text-indigo-900 text-sm">Blocked On</span>
-                            <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.blocked_at"></span>
+                            <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.blocked_at_display ?? ''"></span>
                         </div>
                     </template>
 

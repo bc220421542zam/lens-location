@@ -92,7 +92,7 @@
                 <dl class="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
                     <dt class="text-xs uppercase underline text-red-700 mb-1">Block Reason</dt>
                     <dd class="text-sm text-red-700">{{ $user->block_reason ?? 'No reason provided' }}</dd>
-                    <dd class="text-xs text-red-400 mt-1">Blocked on {{ $user->blocked_at?->format('d M Y') ?? 'unknown date' }}</dd>
+                    <dd class="text-xs text-red-400 mt-1">Blocked on {{ $user->blockedAtDisplay() ?? 'unknown date' }}</dd>
                 </dl>
             @endif
 
