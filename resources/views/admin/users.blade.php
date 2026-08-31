@@ -243,33 +243,33 @@
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">First Name</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.first_name"></span>
+                        <span class="text-indigo-900 text-sm font-medium">First Name</span>
+                        <span class="text-indigo-900 text-sm" x-text="selectedUser.first_name"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Last Name</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.last_name"></span>
+                        <span class="text-indigo-900 text-sm font-medium">Last Name</span>
+                        <span class="text-indigo-900 text-sm " x-text="selectedUser.last_name"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Email</span>
-                        <span class="text-indigo-900 text-sm font-medium break-all ml-4" x-text="selectedUser.email"></span>
+                        <span class="text-indigo-900 text-sm font-medium">Email</span>
+                        <span class="text-indigo-900 text-sm break-all ml-4" x-text="selectedUser.email"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Phone</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.phone ?? 'N/A'"></span>
+                        <span class="text-indigo-900 text-sm font-medium">Phone</span>
+                        <span class="text-indigo-900 text-sm" x-text="selectedUser.phone ?? 'N/A'"></span>
                     </div>
 
                     <div class="flex justify-between border-b border-indigo-100 pb-2">
-                        <span class="text-indigo-900 text-sm">Role</span>
-                        <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.role"></span>
+                        <span class="text-indigo-900 text-sm font-medium">Role</span>
+                        <span class="text-indigo-900 text-sm" x-text="selectedUser.role"></span>
                     </div>
 
                     <div class="flex justify-between pb-2">
-                        <span class="text-indigo-900 text-sm">Status</span>
-                        <span class="text-sm font-medium"
+                        <span class="text-indigo-900 text-sm font-medium">Status</span>
+                        <span class="text-sm"
                             :class="selectedUser.status === 'active' ? 'text-green-500' : 'text-red-400'"
                             x-text="selectedUser.status ?? 'N/A'">
                         </span>
@@ -277,14 +277,14 @@
 
                     <template x-if="selectedUser.block_reason">
                         <div class="flex justify-between border-b border-indigo-100 pb-2">
-                            <span class="text-indigo-900 text-sm">Block Reason</span>
-                            <span class="text-indigo-900 text-sm font-medium break-all ml-4" x-text="selectedUser.block_reason"></span>
+                            <span class="text-gray-500 text-sm font-medium">Block Reason</span>
+                            <span class="text-gray-500 text-sm break-all ml-4" x-text="selectedUser.block_reason"></span>
                         </div>
                     </template>
                     <template x-if="selectedUser.blocked_at">
                         <div class="flex justify-between pb-2">
-                            <span class="text-indigo-900 text-sm">Blocked On</span>
-                            <span class="text-indigo-900 text-sm font-medium" x-text="selectedUser.blocked_at_display ?? ''"></span>
+                            <span class="text-gray-500 text-sm font-medium">Blocked On</span>
+                            <span class="text-gray-500 text-sm" x-text="selectedUser.blocked_at_display ?? ''"></span>
                         </div>
                     </template>
 
