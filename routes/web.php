@@ -28,7 +28,7 @@ use App\Http\Controllers\StripeWebhookController;
 // Public marketing pages. `/` used to redirect to /register; it now serves
 // the home page. Registration is still one click away in the nav and hero.
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::view('/about', 'about')->name('about');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');

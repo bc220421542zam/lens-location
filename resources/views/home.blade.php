@@ -1,20 +1,7 @@
 <x-layout :title="'Find & book your next shoot location'">
-@php
-    /**
-     * Locations. HomeController always passes approved listings in
-     * $locations — the nine featured ones, narrowed down when the hero
-     * search was submitted ($isSearch). The section below swaps between
-     * the two states on this same page.
-     */
-    $testimonials = [
-        ['quote' => 'I booked a rooftop studio for a bridal shoot in under ten minutes. The photos came out incredible and the owner was so helpful.',
-         'name' => 'Ayesha Khan', 'role' => 'Wedding Customer', 'initials' => 'AK'],
-        ['quote' => 'Listing my studio on LensLocation pays for itself. I get steady bookings and the dashboard makes managing everything effortless.',
-         'name' => 'Bilal Ahmed', 'role' => 'Studio Owner, Lahore', 'initials' => 'BA'],
-        ['quote' => 'As a commercial shooter I need locations fast. The filters make finding the right space in the right city a two-minute job.',
-         'name' => 'Sarah Malik', 'role' => 'Commercial Customer', 'initials' => 'SM'],
-    ];
-@endphp
+{{-- HomeController passes the approved listings in $locations (the nine
+     featured ones, narrowed when the hero search was submitted) and the
+     admin-managed marketing $stats. --}}
 
 {{-- ============================ HERO ============================ --}}
 <section class="relative overflow-hidden bg-linear-to-br from-indigo-950 via-indigo-900 to-indigo-800 text-white">
@@ -77,21 +64,21 @@
                 <div>
                     <dt class="sr-only">Locations listed</dt>
                     <dd class="flex items-baseline gap-2">
-                        <span class="text-2xl font-semibold">500+</span>
+                        <span class="text-2xl font-semibold">{{ $stats['locations'] }}</span>
                         <span class="text-xs text-indigo-300">locations</span>
                     </dd>
                 </div>
                 <div>
                     <dt class="sr-only">Shoots booked</dt>
                     <dd class="flex items-baseline gap-2">
-                        <span class="text-2xl font-semibold">12,000+</span>
+                        <span class="text-2xl font-semibold">{{ $stats['shoots'] }}</span>
                         <span class="text-xs text-indigo-300">shoots booked</span>
                     </dd>
                 </div>
                 <div>
                     <dt class="sr-only">Average rating</dt>
                     <dd class="flex items-baseline gap-2">
-                        <span class="text-2xl font-semibold">4.9★</span>
+                        <span class="text-2xl font-semibold">{{ $stats['rating'] }}</span>
                         <span class="text-xs text-indigo-300">average rating</span>
                     </dd>
                 </div>
@@ -313,98 +300,6 @@
                         <span class="text-sm text-gray-600 leading-relaxed">Track bookings, reviews and earnings from a single owner dashboard.</span>
                     </li>
                 </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- ======================= TESTIMONIALS ======================= --}}
-<section class="relative overflow-hidden bg-indigo-950 py-16 sm:py-24 text-white" aria-labelledby="testimonials-heading">
-    <div class="absolute -top-32 -right-32 size-96 rounded-full bg-indigo-600/20 blur-3xl" aria-hidden="true"></div>
-    <div class="absolute -bottom-32 -left-32 size-96 rounded-full bg-fuchsia-500/10 blur-3xl" aria-hidden="true"></div>
-
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-2xl mx-auto text-center">
-            <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-indigo-300">Testimonials</p>
-            <h2 id="testimonials-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">Loved by customers and owners alike</h2>
-        </div>
-
-        <div x-data="{
-                active: 0,
-                total: {{ count($testimonials) }},
-                timer: null,
-                tick() { this.active = (this.active + 1) % this.total; },
-                go(i) { this.active = i; this.start(); },
-                next() { this.tick(); this.start(); },
-                prev() { this.active = (this.active - 1 + this.total) % this.total; this.start(); },
-                start() { this.stop(); this.timer = setInterval(() => this.tick(), 6000); },
-                stop() { clearInterval(this.timer); this.timer = null; },
-             }"
-             x-init="start()"
-             @mouseenter="stop()"
-             @mouseleave="start()"
-             @focusin="stop()"
-             @focusout="start()"
-             class="relative max-w-3xl mx-auto mt-14"
-             aria-roledescription="carousel" aria-label="Customer testimonials">
-
-            {{-- All cards share one grid cell: inactive ones stay in the layout
-                 (visibility, not display), so the section height never changes
-                 and the crossfade happens in place without a page jump. --}}
-            <div aria-live="polite" class="grid">
-                @foreach ($testimonials as $i => $testimonial)
-                    <figure x-cloak
-                            :class="active === {{ $i }} ? 'visible opacity-100' : 'invisible opacity-0'"
-                            :aria-hidden="active !== {{ $i }}"
-                            class="[grid-area:1/1] flex flex-col items-center justify-center rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur px-6 py-10 sm:px-12 text-center transition-all duration-500 ease-out">
-                        <div class="flex justify-center gap-1 text-sm text-amber-400" aria-label="Rated 5 out of 5">
-                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            <i class="fa-solid fa-star" aria-hidden="true"></i>
-                        </div>
-                        <blockquote class="mt-5 text-lg sm:text-xl leading-relaxed text-indigo-100">
-                            “{{ $testimonial['quote'] }}”
-                        </blockquote>
-                        <figcaption class="mt-8 flex items-center justify-center gap-3">
-                            <span class="flex size-11 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-fuchsia-500 text-sm font-semibold" aria-hidden="true">
-                                {{ $testimonial['initials'] }}
-                            </span>
-                            <span class="text-left">
-                                <span class="block text-sm font-semibold">{{ $testimonial['name'] }}</span>
-                                <span class="block text-xs text-indigo-300">{{ $testimonial['role'] }}</span>
-                            </span>
-                        </figcaption>
-                    </figure>
-                @endforeach
-            </div>
-
-            <div class="mt-8 flex items-center justify-center gap-4">
-                <button type="button"
-                        @click="prev()"
-                        aria-label="Previous testimonial"
-                        class="size-10 rounded-full bg-white/10 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
-                    <i class="fa-solid fa-chevron-left text-sm" aria-hidden="true"></i>
-                </button>
-
-                <div class="flex items-center gap-2" role="group" aria-label="Choose a testimonial">
-                    @foreach ($testimonials as $i => $testimonial)
-                        <button type="button"
-                                @click="go({{ $i }})"
-                                :aria-current="active === {{ $i }} ? 'true' : 'false'"
-                                aria-label="Show testimonial {{ $i + 1 }} of {{ count($testimonials) }}"
-                                class="size-2.5 rounded-full transition-colors duration-200"
-                                :class="active === {{ $i }} ? 'bg-white' : 'bg-white/30 hover:bg-white/60'"></button>
-                    @endforeach
-                </div>
-
-                <button type="button"
-                        @click="next()"
-                        aria-label="Next testimonial"
-                        class="size-10 rounded-full bg-white/10 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
-                    <i class="fa-solid fa-chevron-right text-sm" aria-hidden="true"></i>
-                </button>
             </div>
         </div>
     </div>

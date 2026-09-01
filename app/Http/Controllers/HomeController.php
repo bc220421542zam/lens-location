@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ListingStatus;
 use App\Models\Category;
 use App\Models\Location;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -61,6 +62,25 @@ class HomeController extends Controller
         // page filters use).
         $categories = Category::orderBy('name')->pluck('name');
 
-        return view('home', compact('locations', 'categories', 'isSearch'));
+        // Admin-managed marketing stats. Defaults keep the page identical
+        // on a fresh database (or in tests) before any seed/save happens.
+        $stats = [
+            'locations' => Setting::get('home_locations', '500+'),
+            'shoots'    => Setting::get('home_shoots', '12,000+'),
+            'rating'    => Setting::get('home_rating', '4.9★'),
+        ];
+
+        return view('home', compact('locations', 'categories', 'isSearch', 'stats'));
+    }
+
+    public function about(): View
+    {
+        $stats = [
+            'locations' => Setting::get('about_locations', '500+'),
+            'roles'     => Setting::get('about_roles', '3'),
+            'rating'    => Setting::get('about_rating', '4.9★'),
+        ];
+
+        return view('about', compact('stats'));
     }
 }

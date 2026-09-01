@@ -25,21 +25,21 @@
             <div>
                 <dt class="sr-only">Locations listed</dt>
                 <dd class="flex items-baseline gap-2">
-                    <span class="text-2xl font-semibold">500+</span>
+                    <span class="text-2xl font-semibold">{{ $stats['locations'] }}</span>
                     <span class="text-xs text-indigo-300">vetted locations</span>
                 </dd>
             </div>
             <div>
                 <dt class="sr-only">Roles on the platform</dt>
                 <dd class="flex items-baseline gap-2">
-                    <span class="text-2xl font-semibold">3</span>
+                    <span class="text-2xl font-semibold">{{ $stats['roles'] }}</span>
                     <span class="text-xs text-indigo-300">roles, one marketplace</span>
                 </dd>
             </div>
             <div>
                 <dt class="sr-only">Average rating</dt>
                 <dd class="flex items-baseline gap-2">
-                    <span class="text-2xl font-semibold">4.9★</span>
+                    <span class="text-2xl font-semibold">{{ $stats['rating'] }}</span>
                     <span class="text-xs text-indigo-300">average rating</span>
                 </dd>
             </div>
