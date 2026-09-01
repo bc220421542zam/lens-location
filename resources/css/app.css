@@ -9,6 +9,10 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
+/* Hide Alpine-controlled elements until Alpine initializes, so x-show panels
+   (mobile nav, testimonial slides) never flash on first paint. */
+[x-cloak] { display: none !important; }
+
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     opacity: 0;
     cursor: pointer;

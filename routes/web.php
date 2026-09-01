@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Owner;
 use App\Http\Controllers\Customer;
 use App\Http\Controllers\Customer\FavoriteController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\ProfileController;
@@ -24,7 +25,10 @@ use App\Http\Controllers\StripeWebhookController;
 
 
 
-Route::redirect('/', '/register');
+// Public marketing pages. `/` used to redirect to /register; it now serves
+// the home page. Registration is still one click away in the nav and hero.
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/about', 'about')->name('about');
 
 Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');
