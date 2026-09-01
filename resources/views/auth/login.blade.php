@@ -1,5 +1,8 @@
 <x-layout>
-<div class="min-h-screen bg-[#DDDEEF] relative overflow-hidden">
+<div class="min-h-screen bg-gradient-to-br from-[#E7E8F6] via-[#DDDEEF] to-[#D6D8EE] relative overflow-hidden">
+    {{-- BACKGROUND DECORATION (behind the card) --}}
+    <x-auth-decor />
+
     {{-- CENTER WRAPPER --}}
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
         {{-- CARD --}}

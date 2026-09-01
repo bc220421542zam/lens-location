@@ -329,18 +329,34 @@
             <h2 id="testimonials-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">Loved by customers and owners alike</h2>
         </div>
 
-        <div x-data="{ active: 0 }"
-             x-init="setInterval(() => active = (active + 1) % {{ count($testimonials) }}, 6000)"
+        <div x-data="{
+                active: 0,
+                total: {{ count($testimonials) }},
+                timer: null,
+                tick() { this.active = (this.active + 1) % this.total; },
+                go(i) { this.active = i; this.start(); },
+                next() { this.tick(); this.start(); },
+                prev() { this.active = (this.active - 1 + this.total) % this.total; this.start(); },
+                start() { this.stop(); this.timer = setInterval(() => this.tick(), 6000); },
+                stop() { clearInterval(this.timer); this.timer = null; },
+             }"
+             x-init="start()"
+             @mouseenter="stop()"
+             @mouseleave="start()"
+             @focusin="stop()"
+             @focusout="start()"
              class="relative max-w-3xl mx-auto mt-14"
              aria-roledescription="carousel" aria-label="Customer testimonials">
 
-            <div aria-live="polite">
+            {{-- All cards share one grid cell: inactive ones stay in the layout
+                 (visibility, not display), so the section height never changes
+                 and the crossfade happens in place without a page jump. --}}
+            <div aria-live="polite" class="grid">
                 @foreach ($testimonials as $i => $testimonial)
                     <figure x-cloak
-                            x-show="active === {{ $i }}"
-                            x-transition.opacity.duration.500ms
+                            :class="active === {{ $i }} ? 'visible opacity-100' : 'invisible opacity-0'"
                             :aria-hidden="active !== {{ $i }}"
-                            class="rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur px-6 py-10 sm:px-12 text-center">
+                            class="[grid-area:1/1] flex flex-col items-center justify-center rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur px-6 py-10 sm:px-12 text-center transition-all duration-500 ease-out">
                         <div class="flex justify-center gap-1 text-sm text-amber-400" aria-label="Rated 5 out of 5">
                             <i class="fa-solid fa-star" aria-hidden="true"></i>
                             <i class="fa-solid fa-star" aria-hidden="true"></i>
@@ -366,7 +382,7 @@
 
             <div class="mt-8 flex items-center justify-center gap-4">
                 <button type="button"
-                        @click="active = (active - 1 + {{ count($testimonials) }}) % {{ count($testimonials) }}"
+                        @click="prev()"
                         aria-label="Previous testimonial"
                         class="size-10 rounded-full bg-white/10 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                     <i class="fa-solid fa-chevron-left text-sm" aria-hidden="true"></i>
@@ -375,7 +391,7 @@
                 <div class="flex items-center gap-2" role="group" aria-label="Choose a testimonial">
                     @foreach ($testimonials as $i => $testimonial)
                         <button type="button"
-                                @click="active = {{ $i }}"
+                                @click="go({{ $i }})"
                                 :aria-current="active === {{ $i }} ? 'true' : 'false'"
                                 aria-label="Show testimonial {{ $i + 1 }} of {{ count($testimonials) }}"
                                 class="size-2.5 rounded-full transition-colors duration-200"
@@ -384,7 +400,7 @@
                 </div>
 
                 <button type="button"
-                        @click="active = (active + 1) % {{ count($testimonials) }}"
+                        @click="next()"
                         aria-label="Next testimonial"
                         class="size-10 rounded-full bg-white/10 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                     <i class="fa-solid fa-chevron-right text-sm" aria-hidden="true"></i>
