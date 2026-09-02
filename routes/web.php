@@ -105,9 +105,9 @@ Route::middleware('auth')->group(function () {
         // Payments
         Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments');
 
-        // Payouts
-        Route::get('/payouts',                     [Admin\PayoutController::class, 'index'])->name('payouts');
-        Route::post('/payouts/{transaction}/mark', [Admin\PayoutController::class, 'mark'])->name('payouts.mark');
+        // Ledger (escrow dashboard: bookings, payments and payouts in one page)
+        Route::get('/ledger',        [Admin\LedgerController::class, 'index'])->name('ledger');
+        Route::get('/ledger/export', [Admin\LedgerController::class, 'export'])->name('ledger.export');
     });
 
     // ==================== OWNER ====================

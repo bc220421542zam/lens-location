@@ -24,12 +24,13 @@ class BookingController extends Controller
         $request->user()->markSectionViewed('admin.bookings');
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
             'search' => 'nullable|string|max:255',
         ]);
 
-        // Backstop so paid bookings whose shoot has ended show as completed
-        // here too, not only on the customer/owner pages.
+        // Backstop so settled bookings show their final status here too, not
+        // only on the customer/owner pages.
+        BookingCompleter::expireUnpaidForAll();
         BookingCompleter::forAll();
 
         $bookings = Booking::with(['location.owner', 'customer'])

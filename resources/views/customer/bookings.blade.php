@@ -34,14 +34,17 @@
                 $isPaid   = (bool) $booking->paid_transaction_exists;
                 $hasEnded = $booking->hasEnded();
 
-                $canPay    = $status === 'confirmed' && ! $isPaid && ! $hasEnded;
+                // The payment window closes at the booking date, not the end of
+                // the shoot - once the date is here, paying is no longer
+                // possible even if the settle pass hasn't expired it yet.
+                $canPay    = $status === 'confirmed' && ! $isPaid && ! $booking->hasStarted();
                 $canCancel = $status === 'pending';
                 $canReview = $status === 'completed' && $hasEnded;
 
-                // Confirmed but never paid, and the shoot has been and gone.
-                // Nothing left to do with it, so say so instead of offering a
-                // Pay button that would only bounce.
-                $isExpired = $status === 'confirmed' && ! $isPaid && $hasEnded;
+                // Persisted by the settle pass once the booking date has come
+                // and gone without payment. Nothing left to do with it, so say
+                // so instead of offering a Pay button that would only bounce.
+                $isExpired = $status === 'expired';
             @endphp
 
             {{-- h-full keeps every tile in a row the same height --}}
@@ -104,7 +107,7 @@
                 {{-- ACTIONS — mt-auto pins them to the bottom so buttons line up across a row --}}
                 <div class="mt-auto pt-1 flex flex-col gap-2">
                     @if ($isExpired)
-                        <p class="text-xs text-gray-500">This booking has expired — the payment window closed when the shoot ended.</p>
+                        <p class="text-xs text-gray-500">This booking has expired — the payment window closed at the booking date.</p>
                     @endif
 
                     @if ($canPay)

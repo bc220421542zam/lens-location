@@ -11,9 +11,10 @@ use Stripe\StripeClient;
  * Every piece of Stripe knowledge in the app lives here so controllers never
  * touch config or the SDK directly.
  *
- * Charge model: destination charges. The customer pays the platform, Stripe
- * immediately transfers the owner's share to their connected account, and the
- * platform keeps `application_fee_amount` as commission.
+ * Charge model: escrow. The customer pays the platform and 100% of the money
+ * sits on the platform balance. When a booking completes, its transaction
+ * becomes eligible, and the `payouts:process` command issues standalone
+ * Stripe Transfers to owners' connected accounts (90% owner / 10% commission).
  */
 class StripeGateway
 {
@@ -167,7 +168,11 @@ class StripeGateway
     // --------------------------------------------------------------- Checkout
 
     /**
-     * Hosted Checkout Session for a booking, as a destination charge.
+     * Hosted Checkout Session for a booking, as an escrow charge.
+     *
+     * No `application_fee_amount` and no `transfer_data.destination`: the full
+     * amount lands on the platform balance and stays there until the batch
+     * payout issues a standalone transfer.
      *
      * `payment_method_types` is deliberately omitted so Stripe picks the
      * highest-converting methods for each customer (dynamic payment methods).
@@ -175,7 +180,6 @@ class StripeGateway
     public function checkoutSession(
         Booking $booking,
         Transaction $transaction,
-        string $destinationAccount,
         string $successUrl,
         string $cancelUrl,
     ) {
@@ -205,9 +209,7 @@ class StripeGateway
                 ],
             ]],
             'payment_intent_data' => [
-                'application_fee_amount' => $split['fee_minor'],
-                'transfer_data'          => ['destination' => $destinationAccount],
-                'metadata'               => $metadata,
+                'metadata' => $metadata,
             ],
             'metadata'    => $metadata,
             'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
@@ -226,15 +228,36 @@ class StripeGateway
     }
 
     /**
-     * Refund a destination charge and claw back both the platform fee and the
-     * transfer, so a refund doesn't leave the platform out of pocket.
+     * Refund an escrow charge. No application fee was collected at charge time,
+     * so there is nothing to claw back there; `reverse_transfer` handles the
+     * case where a batch transfer already moved the owner's share.
      */
     public function refund(string $paymentIntentId)
     {
         return $this->stripe->refunds->create([
-            'payment_intent'         => $paymentIntentId,
-            'refund_application_fee' => true,
-            'reverse_transfer'       => true,
+            'payment_intent'   => $paymentIntentId,
+            'reverse_transfer' => true,
         ]);
+    }
+
+    /**
+     * Standalone transfer from the platform balance to an owner's connected
+     * account. The idempotency key is stable per transaction, which is what
+     * makes command retries and re-runs safe from double payment - a retry
+     * returns the existing transfer instead of moving money twice.
+     */
+    public function transfer(Transaction $transaction, User $owner): \Stripe\Transfer
+    {
+        return $this->stripe->transfers->create([
+            'amount'      => (int) round((float) $transaction->owner_payout_amount * 100),
+            'currency'    => $this->currency(),
+            'destination' => $owner->stripe_account_id,
+            'description' => 'Booking payout',
+            'metadata'    => [
+                'transaction_id' => (string) $transaction->id,
+                'booking_id'     => (string) $transaction->booking_id,
+                'owner_id'       => (string) $owner->id,
+            ],
+        ], ['idempotency_key' => "transfer-txn-{$transaction->id}"]);
     }
 }

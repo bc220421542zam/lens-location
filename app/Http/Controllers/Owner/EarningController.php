@@ -19,7 +19,7 @@ class EarningController extends Controller
         $request->validate([
             'search'        => 'nullable|string|max:255',
             'status'        => 'nullable|in:paid,pending,failed,refunded',
-            'payout_status' => 'nullable|in:paid,unpaid',
+            'payout_status' => 'nullable|in:held,eligible,paid_out',
             'min_amount'    => 'nullable|numeric|min:0',
             'max_amount'    => 'nullable|numeric|min:0|gte:min_amount',
         ]);
@@ -40,15 +40,15 @@ class EarningController extends Controller
         $paid = Transaction::where('owner_id', $ownerId)->where('status', PaymentStatus::Paid);
 
         $stats = [
-            'total_earned' => (clone $paid)->sum('owner_earning'),
+            'total_earned' => (clone $paid)->sum('owner_payout_amount'),
 
-            // Stripe transfers on charge success, so anything still 'unpaid' is
-            // in flight rather than waiting on a manual payout.
-            'in_transit' => (clone $paid)->where('payout_status', PayoutStatus::Unpaid)->sum('owner_earning'),
+            // Escrow: money sits on the platform until the booking completes
+            // and the weekly/monthly batch transfers it out.
+            'in_escrow' => (clone $paid)->where('payout_status', PayoutStatus::Held)->sum('owner_payout_amount'),
 
-            'transferred' => Transaction::where('owner_id', $ownerId)
-                ->where('payout_status', PayoutStatus::Paid)
-                ->sum('owner_earning'),
+            'eligible' => (clone $paid)->where('payout_status', PayoutStatus::Eligible)->sum('owner_payout_amount'),
+
+            'transferred' => (clone $paid)->where('payout_status', PayoutStatus::PaidOut)->sum('owner_payout_amount'),
         ];
 
         return view('owner.earnings', compact('transactions', 'stats'));

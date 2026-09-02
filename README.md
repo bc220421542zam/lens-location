@@ -153,6 +153,37 @@ npm run dev                 # Vite dev server with HMR
 php artisan reverb:start    # WebSocket server (if using notifications)
 ```
 
+### Escrow payout scheduler
+
+**Nothing runs without a scheduler** - in development run:
+
+```bash
+php artisan schedule:work
+```
+
+In production add a cron entry:
+
+```
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Scheduled commands:
+
+- `bookings:settle` (hourly) - expires unpaid bookings whose date has passed
+  and marks paid ones visited, releasing their escrow for payout.
+- `payouts:process` (weekly on Mondays and monthly on the 1st, both at 09:00)
+  - batch-transfers eligible escrow to owners' Stripe accounts.
+
+Run them manually:
+
+```bash
+php artisan bookings:settle
+php artisan payouts:process --period=weekly
+php artisan payouts:process --period=monthly
+```
+
+Verify the schedule with `php artisan schedule:list`.
+
 ### Running Tests
 
 ```bash

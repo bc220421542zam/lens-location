@@ -45,12 +45,12 @@
 
     <div class="shade card card-transition bg-[#EEEFF7] p-4 md:p-5 rounded-2xl border border-l-3 border-green-600">
         <div class="flex items-center justify-between">
-            <p class="label text-xs md:text-sm">In Transit</p>
+            <p class="label text-xs md:text-sm">In Escrow</p>
             <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-700 shrink-0 ml-2">
                 <i class="fa-solid fa-sack-dollar text-sm md:text-base"></i>
             </div>
         </div>
-        <p class="text-xl md:text-2xl font-semibold text-green-600 mt-1">Rs. {{ number_format($stats['in_transit'], 2) }}</p>
+        <p class="text-xl md:text-2xl font-semibold text-green-600 mt-1">Rs. {{ number_format($stats['in_escrow'], 2) }}</p>
     </div>
 
 </div>

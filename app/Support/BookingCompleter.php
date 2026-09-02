@@ -9,18 +9,21 @@ use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Moves paid bookings to `completed` once their shoot has finished.
+ * Booking lifecycle backstop: expires unpaid bookings and completes paid ones
+ * once their booking date has passed.
  *
- * The webhook does this in real time when a payment lands, so this is the
- * backstop for bookings that were paid while the webhook never arrived - the
- * Stripe CLI not running locally, a delivery failure, or a payment taken before
- * automatic completion existed. Called on page load rather than from a
- * scheduler, so no cron setup is required.
+ * The `bookings:settle` scheduler runs this whole-platform periodically; the
+ * controllers call the scoped variants on page load so a customer or owner
+ * opening their bookings sees an up-to-date status even when the scheduler
+ * isn't running (e.g. the Stripe CLI isn't up locally, or a payment landed
+ * while the webhook never arrived).
  *
- * One scoped UPDATE, no model hydration.
+ * Both moves are one scoped UPDATE each, no model hydration.
  */
 class BookingCompleter
 {
+    // ---------------------------------------------------------------- Complete
+
     public static function forCustomer(int $customerId): int
     {
         return self::complete(Booking::where('customer_id', $customerId));
@@ -46,16 +49,76 @@ class BookingCompleter
      * Only `confirmed` bookings advance - this must never resurrect one the
      * customer or owner cancelled, or re-complete a refunded one.
      *
-     * `serviceEnded()` is what keeps payment from standing in for delivery: a
-     * shoot booked for next month is paid today but stays `confirmed` until it
-     * has actually happened, so the review action can't open early.
+     * `started()` implements the "visited" rule: the moment the booking date
+     * has arrived the slot is honored (or lost to a no-show), because the
+     * owner can no longer rebook it - payment is due from the start time, not
+     * the end of the shoot.
+     *
+     * A disputed transaction keeps its booking out of this pass - the money
+     * stays in escrow until an admin resolves the dispute.
+     *
+     * Completing a booking also releases its escrow: the paid transaction flips
+     * `held` -> `eligible` and gets its 90/10 split stamped (PayoutEligibility).
      */
     private static function complete(Builder $query): int
     {
-        return $query
+        $bookingIds = (clone $query)
             ->where('status', BookingStatus::Confirmed)
-            ->serviceEnded()
+            ->started()
             ->whereHas('transactions', fn ($q) => $q->where('status', PaymentStatus::Paid))
-            ->update(['status' => BookingStatus::Completed]);
+            ->whereDoesntHave('transactions', fn ($q) => $q->whereNotNull('disputed_at'))
+            ->pluck('id');
+
+        if ($bookingIds->isEmpty()) {
+            return 0;
+        }
+
+        $count = Booking::whereIn('id', $bookingIds)->update(['status' => BookingStatus::Completed]);
+
+        PayoutEligibility::markEligible($bookingIds);
+
+        return $count;
+    }
+
+    // ------------------------------------------------------------------ Expire
+
+    public static function expireUnpaidForCustomer(int $customerId): int
+    {
+        return self::expireUnpaid(Booking::where('customer_id', $customerId));
+    }
+
+    public static function expireUnpaidForOwner(int $ownerId): int
+    {
+        return self::expireUnpaid(
+            Booking::whereIn('location_id', Location::select('id')->where('user_id', $ownerId)),
+        );
+    }
+
+    public static function expireUnpaidForAll(): int
+    {
+        return self::expireUnpaid(Booking::query());
+    }
+
+    /**
+     * A confirmed booking whose date has arrived without any successful
+     * payment is expired: the payment window closed at the booking date, and
+     * an expired booking never enters the payout flow.
+     *
+     * Only `confirmed` bookings expire - pending ones still await the owner's
+     * decision, and cancelled/completed ones are already terminal.
+     */
+    private static function expireUnpaid(Builder $query): int
+    {
+        $bookingIds = (clone $query)
+            ->where('status', BookingStatus::Confirmed)
+            ->started()
+            ->whereDoesntHave('transactions', fn ($q) => $q->where('status', PaymentStatus::Paid))
+            ->pluck('id');
+
+        if ($bookingIds->isEmpty()) {
+            return 0;
+        }
+
+        return Booking::whereIn('id', $bookingIds)->update(['status' => BookingStatus::Expired]);
     }
 }

@@ -8,6 +8,7 @@ enum BookingStatus: string
     case Confirmed = 'confirmed';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
+    case Expired   = 'expired';
 
     public function label(): string
     {
@@ -21,6 +22,7 @@ enum BookingStatus: string
             self::Confirmed => 'bg-green-100 text-green-700',
             self::Completed => 'bg-indigo-100 text-indigo-700',
             self::Cancelled => 'bg-red-100 text-red-600',
+            self::Expired   => 'bg-gray-100 text-gray-600',
         };
     }
 }

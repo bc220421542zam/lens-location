@@ -4,33 +4,39 @@ namespace App\Enums;
 
 enum PayoutStatus: string
 {
-    /** No transfer to the owner's connected account has landed yet. */
-    case Unpaid = 'unpaid';
+    /** Funds are sitting on the platform balance - the booking hasn't completed. */
+    case Held = 'held';
 
-    /** Stripe transferred the owner's share to their connected account. */
-    case Paid = 'paid';
+    /** Booking completed; the transaction is queued for a batch transfer. */
+    case Eligible = 'eligible';
+
+    /** A Stripe transfer to the owner's connected account has been issued. */
+    case PaidOut = 'paid_out';
 
     public function label(): string
     {
         return match ($this) {
-            self::Unpaid => 'In transit',
-            self::Paid   => 'Transferred',
+            self::Held     => 'On platform',
+            self::Eligible => 'Eligible',
+            self::PaidOut  => 'Paid out',
         };
     }
 
     public function badgeClasses(): string
     {
         return match ($this) {
-            self::Unpaid => 'bg-yellow-100 text-yellow-700',
-            self::Paid   => 'bg-green-100 text-green-700',
+            self::Held     => 'bg-gray-100 text-gray-600',
+            self::Eligible => 'bg-yellow-100 text-yellow-700',
+            self::PaidOut  => 'bg-green-100 text-green-700',
         };
     }
 
     public function dotClasses(): string
     {
         return match ($this) {
-            self::Unpaid => 'bg-yellow-600',
-            self::Paid   => 'bg-green-600',
+            self::Held     => 'bg-gray-500',
+            self::Eligible => 'bg-yellow-600',
+            self::PaidOut  => 'bg-green-600',
         };
     }
 }

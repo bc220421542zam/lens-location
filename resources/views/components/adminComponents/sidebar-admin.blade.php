@@ -22,10 +22,12 @@
     $newBookings  = Booking::where('status', BookingStatus::Pending)
         ->when($seen('admin.bookings'),  fn ($q, $v) => $q->where('created_at', '>', $v))->count();
     $newPayments  = Transaction::when($seen('admin.payments'),  fn ($q, $v) => $q->where('created_at', '>', $v))->count();
+    // Escrow money sitting held/eligible counts as "payout owed" - the Ledger
+    // page now owns payout tracking since the old Payouts page is gone.
     $newPayouts   = Transaction::where('status', PaymentStatus::Paid)
-        ->where('payout_status', PayoutStatus::Unpaid)
-        ->whereNotNull('paid_at')
-        ->when($seen('admin.payouts'),   fn ($q, $v) => $q->where('paid_at', '>', $v))->count();
+        ->whereIn('payout_status', [PayoutStatus::Held, PayoutStatus::Eligible])
+        ->whereNotNull('held_since')
+        ->when($seen('admin.ledger'),    fn ($q, $v) => $q->where('held_since', '>', $v))->count();
     $unviewedReviews = Review::whereNull('admin_reviewed_at')->count();
 
     $links = [
@@ -35,7 +37,7 @@
         ['route' => 'admin.categories', 'icon' => 'fa-tags',         'label' => 'Categories'],
         ['route' => 'admin.bookings',   'icon' => 'fa-calendar-days', 'label' => 'Bookings', 'unread' => $newBookings],
         ['route' => 'admin.payments',   'icon' => 'fa-credit-card',  'label' => 'Payments',  'unread' => $newPayments],
-        ['route' => 'admin.payouts',    'icon' => 'fa-money-bill-transfer', 'label' => 'Payouts', 'unread' => $newPayouts],
+        ['route' => 'admin.ledger',     'icon' => 'fa-chart-column', 'label' => 'Ledger',    'unread' => $newPayouts],
         ['route' => 'admin.reviews',    'icon' => 'fa-star',         'label' => 'Reviews',   'unread' => $unviewedReviews],
         ['route' => 'admin.profile',    'icon' => 'fa-user',         'label' => 'Profile'],
     ];

@@ -61,12 +61,16 @@ class PaymentController extends Controller
 
         $booking->loadMissing('location.owner', 'customer');
 
-        if ($booking->status !== BookingStatus::Confirmed) {
-            return back()->with('error', 'Only confirmed bookings can be paid.');
+        // The payment window closes at the booking date. The persisted
+        // `expired` status covers the settled case; hasStarted() covers the
+        // gap between the booking date and the next settle pass.
+        if ($booking->status === BookingStatus::Expired
+            || ($booking->status === BookingStatus::Confirmed && $booking->hasStarted())) {
+            return back()->with('error', 'This booking has expired - the payment window closed at the booking date.');
         }
 
-        if ($booking->hasEnded()) {
-            return back()->with('error', 'This booking has expired - the payment window closed when the shoot ended.');
+        if ($booking->status !== BookingStatus::Confirmed) {
+            return back()->with('error', 'Only confirmed bookings can be paid.');
         }
 
         if ($booking->transactions()->where('status', PaymentStatus::Paid)->exists()) {
@@ -107,7 +111,6 @@ class PaymentController extends Controller
             $session = $this->stripe->checkoutSession(
                 $booking,
                 $transaction,
-                $owner->stripe_account_id,
                 route('customer.payments.success'),
                 route('customer.bookings'),
             );

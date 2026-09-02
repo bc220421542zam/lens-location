@@ -20,9 +20,11 @@ class BookingController extends Controller
         $request->user()->markSectionViewed('owner.bookings');
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
         ]);
 
+        // Backstop for bookings the scheduler hasn't settled yet. Normally a no-op.
+        BookingCompleter::expireUnpaidForOwner(auth()->id());
         BookingCompleter::forOwner(auth()->id());
 
         // A subquery keeps the owner's listing ids in the database instead of
@@ -70,6 +72,7 @@ class BookingController extends Controller
 
         // Same backstop the index runs, so a directly opened page still sees
         // an up-to-date status.
+        BookingCompleter::expireUnpaidForOwner(auth()->id());
         BookingCompleter::forOwner(auth()->id());
         $booking->refresh();
 

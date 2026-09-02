@@ -20,6 +20,8 @@ class PaymentController extends Controller
             'status'     => 'nullable|in:paid,pending,failed,refunded',
             'min_amount' => 'nullable|numeric|min:0',
             'max_amount' => 'nullable|numeric|min:0|gte:min_amount',
+            'sort'       => 'nullable|in:gateway_ref,amount,status',
+            'direction'  => 'nullable|in:asc,desc',
         ]);
 
         $transactions = Transaction::with(['booking.location', 'customer', 'owner'])
@@ -32,10 +34,17 @@ class PaymentController extends Controller
             }))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('min_amount'), fn ($q) => $q->where('amount', '>=', $request->float('min_amount')))
-            ->when($request->filled('max_amount'), fn ($q) => $q->where('amount', '<=', $request->float('max_amount')))
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->when($request->filled('max_amount'), fn ($q) => $q->where('amount', '<=', $request->float('max_amount')));
+
+        // The header sort links drive ordering; without a sort param the table
+        // keeps its newest-first default.
+        if ($request->filled('sort')) {
+            $transactions->orderBy($request->string('sort'), $request->string('direction', 'asc')->toString());
+        } else {
+            $transactions->latest();
+        }
+
+        $transactions = $transactions->paginate(10)->withQueryString();
 
         $paid = Transaction::where('status', PaymentStatus::Paid);
 

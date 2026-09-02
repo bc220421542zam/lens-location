@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\BookingStatus;
 use App\Enums\ListingStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\PayoutStatus;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\Transaction;
@@ -69,18 +70,27 @@ class BookingCompletionTest extends TestCase
             'platform_fee'  => 520,
             'owner_earning' => 4680,
             'status'        => PaymentStatus::Paid,
+            'payout_status' => PayoutStatus::Held,
             'paid_at'       => now(),
+            'held_since'    => now(),
         ]);
     }
 
     public function test_paid_confirmed_booking_completes_for_the_customer(): void
     {
         $booking = $this->booking(BookingStatus::Confirmed);
-        $this->paidTransaction($booking);
+        $transaction = $this->paidTransaction($booking);
 
         BookingCompleter::forCustomer($this->customer->id);
 
         $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+
+        // Completion releases the escrow and stamps the split.
+        $transaction->refresh();
+
+        $this->assertSame(PayoutStatus::Eligible, $transaction->payout_status);
+        $this->assertSame('520.00', $transaction->platform_commission);
+        $this->assertSame('4680.00', $transaction->owner_payout_amount);
     }
 
     public function test_paid_confirmed_booking_completes_for_the_owner(): void
@@ -91,6 +101,19 @@ class BookingCompletionTest extends TestCase
         BookingCompleter::forOwner($this->owner->id);
 
         $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+        $this->assertSame(PayoutStatus::Eligible, Transaction::where('booking_id', $booking->id)->sole()->payout_status);
+    }
+
+    public function test_completing_twice_is_idempotent_for_the_transaction(): void
+    {
+        $booking = $this->booking(BookingStatus::Confirmed);
+        $transaction = $this->paidTransaction($booking);
+
+        BookingCompleter::forCustomer($this->customer->id);
+        BookingCompleter::forCustomer($this->customer->id);
+
+        // The second run must not re-stamp the split or move the status again.
+        $this->assertSame(PayoutStatus::Eligible, $transaction->fresh()->payout_status);
     }
 
     public function test_unpaid_confirmed_booking_stays_confirmed(): void
@@ -199,5 +222,50 @@ class BookingCompletionTest extends TestCase
         $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
 
         Carbon::setTestNow();
+    }
+
+    public function test_booking_completes_once_the_start_time_passes_even_mid_shoot(): void
+    {
+        // Started an hour ago but still booked for 4 hours: the slot is lost
+        // to the owner from the start time, so the booking is "visited" now.
+        $booking = $this->booking(BookingStatus::Confirmed, now()->subHour());
+        $transaction = $this->paidTransaction($booking);
+
+        BookingCompleter::forCustomer($this->customer->id);
+
+        $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+        $this->assertSame(PayoutStatus::Eligible, $transaction->fresh()->payout_status);
+    }
+
+    public function test_same_day_booking_is_visited_and_released_for_payout_by_the_settle_command(): void
+    {
+        // booking_date = today: the settle pass must visit the booking the
+        // same day it runs, not wait for the date to be strictly in the past.
+        $booking = $this->booking(BookingStatus::Confirmed, now()->startOfDay());
+        $transaction = $this->paidTransaction($booking);
+
+        $this->artisan('bookings:settle')
+            ->expectsOutput('Settled bookings: 1 visited, 0 expired.')
+            ->assertExitCode(0);
+
+        $this->assertSame(BookingStatus::Completed, $booking->fresh()->status);
+
+        // Visited -> Transfer Status: Ready to Pay (eligible for the payout
+        // batch, which then moves it to Transferred).
+        $this->assertSame(PayoutStatus::Eligible, $transaction->fresh()->payout_status);
+    }
+
+    public function test_disputed_transaction_blocks_completion_and_escrow_stays_held(): void
+    {
+        $booking = $this->booking(BookingStatus::Confirmed);
+        $transaction = $this->paidTransaction($booking);
+
+        $transaction->update(['disputed_at' => now()]);
+
+        BookingCompleter::forCustomer($this->customer->id);
+
+        // Flagged for admin review: no auto-visit, no payout release.
+        $this->assertSame(BookingStatus::Confirmed, $booking->fresh()->status);
+        $this->assertSame(PayoutStatus::Held, $transaction->fresh()->payout_status);
     }
 }

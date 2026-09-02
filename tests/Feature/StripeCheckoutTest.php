@@ -89,9 +89,9 @@ class StripeCheckoutTest extends TestCase
                 return 0.10;
             }
 
-            public function checkoutSession($booking, $transaction, $destination, $successUrl, $cancelUrl)
+            public function checkoutSession($booking, $transaction, $successUrl, $cancelUrl)
             {
-                $this->sessionArgs[] = compact('destination', 'successUrl', 'cancelUrl')
+                $this->sessionArgs[] = compact('successUrl', 'cancelUrl')
                     + ['transaction_id' => $transaction->id];
 
                 return (object) [
@@ -124,7 +124,11 @@ class StripeCheckoutTest extends TestCase
         $this->assertSame('9000.00', $transaction->owner_earning);
         $this->assertSame(PaymentStatus::Pending, $transaction->status);
         $this->assertSame('cs_test_1', $transaction->stripe_checkout_session_id);
-        $this->assertSame('acct_test123', $gateway->sessionArgs[0]['destination']);
+
+        // Escrow checkout carries no destination - the transaction id is all
+        // the session needs to reconcile later.
+        $this->assertSame($transaction->id, $gateway->sessionArgs[0]['transaction_id']);
+        $this->assertArrayNotHasKey('destination', $gateway->sessionArgs[0]);
 
         // The three money columns must reconcile exactly.
         $this->assertSame(

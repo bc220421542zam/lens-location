@@ -5,17 +5,19 @@
     'btn' => ''
 ])
 
-{{-- TOP BAR --}}
+{{-- TOP BAR: heading on the first line, sub-heading below it, actions on the right. --}}
 <div class="top-bar flex flex-wrap items-center justify-between gap-3">
 
     <div>
-        <h1 class="title text-indigo-900">
+        <h1 class="title mb-0 text-indigo-900">
             {{ $title }}
         </h1>
 
-        <p class="text-sm text-gray-500">
-            {{ $description }}
-        </p>
+        @if ($description)
+            <p class="mt-1 text-sm text-gray-500">
+                {{ $description }}
+            </p>
+        @endif
     </div>
 
     <div>

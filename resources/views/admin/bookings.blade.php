@@ -74,6 +74,7 @@
                     <option value="confirmed" @selected(request('status') === 'confirmed')>Confirmed</option>
                     <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                     <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+                    <option value="expired"   @selected(request('status') === 'expired')>Expired</option>
                 </select>
                 <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                     <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"
@@ -118,7 +119,7 @@
         <div class="overflow-x-auto">
             <div class="bg-white rounded-xl shadow-sm border border-r-3 border-indigo-400 overflow-hidden">
 
-                <table class="w-full text-left min-w-[900px]">
+                <table class="table-clean w-full text-left min-w-[900px]">
                     <thead>
                         <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                             <th class="py-3 px-3 font-medium">Sr. No.</th>
@@ -127,7 +128,7 @@
                             <th class="px-2 font-medium">Listing</th>
                             <th class="px-2 font-medium">Owner</th>
                             <th class="px-2 font-medium">Date</th>
-                            <th class="px-2 font-medium">Total</th>
+                            <th class="px-2 font-medium text-right">Total</th>
                             <th class="px-2 font-medium">Status</th>
                             <th class="px-2 font-medium text-center">Action</th>
                         </tr>
@@ -157,7 +158,7 @@
                                 @endif
                             </td>
                             <td class="px-2 text-sm text-indigo-700">{{ $booking->booking_date->format('M d, Y · g:i A') }}</td>
-                            <td class="px-2 text-sm text-indigo-700">PKR {{ number_format((float) $booking->total_price) }}</td>
+                            <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">PKR {{ number_format((float) $booking->total_price) }}</td>
                             <td class="px-2 text-sm">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $booking->status->badgeClasses() }}">
                                     {{ $booking->status->label() }}

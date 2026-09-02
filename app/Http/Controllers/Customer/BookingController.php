@@ -27,11 +27,13 @@ class BookingController extends Controller
             ->update(['read_at' => now()]);
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled',
+            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
         ]);
 
-        // Backstop for paid bookings the webhook never completed (e.g. the
-        // Stripe CLI wasn't running locally). Normally a no-op.
+        // Backstop for bookings the scheduler hasn't settled yet: expire the
+        // unpaid past-due ones and complete the paid ones the webhook missed
+        // (e.g. the Stripe CLI wasn't running locally). Normally a no-op.
+        BookingCompleter::expireUnpaidForCustomer(auth()->id());
         BookingCompleter::forCustomer(auth()->id());
 
         $bookings = Booking::with('location.owner')
@@ -87,6 +89,7 @@ class BookingController extends Controller
 
         // Same backstop the index runs, so opening this page directly still
         // sees an up-to-date status rather than a stale `confirmed`.
+        BookingCompleter::expireUnpaidForCustomer(auth()->id());
         BookingCompleter::forCustomer(auth()->id());
         $booking->refresh();
 

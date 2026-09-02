@@ -26,8 +26,8 @@
 
                 <p class="text-sm text-gray-500 mt-1">
                     @if ($active)
-                        You're all set. Each booking payment is transferred to your Stripe account automatically,
-                        less the {{ (int) round(config('services.stripe.commission_rate') * 100) }}% platform commission.
+                        You're all set. Each booking payment is held in escrow and paid out to your Stripe
+                        account in weekly batches, less the {{ (int) round(config('services.stripe.commission_rate') * 100) }}% platform commission.
                     @elseif ($started)
                         Stripe is still reviewing your details. Customers can't pay for your listings until this clears.
                     @else

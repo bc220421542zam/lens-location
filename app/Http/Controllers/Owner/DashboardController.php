@@ -36,12 +36,12 @@ class DashboardController extends Controller
             'active'         => (int) $listingTotals->approved_count,
             'pending'        => (int) $listingTotals->pending_count,
             'bookings'       => $this->ownerBookings($ownerId)->count(),
-            // Destination charges transfer automatically, so anything still
-            // 'unpaid' is in flight rather than awaiting a manual payout.
-            'in_transit' => Transaction::where('owner_id', $ownerId)
+            // Escrow: money sits on the platform until the booking completes
+            // and the weekly/monthly batch transfers it out.
+            'in_escrow' => Transaction::where('owner_id', $ownerId)
                 ->where('status', 'paid')
-                ->where('payout_status', 'unpaid')
-                ->sum('owner_earning'),
+                ->where('payout_status', 'held')
+                ->sum('owner_payout_amount'),
         ];
 
         // Two grouped queries replace 28 per-day COUNTs.

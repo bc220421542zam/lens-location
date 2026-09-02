@@ -11,7 +11,9 @@ use App\Models\Location;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\AdminDisputeNotification;
 use App\Notifications\PaymentSuccessNotification;
+use App\Support\BookingCompleter;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -157,7 +159,9 @@ class StripeWebhookTest extends TestCase
 
     public function test_valid_completed_session_marks_the_transaction_paid(): void
     {
-        $transaction = $this->transaction();
+        // Future shoot: the inline completion path stays out, so the payout
+        // remains held until the booking actually completes.
+        $transaction = $this->transaction(bookingDate: now()->addDay());
 
         $this->send($this->completedEvent())->assertOk();
 
@@ -167,6 +171,10 @@ class StripeWebhookTest extends TestCase
         $this->assertSame('pi_test_abc', $transaction->stripe_payment_intent_id);
         $this->assertSame('pi_test_abc', $transaction->gateway_ref);
         $this->assertNotNull($transaction->paid_at);
+
+        // Escrow: the money is held on the platform from the moment it lands.
+        $this->assertSame(PayoutStatus::Held, $transaction->payout_status);
+        $this->assertNotNull($transaction->held_since);
     }
 
     public function test_paid_session_notifies_the_customer(): void
@@ -223,6 +231,14 @@ class StripeWebhookTest extends TestCase
         $this->send($this->completedEvent())->assertOk();
 
         $this->assertSame(BookingStatus::Completed, $transaction->booking->fresh()->status);
+
+        // Completing the booking releases the escrow: the transaction becomes
+        // eligible and the 90/10 split is recorded on the transaction.
+        $transaction->refresh();
+
+        $this->assertSame(PayoutStatus::Eligible, $transaction->payout_status);
+        $this->assertSame('1000.00', $transaction->platform_commission);
+        $this->assertSame('9000.00', $transaction->owner_payout_amount);
     }
 
     public function test_paid_session_does_not_complete_a_future_booking(): void
@@ -319,10 +335,13 @@ class StripeWebhookTest extends TestCase
         $this->assertSame(PaymentStatus::Failed, $transaction->fresh()->status);
     }
 
-    public function test_charge_succeeded_records_the_transfer_to_the_owner(): void
+    public function test_charge_succeeded_does_not_touch_payout_status(): void
     {
+        // Under escrow there is no destination transfer at charge time - the
+        // payout stays held until the booking completes and the batch runs.
         $transaction = $this->transaction([
-            'status'                   => PaymentStatus::Paid,
+            'status'         => PaymentStatus::Paid,
+            'payout_status'  => PayoutStatus::Held,
             'stripe_payment_intent_id' => 'pi_test_abc',
         ]);
 
@@ -338,8 +357,8 @@ class StripeWebhookTest extends TestCase
 
         $transaction->refresh();
 
-        $this->assertSame('tr_test_abc', $transaction->stripe_transfer_id);
-        $this->assertSame(PayoutStatus::Paid, $transaction->payout_status);
+        $this->assertNull($transaction->stripe_transfer_id);
+        $this->assertSame(PayoutStatus::Held, $transaction->payout_status);
     }
 
     public function test_refund_cancels_the_booking(): void
@@ -360,6 +379,59 @@ class StripeWebhookTest extends TestCase
 
         $this->assertSame(PaymentStatus::Refunded, $transaction->fresh()->status);
         $this->assertSame(BookingStatus::Cancelled, $transaction->booking->fresh()->status);
+    }
+
+    public function test_dispute_flags_the_transaction_and_notifies_admins(): void
+    {
+        $admin = User::create([
+            'role' => 'admin', 'first_name' => 'A', 'last_name' => 'Dmin',
+            'email' => 'admin'.uniqid().'@example.com', 'phone' => '03009999999',
+            'password' => bcrypt('password'),
+        ]);
+
+        $transaction = $this->transaction([
+            'status'                   => PaymentStatus::Paid,
+            'stripe_payment_intent_id' => 'pi_test_abc',
+            'payout_status'            => PayoutStatus::Held,
+        ]);
+
+        $this->send([
+            'id'   => 'evt_dispute',
+            'type' => 'charge.dispute.created',
+            'data' => ['object' => [
+                'id'             => 'dp_test_abc',
+                'payment_intent' => 'pi_test_abc',
+            ]],
+        ])->assertOk();
+
+        $transaction->refresh();
+
+        // Not a refund yet: the charge stays paid, but escrow freezes pending
+        // admin review and the booking is not auto-completed.
+        $this->assertNotNull($transaction->disputed_at);
+        $this->assertSame(PaymentStatus::Paid, $transaction->status);
+
+        $this->assertDatabaseHas('notifications', [
+            'type'         => AdminDisputeNotification::class,
+            'notifiable_id' => $admin->id,
+        ]);
+    }
+
+    public function test_disputed_transaction_is_not_completed_by_later_settlement(): void
+    {
+        $transaction = $this->transaction([
+            'status'                   => PaymentStatus::Paid,
+            'stripe_payment_intent_id' => 'pi_test_abc',
+            'payout_status'            => PayoutStatus::Held,
+            'disputed_at'              => now(),
+        ]);
+
+        BookingCompleter::forAll();
+
+        // The booking date has passed and payment was received, but the
+        // dispute keeps it out of the auto-visit pass.
+        $this->assertSame(BookingStatus::Confirmed, $transaction->booking->fresh()->status);
+        $this->assertSame(PayoutStatus::Held, $transaction->fresh()->payout_status);
     }
 
     public function test_unhandled_event_type_is_acknowledged(): void

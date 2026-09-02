@@ -8,8 +8,10 @@ use App\Enums\PayoutStatus;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\AdminDisputeNotification;
 use App\Notifications\PaymentReceivedNotification;
 use App\Notifications\PaymentSuccessNotification;
+use App\Support\PayoutEligibility;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -72,8 +74,8 @@ class StripeWebhookController extends Controller
                 'checkout.session.async_payment_failed',
                 'checkout.session.expired'                 => $this->sessionFailed($event->data->object),
                 'payment_intent.payment_failed'            => $this->paymentIntentFailed($event->data->object),
-                'charge.succeeded'                         => $this->chargeSucceeded($event->data->object),
                 'charge.refunded'                          => $this->chargeRefunded($event->data->object),
+                'charge.dispute.created'                   => $this->chargeDisputed($event->data->object),
                 default                                    => null,
             };
         } catch (\Throwable $e) {
@@ -137,6 +139,8 @@ class StripeWebhookController extends Controller
                 'stripe_payment_intent_id' => $session->payment_intent,
                 'gateway_ref'              => $session->payment_intent,
                 'paid_at'                  => now(),
+                'payout_status'            => PayoutStatus::Held,
+                'held_since'               => now(),
             ]);
 
             // A mailer outage must not roll the payment back - Stripe would
@@ -161,15 +165,20 @@ class StripeWebhookController extends Controller
                 ]);
             }
 
-            // Payment alone doesn't settle the booking - the shoot still has to
-            // happen. Guarded on Confirmed so a booking cancelled between
-            // checkout and this webhook isn't resurrected, and on hasEnded() so
-            // a future shoot stays `confirmed`; BookingCompleter promotes it on
-            // the first page load after its end time.
+            // Payment alone doesn't settle the booking - the booking date still
+            // has to arrive. Guarded on Confirmed so a booking cancelled
+            // between checkout and this webhook isn't resurrected, on
+            // hasStarted() so a future booking stays `confirmed`, and on
+            // disputed_at so a disputed payment never auto-completes;
+            // BookingCompleter promotes it on the next settle pass.
             $booking = $transaction->booking;
 
-            if ($booking && $booking->status === BookingStatus::Confirmed && $booking->hasEnded()) {
+            if ($booking
+                && $booking->status === BookingStatus::Confirmed
+                && $transaction->disputed_at === null
+                && $booking->hasStarted()) {
                 $booking->update(['status' => BookingStatus::Completed]);
+                PayoutEligibility::markEligibleForBooking($booking);
             }
         });
     }
@@ -198,28 +207,6 @@ class StripeWebhookController extends Controller
         });
     }
 
-    /**
-     * A destination charge transfers the owner's share automatically, so the
-     * transfer id on the charge is what proves the owner has been paid.
-     */
-    private function chargeSucceeded($charge): void
-    {
-        if (! ($charge->transfer ?? null)) {
-            return;
-        }
-
-        DB::transaction(function () use ($charge) {
-            $transaction = Transaction::where('stripe_payment_intent_id', $charge->payment_intent)
-                ->lockForUpdate()
-                ->first();
-
-            $transaction?->update([
-                'stripe_transfer_id' => $charge->transfer,
-                'payout_status'      => PayoutStatus::Paid,
-            ]);
-        });
-    }
-
     private function chargeRefunded($charge): void
     {
         DB::transaction(function () use ($charge) {
@@ -233,6 +220,31 @@ class StripeWebhookController extends Controller
 
             $transaction->update(['status' => PaymentStatus::Refunded]);
             $transaction->booking?->update(['status' => BookingStatus::Cancelled]);
+        });
+    }
+
+    /**
+     * A dispute is not a refund yet: the charge stays `paid`, but the money
+     * freezes in escrow - `disputed_at` excludes the transaction from booking
+     * completion and from the payout batch until an admin resolves it, and
+     * flags it for review on the ledger.
+     */
+    private function chargeDisputed($dispute): void
+    {
+        DB::transaction(function () use ($dispute) {
+            $transaction = Transaction::where('stripe_payment_intent_id', $dispute->payment_intent)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $transaction) {
+                return;
+            }
+
+            $transaction->update(['disputed_at' => now()]);
+
+            User::where('role', 'admin')->each(
+                fn (User $admin) => $admin->notify(new AdminDisputeNotification($transaction->id, $transaction->booking_id))
+            );
         });
     }
 

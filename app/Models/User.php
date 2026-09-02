@@ -142,7 +142,7 @@ class User extends Authenticatable
 
     /**
      * When this user last opened the given section page, if ever. Sections use
-     * route-like keys ('admin.payouts', 'owner.earnings', ...). Prefer the
+     * route-like keys ('admin.ledger', 'owner.earnings', ...). Prefer the
      * eager-loaded relation (see the sidebar components) to avoid per-tab
      * queries.
      */

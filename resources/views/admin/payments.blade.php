@@ -31,7 +31,7 @@
         <div class="overflow-x-auto">
             <div class="bg-white rounded-xl shadow-sm border border-r-3 border-indigo-400 overflow-hidden">
 
-                <table class="w-full text-left min-w-[900px]">
+                <table class="table-clean w-full text-left min-w-[820px]">
                     <thead>
                         <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                             <th class="py-3 px-3 font-medium">Sr. No.</th>
@@ -62,7 +62,7 @@
                             <th class="px-2 font-medium">Customer</th>
                             <th class="px-2 font-medium">Owner</th>
 
-                            <th class="px-2 font-medium">
+                            <th class="px-2 font-medium text-right">
                                 <a href="{{ $sortLink('amount') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
                                     Amount
                                     @if($currentSort === 'amount')
@@ -73,8 +73,8 @@
                                 </a>
                             </th>
 
-                            <th class="px-2 font-medium">Owner Earning</th>
-                            <th class="px-2 font-medium">Commission</th>
+                            <th class="px-2 font-medium text-right">Owner Earning</th>
+                            <th class="px-2 font-medium text-right">Commission</th>
 
                             <th class="px-2 font-medium">
                                 <a href="{{ $sortLink('status') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
@@ -105,7 +105,9 @@
                                     <span class="text-gray-400">—</span>
                                 @endif
                             </td>
-                            <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
+                            <td class="px-2 text-sm font-medium text-indigo-900">
+                                <div class="max-w-[150px] truncate" title="{{ $t->booking->location->title ?? '' }}">{{ $t->booking->location->title ?? '—' }}</div>
+                            </td>
                             <td class="px-2 text-sm text-indigo-700">
                                 @if($t->customer)
                                     <a href="{{ route('admin.users.detail', $t->customer->id) }}"
@@ -122,9 +124,9 @@
                                     —
                                 @endif
                             </td>
-                            <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
-                            <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->owner_earning, 2) }}</td>
-                            <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->platform_fee, 2) }}</td>
+                            <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format($t->amount, 2) }}</td>
+                            <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format($t->owner_earning, 2) }}</td>
+                            <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format($t->platform_fee, 2) }}</td>
                             <td class="px-2 text-sm">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>

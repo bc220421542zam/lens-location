@@ -84,23 +84,23 @@
                 <h3 class="text-sm font-semibold text-indigo-900 mb-2">Payments</h3>
                 @if ($booking->transactions->isNotEmpty())
                     <div class="overflow-x-auto border border-indigo-100 rounded-xl bg-white">
-                        <table class="w-full text-left">
+                        <table class="table-clean w-full text-left">
                             <thead>
                                 <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                                     <th class="py-2 px-3 font-medium">Ref</th>
-                                    <th class="py-2 px-3 font-medium">Amount</th>
-                                    <th class="py-2 px-3 font-medium">Commission</th>
-                                    <th class="py-2 px-3 font-medium">Owner Share</th>
+                                    <th class="py-2 px-3 font-medium text-right">Amount</th>
+                                    <th class="py-2 px-3 font-medium text-right">Commission</th>
+                                    <th class="py-2 px-3 font-medium text-right">Owner Share</th>
                                     <th class="py-2 px-3 font-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($booking->transactions as $t)
-                                    <tr class="border-t border-indigo-50">
+                                    <tr class="border-t border-indigo-50 {{ $loop->even ? 'bg-indigo-50/40' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                                         <td class="py-2 px-3 text-sm text-indigo-700">{{ $t->reference() ?? '—' }}</td>
-                                        <td class="py-2 px-3 text-sm text-indigo-700">Rs. {{ number_format((float) $t->amount, 2) }}</td>
-                                        <td class="py-2 px-3 text-sm text-indigo-700">Rs. {{ number_format((float) $t->platform_fee, 2) }}</td>
-                                        <td class="py-2 px-3 text-sm text-indigo-700">Rs. {{ number_format((float) $t->owner_earning, 2) }}</td>
+                                        <td class="py-2 px-3 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format((float) $t->amount, 2) }}</td>
+                                        <td class="py-2 px-3 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format((float) $t->platform_fee, 2) }}</td>
+                                        <td class="py-2 px-3 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format((float) $t->owner_earning, 2) }}</td>
                                         <td class="py-2 px-3 text-sm">
                                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
                                                 <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>

@@ -16,7 +16,7 @@
         <div class="overflow-x-auto">
             <div class="bg-white rounded-xl shadow-sm border border-r-3 border-indigo-400 overflow-hidden">
 
-                <table class="w-full text-left min-w-[640px]">
+                <table class="table-clean w-full text-left min-w-[640px]">
                     <thead>
                         <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                             <th class="py-3 px-3 font-medium">Sr. No.</th>
@@ -35,7 +35,7 @@
                             <th class="px-2 font-medium">Listing</th>
                             <th class="px-2 font-medium">Ref</th>
 
-                            <th class="px-2 font-medium">
+                            <th class="px-2 font-medium text-right">
                                 <a href="{{ $sortLink('amount') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
                                     Amount
                                     @if($currentSort === 'amount')
@@ -76,7 +76,7 @@
                             </td>
                             <td class="px-2 text-sm font-medium text-indigo-900">{{ $t->booking->location->title ?? '—' }}</td>
                             <td class="px-2 text-sm text-indigo-700">{{ $t->reference() }}</td>
-                            <td class="px-2 text-sm text-indigo-700">Rs. {{ number_format($t->amount, 2) }}</td>
+                            <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format($t->amount, 2) }}</td>
                             <td class="px-2 text-sm">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>

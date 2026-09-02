@@ -24,7 +24,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-r-3 border-indigo-400 overflow-hidden">
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left min-w-[760px]">
+                    <table class="table-clean w-full text-left min-w-[760px]">
                         <thead>
                             <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                                 <th class="py-3 px-4 font-medium">Sr. No.</th>
@@ -66,7 +66,7 @@
 
                                 <th class="px-2 font-medium">Owner</th>
 
-                                <th class="px-2 font-medium">
+                                <th class="px-2 font-medium text-right">
                                     <a href="{{ $sortLink('price_per_hour') }}" class="inline-flex items-center gap-1 hover:text-indigo-600">
                                         Price/hr {!! $sortIcon('price_per_hour') !!}
                                     </a>
@@ -97,7 +97,7 @@
                                 <td class="px-2 text-sm text-indigo-700">
                                     {{ $listing->owner->first_name ?? 'N/A' }} {{ $listing->owner->last_name ?? '' }}
                                 </td>
-                                <td class="px-2 text-sm text-indigo-700">Rs. {{ $listing->price_per_hour }}</td>
+                                <td class="px-2 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ $listing->price_per_hour }}</td>
                                 <td class="px-2 text-sm">
                                     @php
                                         $statusValue = $listing->status->value;

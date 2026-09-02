@@ -33,9 +33,10 @@
         <div class="relative">
             <select name="status" id="filter-status" class="input text-indigo-800 w-full appearance-none pr-8">
                 <option value="">All</option>
-                <option value="paid"    @selected(request('status') === 'paid')>Paid</option>
-                <option value="pending" @selected(request('status') === 'pending')>Pending</option>
-                <option value="failed"  @selected(request('status') === 'failed')>Failed</option>
+                <option value="paid"     @selected(request('status') === 'paid')>Paid</option>
+                <option value="pending"  @selected(request('status') === 'pending')>Pending</option>
+                <option value="failed"   @selected(request('status') === 'failed')>Failed</option>
+                <option value="refunded" @selected(request('status') === 'refunded')>Refunded</option>
             </select>
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                 <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"

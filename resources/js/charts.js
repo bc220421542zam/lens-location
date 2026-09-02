@@ -1,13 +1,15 @@
 /**
  * Chart.js, bundled locally and tree-shaken.
  *
- * The dashboards only ever draw line and doughnut charts, so registering just
- * those controllers/elements ships a fraction of the full UMD build the pages
- * used to pull from a CDN. Loaded as its own Vite entry so the ~200 kB of
- * charting code stays off every non-dashboard page.
+ * The dashboards draw line, doughnut and (ledger trend) stacked bar charts,
+ * so registering just those controllers/elements ships a fraction of the full
+ * UMD build the pages used to pull from a CDN. Loaded as its own Vite entry so
+ * the ~200 kB of charting code stays off every non-dashboard page.
  */
 import {
     ArcElement,
+    BarController,
+    BarElement,
     CategoryScale,
     Chart,
     DoughnutController,
@@ -26,6 +28,8 @@ Chart.register(
     PointElement,
     DoughnutController,
     ArcElement,
+    BarController,
+    BarElement,
     CategoryScale,
     LinearScale,
     Filler,   // datasets use `fill: true`

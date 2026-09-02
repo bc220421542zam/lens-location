@@ -6,12 +6,16 @@
         $isPaid   = $booking->transactions->contains(fn ($t) => $t->status->value === 'paid');
         $hasEnded = $booking->hasEnded();
 
-        $canPay    = $status === 'confirmed' && ! $isPaid && ! $hasEnded;
+        // The payment window closes at the booking date, not the end of the
+        // shoot - so a booking whose date is here but hasn't been settled
+        // (expired) yet can no longer be paid either.
+        $canPay    = $status === 'confirmed' && ! $isPaid && ! $booking->hasStarted();
         $canCancel = $status === 'pending';
         $canReview = $status === 'completed' && $hasEnded;
 
-        // Confirmed but never paid, and the shoot has been and gone.
-        $isExpired = $status === 'confirmed' && ! $isPaid && $hasEnded;
+        // Persisted by the settle pass once the booking date has come and gone
+        // without payment.
+        $isExpired = $status === 'expired';
     @endphp
 
     <x-topbar
@@ -69,7 +73,7 @@
 
             @if ($isExpired)
                 <p class="text-sm text-gray-500 mb-4">
-                    This booking has expired — the payment window closed when the shoot ended.
+                    This booking has expired — the payment window closed at the booking date.
                 </p>
             @endif
 
@@ -108,19 +112,19 @@
                 <h3 class="text-sm font-semibold text-indigo-900 mb-2">Payments</h3>
                 @if ($booking->transactions->isNotEmpty())
                     <div class="overflow-x-auto border border-indigo-100 rounded-xl">
-                        <table class="w-full text-left">
+                        <table class="table-clean w-full text-left">
                             <thead>
                                 <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                                     <th class="py-2 px-3 font-medium">Ref</th>
-                                    <th class="py-2 px-3 font-medium">Amount</th>
+                                    <th class="py-2 px-3 font-medium text-right">Amount</th>
                                     <th class="py-2 px-3 font-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($booking->transactions as $t)
-                                    <tr class="border-t border-indigo-50">
+                                    <tr class="border-t border-indigo-50 {{ $loop->even ? 'bg-indigo-50/40' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                                         <td class="py-2 px-3 text-sm text-indigo-700">{{ $t->reference() ?? '—' }}</td>
-                                        <td class="py-2 px-3 text-sm text-indigo-700">Rs. {{ number_format((float) $t->amount, 2) }}</td>
+                                        <td class="py-2 px-3 text-sm tabular-nums text-indigo-700 text-right">Rs. {{ number_format((float) $t->amount, 2) }}</td>
                                         <td class="py-2 px-3 text-sm">
                                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $t->status->badgeClasses() }}">
                                                 <span class="w-1.5 h-1.5 rounded-full {{ $t->status->dotClasses() }}"></span>
