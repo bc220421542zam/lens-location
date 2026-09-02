@@ -121,15 +121,18 @@ class CustomerReviewTest extends TestCase
         $this->assertSame(5, Review::sole()->rating);
     }
 
-    public function test_customer_can_review_a_confirmed_paid_booking(): void
+    public function test_paid_but_uncompleted_booking_cannot_be_reviewed(): void
     {
-        // Payment opens reviews even while the settle pass hasn't moved the
-        // booking to `completed` yet.
+        // Payment alone is not enough - the shoot must have taken place too,
+        // so a confirmed booking stays locked until the settle pass moves it
+        // to `completed`.
         $booking = $this->booking(BookingStatus::Confirmed);
 
         $this->actingAs($this->customer)
             ->get(route('customer.bookings.review', $booking))
-            ->assertOk();
+            ->assertForbidden();
+
+        $this->assertSame(0, Review::count());
     }
 
     public function test_unpaid_booking_cannot_be_reviewed(): void

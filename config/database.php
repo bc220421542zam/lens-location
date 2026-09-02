@@ -53,6 +53,11 @@ return [
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
+            // Keep TIMESTAMP columns (created_at etc.) on the same wall clock as
+            // the app: MySQL converts them with the session timezone, which is
+            // otherwise whatever the server happens to run on. DATETIME columns
+            // like bookings.booking_date are stored raw and are unaffected.
+            'timezone' => env('DB_TIMEZONE', '+05:00'),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',

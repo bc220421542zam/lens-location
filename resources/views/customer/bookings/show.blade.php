@@ -11,10 +11,9 @@
         $canPay    = $status === 'confirmed' && ! $isPaid && ! $booking->hasStarted();
         $canCancel = $status === 'pending';
 
-        // Reviews open as soon as the booking is paid for - a paid booking is
-        // a real shoot, whether the settle pass has moved it to `completed`
-        // yet or not.
-        $canReview = $isPaid;
+        // Reviews need both: payment proves the booking is real, and
+        // `completed` means the shoot has actually taken place.
+        $canReview = $isPaid && $status === 'completed';
 
         // Persisted by the settle pass once the booking date has come and gone
         // without payment.

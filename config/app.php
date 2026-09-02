@@ -63,9 +63,14 @@ return [
     | will be used by the PHP date and date-time functions. The timezone
     | is set to "UTC" by default as it is suitable for most use cases.
     |
+    | LensLocation operates in Asia/Karachi: booking dates are entered and
+    | stored as local wall-clock times (the DATETIME columns round-trip
+    | untouched), so `now()` must be local too or "past" dates compare as
+    | future ones and bookings never expire or complete.
+    |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Karachi'),
 
     /*
     |--------------------------------------------------------------------------
