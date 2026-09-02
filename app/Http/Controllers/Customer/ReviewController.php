@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
@@ -53,22 +53,19 @@ class ReviewController extends Controller
      * request, including the rightful customer's.
      *
      * Matches authorizeOwnership() in the sibling Customer controllers.
+     *
+     * Reviews are gated on payment, not on the booking's status: a confirmed
+     * booking with a paid transaction is a real shoot the customer can review
+     * immediately, without waiting for the settle pass to move it to
+     * `completed`. This mirrors the `canReview` flag in the booking views.
      */
     private function authorizeReview(Booking $booking): void
     {
         abort_unless($booking->customer_id === Auth::id(), 403);
         abort_unless(
-            $booking->status === BookingStatus::Completed,
+            $booking->transactions()->where('status', PaymentStatus::Paid)->exists(),
             403,
-            'You can only review completed bookings.',
-        );
-
-        // Completion already implies the shoot is over, but a booking moved to
-        // `completed` by hand would otherwise be reviewable before it happens.
-        abort_unless(
-            $booking->hasEnded(),
-            403,
-            'You can only review a shoot that has already taken place.',
+            'You can only review a booking that has been paid for.',
         );
     }
 }

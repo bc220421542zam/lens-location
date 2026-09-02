@@ -27,12 +27,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .round-btn {
   @apply w-8 h-8 overflow-auto rounded-full bg-indigo-100
          border border-indigo-500
-         focus:outline-none focus:ring-1 focus:ring-indigo-500
-         focus:ring-offset-2 focus:ring-offset-indigo-800;
+         focus:outline-none focus:ring-2 focus:ring-indigo-500;
 }
 
 .nav-link {
-  @apply active:bg-slate-900 hover:text-indigo-700
+  @apply hover:text-indigo-700
          text-indigo-900 px-3 py-1 rounded-lg;
 }
 
@@ -55,7 +54,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .error { @apply text-xs text-red-500 mt-px; }
 .label { @apply text-indigo-900 text-sm mb-1 block; }
 .field {@apply w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-700 }
-.field-transition { @apply transition-all duration-100 ease-in hover:scale-100 hover:shadow-lg hover:bg-indigo-100; }
+.field-transition { @apply transition-[box-shadow] duration-100 ease-in hover:shadow-lg; }
 
 .input {
   @apply w-full px-4 py-2 rounded-lg bg-white shadow-md
@@ -72,10 +71,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
  border border-indigo-300  bg-[#EEEFF7]; 
 }
 .card-transition {
-  @apply transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg;
+  @apply transition-[scale,box-shadow] duration-300 ease-in-out hover:scale-105 hover:shadow-lg;
 }
 .chart-transition {
-  @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-lg;
+  @apply transition-[scale,box-shadow] duration-300 ease-in-out hover:scale-102 hover:shadow-lg;
 }
 .border-top {
   @apply border-t-3 border-indigo-400;
@@ -108,7 +107,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 .action-btn.danger  { @apply border-red-200 px-4 text-red-600 hover:bg-red-100; }
 .action-btn.publish { @apply border-blue-200 px-4 bg-blue-50 text-blue-600 hover:bg-blue-100; }
 
-.btn-transition { @apply transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-sm; }
+.btn-transition { @apply transition-[scale,box-shadow,background-color] duration-300 ease-in-out hover:scale-102 hover:shadow-sm; }
 
 /* Data tables: white vertical lines between columns. The tinted header and
    zebra rows make the white separators visible, while white rows keep the

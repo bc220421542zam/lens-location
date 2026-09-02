@@ -32,14 +32,17 @@
             @php
                 $status   = $booking->status->value;
                 $isPaid   = (bool) $booking->paid_transaction_exists;
-                $hasEnded = $booking->hasEnded();
 
                 // The payment window closes at the booking date, not the end of
                 // the shoot - once the date is here, paying is no longer
                 // possible even if the settle pass hasn't expired it yet.
                 $canPay    = $status === 'confirmed' && ! $isPaid && ! $booking->hasStarted();
                 $canCancel = $status === 'pending';
-                $canReview = $status === 'completed' && $hasEnded;
+
+                // Reviews open as soon as the booking is paid for - a paid
+                // booking is a real shoot, whether the settle pass has moved
+                // it to `completed` yet or not.
+                $canReview = $isPaid;
 
                 // Persisted by the settle pass once the booking date has come
                 // and gone without payment. Nothing left to do with it, so say

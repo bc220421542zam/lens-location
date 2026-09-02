@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\BookingStatus;
 use App\Enums\ListingStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\Review;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -44,16 +46,34 @@ class CustomerReviewTest extends TestCase
         ]);
     }
 
-    private function booking(BookingStatus $status, ?User $customer = null): Booking
+    private function booking(BookingStatus $status, ?User $customer = null, bool $paid = true): Booking
     {
-        return Booking::create([
+        $customer = $customer ?? $this->customer;
+
+        $booking = Booking::create([
             'location_id'  => $this->location->id,
-            'customer_id'  => ($customer ?? $this->customer)->id,
+            'customer_id'  => $customer->id,
             'booking_date' => now()->subDay(),
             'hours'        => 4,
             'total_price'  => 5200,
             'status'       => $status,
         ]);
+
+        // Reviews are gated on payment, not on status - every reviewable
+        // booking needs a successful transaction behind it.
+        if ($paid) {
+            Transaction::create([
+                'booking_id'   => $booking->id,
+                'customer_id'  => $customer->id,
+                'owner_id'     => $this->owner->id,
+                'amount'       => 5200,
+                'platform_fee' => 520,
+                'owner_earning'=> 4680,
+                'status'       => PaymentStatus::Paid,
+            ]);
+        }
+
+        return $booking;
     }
 
     public function test_customer_can_open_the_review_form_for_a_completed_booking(): void
@@ -101,10 +121,21 @@ class CustomerReviewTest extends TestCase
         $this->assertSame(5, Review::sole()->rating);
     }
 
-    public function test_incomplete_booking_cannot_be_reviewed(): void
+    public function test_customer_can_review_a_confirmed_paid_booking(): void
     {
-        foreach ([BookingStatus::Pending, BookingStatus::Confirmed, BookingStatus::Cancelled] as $status) {
-            $booking = $this->booking($status);
+        // Payment opens reviews even while the settle pass hasn't moved the
+        // booking to `completed` yet.
+        $booking = $this->booking(BookingStatus::Confirmed);
+
+        $this->actingAs($this->customer)
+            ->get(route('customer.bookings.review', $booking))
+            ->assertOk();
+    }
+
+    public function test_unpaid_booking_cannot_be_reviewed(): void
+    {
+        foreach ([BookingStatus::Pending, BookingStatus::Confirmed, BookingStatus::Completed, BookingStatus::Cancelled] as $status) {
+            $booking = $this->booking($status, paid: false);
 
             $this->actingAs($this->customer)
                 ->get(route('customer.bookings.review', $booking))
