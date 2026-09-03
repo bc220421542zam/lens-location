@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\BookingStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +22,11 @@ class Booking extends Model
         'status',
     ];
 
+    /**
+     * The timezone users enter and see booking times in.
+     */
+    public const BOOKING_DISPLAY_TIMEZONE = 'Asia/Karachi';
+
     protected function casts(): array
     {
         return [
@@ -28,6 +34,22 @@ class Booking extends Model
             'total_price'  => 'decimal:2',
             'status'       => BookingStatus::class,
         ];
+    }
+
+    /**
+     * booking_date is stored in UTC; users enter and see it on Asia/Karachi
+     * (UTC+5). Reads go through this accessor so views and notifications show
+     * the wall clock the user picked - the `datetime` cast still handles
+     * writes and serialization.
+     */
+    protected function bookingDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value === null
+                ? null
+                : ($value instanceof Carbon ? $value->copy() : Carbon::parse($value, 'UTC'))
+                    ->timezone(self::BOOKING_DISPLAY_TIMEZONE),
+        );
     }
 
     public function location(): BelongsTo

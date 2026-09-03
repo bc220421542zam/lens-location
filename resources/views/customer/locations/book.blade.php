@@ -43,7 +43,7 @@
             <div class="relative">
                 <input type="datetime-local" name="booking_date"
                     value="{{ old('booking_date') }}"
-                    min="{{ now()->format('Y-m-d\TH:i') }}"
+                    min="{{ now()->timezone('Asia/Karachi')->format('Y-m-d\TH:i') }}"
                     class="input text-indigo-800 pr-10 @error('booking_date') border-red-400 @enderror"
                     required>
                 <i class="fa-regular fa-calendar absolute right-3 top-1/2 -translate-y-1/2 text-indigo-900 pointer-events-none"></i>

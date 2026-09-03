@@ -12,6 +12,7 @@ use App\Models\Location;
 use App\Models\Review;
 use App\Notifications\BookingRequestNotification;
 use App\Support\BookingCompleter;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -121,7 +122,8 @@ class BookingController extends Controller
         $booking = Booking::create([
             'location_id' => $location->id,
             'customer_id' => auth()->id(),
-            'booking_date' => $request->date('booking_date'),
+            // The form sends Asia/Karachi wall time; store the UTC instant.
+            'booking_date' => Carbon::parse($request->input('booking_date'), Booking::BOOKING_DISPLAY_TIMEZONE)->utc(),
             'hours' => $hours,
             'total_price' => (float) $location->price_per_hour * $hours,
             'shoot_type' => $request->input('shoot_type'),
