@@ -32,6 +32,12 @@ use App\Http\Controllers\StripeWebhookController;
 Route::middleware('no-cache')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/about', [HomeController::class, 'about'])->name('about');
+
+    // Legal pages - the URLs the Facebook (and Google) app review requires:
+    // privacy policy, terms of service, and data-deletion instructions.
+    Route::view('/privacy-policy', 'privacy-policy')->name('privacy-policy');
+    Route::view('/terms-of-service', 'terms-of-service')->name('terms-of-service');
+    Route::view('/data-deletion', 'data-deletion')->name('data-deletion');
 });
 
 Route::middleware('guest')->group(function () {
