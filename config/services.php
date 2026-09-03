@@ -49,6 +49,11 @@ return [
     'commission_rate' => (float) env('PLATFORM_COMMISSION_RATE', 0.10),
     'connect_country' => env('STRIPE_CONNECT_COUNTRY', 'US'),
 
+    // Checkout charges in `currency`, but the platform account settles into
+    // `payout_currency` (USD), so transfers go out converted at a fixed rate.
+    'payout_currency' => env('STRIPE_PAYOUT_CURRENCY', env('STRIPE_CURRENCY', 'pkr')),
+    'fx_pkr_to_usd'   => (float) env('STRIPE_FX_PKR_TO_USD', 0.0036),
+
     // The Accounts v2 / AccountLinks v2 endpoints are only available on a
     // preview API version. v1 calls (Checkout, PaymentIntents) use the SDK
     // default and must NOT send this.

@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
-use App\Enums\PayoutStatus;
 use App\Models\StripeEvent;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\AdminDisputeNotification;
-use App\Notifications\PaymentReceivedNotification;
-use App\Notifications\PaymentSuccessNotification;
-use App\Support\PayoutEligibility;
+use App\Support\PaymentCompleter;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -95,98 +92,21 @@ class StripeWebhookController extends Controller
     }
 
     /**
-     * With delayed-notification payment methods the completed event can arrive
-     * while the session is still unpaid, so gate on payment_status rather than
-     * treating the event itself as proof of payment.
+     * The completion logic itself is shared with the checkout return page -
+     * see PaymentCompleter - so the webhook and the return page behave
+     * identically and whichever runs second is a no-op.
      */
     private function sessionSucceeded($session): void
     {
-        if (($session->payment_status ?? null) === 'unpaid') {
-            Log::info('Checkout session completed but still unpaid', ['session' => $session->id]);
-
-            return;
-        }
-
-        DB::transaction(function () use ($session) {
-            $transaction = $this->lockTransactionForSession($session);
-
-            if (! $transaction) {
-                Log::warning('No transaction for Stripe session', ['session' => $session->id]);
-
-                return;
-            }
-
-            // Never trust the amount from the event alone - confirm the customer
-            // was charged what we recorded before granting the booking.
-            $expected = (int) round((float) $transaction->amount * 100);
-
-            if ((int) $session->amount_total !== $expected) {
-                Log::error('Stripe amount mismatch; refusing to mark paid', [
-                    'transaction' => $transaction->id,
-                    'expected'    => $expected,
-                    'received'    => $session->amount_total,
-                ]);
-
-                return;
-            }
-
-            if ($transaction->status === PaymentStatus::Paid) {
-                return;
-            }
-
-            $transaction->update([
-                'status'                   => PaymentStatus::Paid,
-                'stripe_payment_intent_id' => $session->payment_intent,
-                'gateway_ref'              => $session->payment_intent,
-                'paid_at'                  => now(),
-                'payout_status'            => PayoutStatus::Held,
-                'held_since'               => now(),
-            ]);
-
-            // A mailer outage must not roll the payment back - Stripe would
-            // retry the event forever while the mail stays down. Log and move
-            // on; the database notification row is part of this transaction
-            // and rolls back atomically with the payment itself.
-            try {
-                $transaction->customer?->notify(new PaymentSuccessNotification($transaction));
-            } catch (\Throwable $e) {
-                Log::warning('Failed to notify customer of payment', [
-                    'transaction' => $transaction->id,
-                    'error'       => $e->getMessage(),
-                ]);
-            }
-
-            try {
-                $transaction->owner?->notify(new PaymentReceivedNotification($transaction));
-            } catch (\Throwable $e) {
-                Log::warning('Failed to notify owner of payment', [
-                    'transaction' => $transaction->id,
-                    'error'       => $e->getMessage(),
-                ]);
-            }
-
-            // Payment alone doesn't settle the booking - the booking date still
-            // has to arrive. Guarded on Confirmed so a booking cancelled
-            // between checkout and this webhook isn't resurrected, on
-            // hasStarted() so a future booking stays `confirmed`, and on
-            // disputed_at so a disputed payment never auto-completes;
-            // BookingCompleter promotes it on the next settle pass.
-            $booking = $transaction->booking;
-
-            if ($booking
-                && $booking->status === BookingStatus::Confirmed
-                && $transaction->disputed_at === null
-                && $booking->hasStarted()) {
-                $booking->update(['status' => BookingStatus::Completed]);
-                PayoutEligibility::markEligibleForBooking($booking);
-            }
-        });
+        PaymentCompleter::forSession($session);
     }
 
     private function sessionFailed($session): void
     {
         DB::transaction(function () use ($session) {
-            $transaction = $this->lockTransactionForSession($session);
+            $transaction = Transaction::where('stripe_checkout_session_id', $session->id)
+                ->lockForUpdate()
+                ->first();
 
             if ($transaction && $transaction->status === PaymentStatus::Pending) {
                 $transaction->update(['status' => PaymentStatus::Failed]);
@@ -246,15 +166,5 @@ class StripeWebhookController extends Controller
                 fn (User $admin) => $admin->notify(new AdminDisputeNotification($transaction->id, $transaction->booking_id))
             );
         });
-    }
-
-    private function lockTransactionForSession($session): ?Transaction
-    {
-        return Transaction::where('stripe_checkout_session_id', $session->id)
-            ->lockForUpdate()
-            ->first()
-            ?? Transaction::whereKey(data_get($session->metadata, 'transaction_id'))
-                ->lockForUpdate()
-                ->first();
     }
 }

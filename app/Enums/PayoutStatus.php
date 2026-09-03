@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum PayoutStatus: string
 {
-    /** Funds are sitting on the platform balance - the booking hasn't completed. */
+    /** Funds are sitting on the platform balance - the booking hasn't been visited. */
     case Held = 'held';
 
-    /** Booking completed; the transaction is queued for a batch transfer. */
+    /** Booking visited; the transfer to the owner failed or the owner cannot receive payouts yet - the batch retries. */
     case Eligible = 'eligible';
 
     /** A Stripe transfer to the owner's connected account has been issued. */
@@ -17,8 +17,8 @@ enum PayoutStatus: string
     {
         return match ($this) {
             self::Held     => 'On platform',
-            self::Eligible => 'Eligible',
-            self::PaidOut  => 'Paid out',
+            self::Eligible => 'Pending',
+            self::PaidOut  => 'Transferred',
         };
     }
 

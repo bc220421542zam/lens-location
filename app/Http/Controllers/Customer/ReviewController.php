@@ -55,15 +55,16 @@ class ReviewController extends Controller
      *
      * Matches authorizeOwnership() in the sibling Customer controllers.
      *
-     * Reviews need both a paid transaction and a completed booking: payment
-     * proves the booking is real, completion means the shoot has actually
-     * taken place. This mirrors the `canReview` flag in the booking views.
+     * Reviews need a paid transaction and a `completed` or `visited` booking:
+     * payment completes the booking, and the settle pass moves it to `visited`
+     * once the booking date has passed. Both are reviewable. This mirrors the
+     * `canReview` flag in the booking views.
      */
     private function authorizeReview(Booking $booking): void
     {
         abort_unless($booking->customer_id === Auth::id(), 403);
         abort_unless(
-            $booking->status === BookingStatus::Completed
+            in_array($booking->status, [BookingStatus::Completed, BookingStatus::Visited], true)
                 && $booking->transactions()->where('status', PaymentStatus::Paid)->exists(),
             403,
             'You can only review a paid, completed booking.',

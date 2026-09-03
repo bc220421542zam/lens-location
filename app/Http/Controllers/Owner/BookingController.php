@@ -20,7 +20,7 @@ class BookingController extends Controller
         $request->user()->markSectionViewed('owner.bookings');
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
+            'status' => 'nullable|in:pending,confirmed,completed,visited,cancelled,expired',
         ]);
 
         // Backstop for bookings the scheduler hasn't settled yet. Normally a no-op.
@@ -38,16 +38,19 @@ class BookingController extends Controller
             ->get();
 
         // Counted in the database rather than by hydrating every booking again.
+        // Completed counts every paid booking - `completed` right after
+        // payment, `visited` once the booking date has passed.
         $totals = Booking::whereIn('location_id', $ownerLocationIds)
             ->selectRaw(
                 'COUNT(*) as total_count,
                  COUNT(CASE WHEN status = ? THEN 1 END) as pending_count,
                  COUNT(CASE WHEN status = ? THEN 1 END) as confirmed_count,
-                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count',
+                 COUNT(CASE WHEN status IN (?, ?) THEN 1 END) as completed_count',
                 [
                     BookingStatus::Pending->value,
                     BookingStatus::Confirmed->value,
                     BookingStatus::Completed->value,
+                    BookingStatus::Visited->value,
                 ]
             )
             ->first();

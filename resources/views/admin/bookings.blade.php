@@ -73,6 +73,7 @@
                     <option value="pending"   @selected(request('status') === 'pending')>Pending</option>
                     <option value="confirmed" @selected(request('status') === 'confirmed')>Confirmed</option>
                     <option value="completed" @selected(request('status') === 'completed')>Completed</option>
+                    <option value="visited"   @selected(request('status') === 'visited')>Visited</option>
                     <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     <option value="expired"   @selected(request('status') === 'expired')>Expired</option>
                 </select>

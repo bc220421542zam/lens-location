@@ -27,8 +27,12 @@ use App\Http\Controllers\StripeWebhookController;
 
 // Public marketing pages. `/` used to redirect to /register; it now serves
 // the home page. Registration is still one click away in the nav and hero.
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [HomeController::class, 'about'])->name('about');
+// No-store keeps the auth-dependent navbar from being shown from a stale
+// browser cache (a logged-in snapshot served to a logged-out visitor).
+Route::middleware('no-cache')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/about', [HomeController::class, 'about'])->name('about');
+});
 
 Route::middleware('guest')->group(function () {
     Route::view('/register', 'auth.register')->name('register');

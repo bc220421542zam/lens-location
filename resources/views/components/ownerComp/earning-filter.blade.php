@@ -61,8 +61,8 @@
                     class="input text-indigo-800 w-full appearance-none pr-8">
                 <option value="">All</option>
                 <option value="held"     @selected(request('payout_status') === 'held')>On platform</option>
-                <option value="eligible" @selected(request('payout_status') === 'eligible')>Eligible</option>
-                <option value="paid_out" @selected(request('payout_status') === 'paid_out')>Paid out</option>
+                <option value="eligible" @selected(request('payout_status') === 'eligible')>Pending</option>
+                <option value="paid_out" @selected(request('payout_status') === 'paid_out')>Transferred</option>
             </select>
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                 <svg class="w-3.5 h-3.5 text-indigo-800" fill="none" stroke="currentColor" stroke-width="2"

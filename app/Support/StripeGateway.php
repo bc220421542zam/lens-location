@@ -12,9 +12,11 @@ use Stripe\StripeClient;
  * touch config or the SDK directly.
  *
  * Charge model: escrow. The customer pays the platform and 100% of the money
- * sits on the platform balance. When a booking completes, its transaction
- * becomes eligible, and the `payouts:process` command issues standalone
- * Stripe Transfers to owners' connected accounts (90% owner / 10% commission).
+ * sits on the platform balance. When a booking is visited, its transaction
+ * becomes eligible and the owner's share (90% owner / 10% commission) is
+ * transferred to their connected account immediately (PayoutTransfer); the
+ * `payouts:process` batch is the retry net for transfers that could not be
+ * issued on the spot.
  */
 class StripeGateway
 {
@@ -23,6 +25,34 @@ class StripeGateway
     public function currency(): string
     {
         return strtolower(config('services.stripe.currency'));
+    }
+
+    /**
+     * The currency the platform balance actually holds. Checkout charges in
+     * `currency()` settle into this on the platform account, so transfers must
+     * go out in it - a PKR transfer against a USD-only balance fails with
+     * "insufficient available funds" regardless of how much money sits there.
+     */
+    public function payoutCurrency(): string
+    {
+        return strtolower(config('services.stripe.payout_currency'));
+    }
+
+    /**
+     * Owner's share expressed in the payout currency, in integer minor units.
+     *
+     * Same-currency accounts skip the conversion entirely. When the payout
+     * currency differs (PKR checkout, USD settlement), the amount is converted
+     * at the configured fixed FX rate - a dev stand-in for Stripe's real-time
+     * FX; production should price this from the charge's actual conversion.
+     */
+    public function transferAmountMinor(float $amount): int
+    {
+        if ($this->payoutCurrency() === $this->currency()) {
+            return (int) round($amount * 100);
+        }
+
+        return (int) round($amount * (float) config('services.stripe.fx_pkr_to_usd') * 100);
     }
 
     public function commissionRate(): float
@@ -182,6 +212,7 @@ class StripeGateway
         Transaction $transaction,
         string $successUrl,
         string $cancelUrl,
+        ?string $idempotencyKey = null,
     ) {
         $split = $this->split((float) $transaction->amount);
 
@@ -214,7 +245,7 @@ class StripeGateway
             'metadata'    => $metadata,
             'success_url' => $successUrl.'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => $cancelUrl,
-        ], ['idempotency_key' => "booking-{$booking->id}-txn-{$transaction->id}"]);
+        ], ['idempotency_key' => $idempotencyKey ?? "booking-{$booking->id}-txn-{$transaction->id}"]);
     }
 
     public function retrieveSession(string $sessionId)
@@ -249,8 +280,8 @@ class StripeGateway
     public function transfer(Transaction $transaction, User $owner): \Stripe\Transfer
     {
         return $this->stripe->transfers->create([
-            'amount'      => (int) round((float) $transaction->owner_payout_amount * 100),
-            'currency'    => $this->currency(),
+            'amount'      => $this->transferAmountMinor((float) $transaction->owner_payout_amount),
+            'currency'    => $this->payoutCurrency(),
             'destination' => $owner->stripe_account_id,
             'description' => 'Booking payout',
             'metadata'    => [

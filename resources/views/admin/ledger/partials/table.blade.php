@@ -14,7 +14,7 @@
             };
             $transferBadge = match ($t->payout_status) {
                 \App\Enums\PayoutStatus::Held     => ['bg-gray-100 text-gray-600', 'bg-gray-500', 'On platform'],
-                \App\Enums\PayoutStatus::Eligible => ['bg-yellow-100 text-yellow-700', 'bg-yellow-600', 'Eligible'],
+                \App\Enums\PayoutStatus::Eligible => ['bg-yellow-100 text-yellow-700', 'bg-yellow-600', 'Pending'],
                 \App\Enums\PayoutStatus::PaidOut  => ['bg-green-100 text-green-700', 'bg-green-600', 'Transferred'],
             };
         @endphp

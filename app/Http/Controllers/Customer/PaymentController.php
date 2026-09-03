@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Transaction;
+use App\Support\PaymentCompleter;
 use App\Support\StripeGateway;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -107,19 +108,25 @@ class PaymentController extends Controller
             );
         });
 
-        try {
-            $session = $this->stripe->checkoutSession(
-                $booking,
-                $transaction,
-                route('customer.payments.success'),
-                route('customer.bookings'),
-            );
-        } catch (ApiErrorException $e) {
-            Log::error('Stripe checkout session failed', [
-                'booking_id' => $booking->id,
-                'message'    => $e->getMessage(),
-            ]);
+        // A pending transaction may already carry a session from an earlier
+        // click. If it's still open, resume it - recreating one under the same
+        // idempotency key fails whenever the checkout parameters changed since
+        // the first attempt (e.g. APP_URL moved after an ngrok restart).
+        if ($transaction->stripe_checkout_session_id) {
+            try {
+                $existing = $this->stripe->retrieveSession($transaction->stripe_checkout_session_id);
 
+                if (($existing->status ?? null) === 'open' && ($existing->payment_status ?? null) === 'unpaid') {
+                    return redirect()->away($existing->url);
+                }
+            } catch (\Throwable $e) {
+                // Unretrievable session - fall through and create a new one.
+            }
+        }
+
+        $session = $this->startCheckout($booking, $transaction);
+
+        if (! $session) {
             return back()->with('error', 'We could not start the payment. Please try again.');
         }
 
@@ -131,8 +138,12 @@ class PaymentController extends Controller
     /**
      * Landing page after Checkout.
      *
-     * Deliberately read-only: the customer may never reach this page, so the
-     * webhook is the only thing that marks a transaction paid.
+     * The webhook is the authoritative path, but it may lag behind this page
+     * or never arrive (e.g. `stripe listen` isn't running locally), so the
+     * session is retrieved from Stripe and completed here synchronously.
+     * PaymentCompleter is idempotent - the webhook replay is a no-op - and
+     * runs the same guards as the webhook (paid session, amount match, no
+     * dispute).
      */
     public function success(Request $request): RedirectResponse
     {
@@ -150,10 +161,83 @@ class PaymentController extends Controller
             return redirect()->route('customer.bookings');
         }
 
-        $message = $transaction->status === PaymentStatus::Paid
+        if ($transaction->status !== PaymentStatus::Paid) {
+            try {
+                $session = $this->stripe->retrieveSession($sessionId);
+            } catch (ApiErrorException $e) {
+                Log::warning('Could not retrieve checkout session on return page', [
+                    'session'     => $sessionId,
+                    'transaction' => $transaction->id,
+                    'error'       => $e->getMessage(),
+                ]);
+
+                return redirect()->route('customer.bookings')
+                    ->with('success', 'Payment received - we are confirming it with Stripe now.');
+            }
+
+            PaymentCompleter::forSession($session, auth()->id());
+        }
+
+        $message = $transaction->fresh()->status === PaymentStatus::Paid
             ? 'Payment successful. Your booking is confirmed.'
             : 'Payment received - we are confirming it with Stripe now.';
 
         return redirect()->route('customer.bookings')->with('success', $message);
+    }
+
+    /**
+     * Create the checkout session, recovering from Stripe's idempotency guard.
+     *
+     * The stable `booking-txn` key means a second click with identical
+     * parameters returns the original session - that's the double-click
+     * protection. But it also means a second click with *changed* parameters
+     * is rejected ("keys for idempotent requests..."), which happens in
+     * practice when APP_URL moves after an ngrok restart and the success/cancel
+     * URLs change. One retry under a fresh key gets the customer a working
+     * session instead of an error page.
+     *
+     * Returns null when Stripe fails for any other reason.
+     */
+    private function startCheckout(Booking $booking, Transaction $transaction)
+    {
+        try {
+            return $this->stripe->checkoutSession(
+                $booking,
+                $transaction,
+                route('customer.payments.success'),
+                route('customer.bookings'),
+            );
+        } catch (ApiErrorException $e) {
+            if (! str_contains($e->getMessage(), 'idempotent requests can only be used')) {
+                Log::error('Stripe checkout session failed', [
+                    'booking_id' => $booking->id,
+                    'message'    => $e->getMessage(),
+                ]);
+
+                return null;
+            }
+
+            Log::info('Stripe idempotency key collision; retrying with a fresh key', [
+                'booking_id'  => $booking->id,
+                'transaction' => $transaction->id,
+            ]);
+        }
+
+        try {
+            return $this->stripe->checkoutSession(
+                $booking,
+                $transaction,
+                route('customer.payments.success'),
+                route('customer.bookings'),
+                "booking-{$booking->id}-txn-{$transaction->id}-".uniqid(),
+            );
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe checkout session failed', [
+                'booking_id' => $booking->id,
+                'message'    => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 }

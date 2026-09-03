@@ -221,24 +221,25 @@ class MessageChatTest extends TestCase
         $this->assertSame(2, Message::count());
     }
 
-    public function test_only_your_own_messages_open_the_context_menu(): void
+    public function test_only_your_own_messages_render_the_action_menu(): void
     {
-        // The shared context menu is always in the DOM, so permission is
-        // asserted on the @contextmenu wiring: own messages hand their id to
-        // openContextMenu, others' messages hand null.
+        // Each message's ⋮ menu lives in the row itself, so permission is
+        // asserted on the wiring: only own messages hand their id to
+        // toggleMenu and carry the menu container.
         $ownerMessage = $this->message($this->owner);
 
         $this->actingAs($this->customer)
             ->get(route('customer.messages', $this->conversation))
             ->assertOk()
             ->assertSee('name="message_token"', false)
-            ->assertDontSee('openContextMenu($event, '.$ownerMessage->id.',', false);
+            ->assertDontSee('toggleMenu('.$ownerMessage->id.')', false);
 
         $myMessage = $this->message($this->customer);
 
         $this->actingAs($this->customer)
             ->get(route('customer.messages', $this->conversation))
             ->assertOk()
-            ->assertSee('openContextMenu($event, '.$myMessage->id.',', false);
+            ->assertSee('toggleMenu('.$myMessage->id.')', false)
+            ->assertSee('id="message-menu-'.$myMessage->id.'"', false);
     }
 }

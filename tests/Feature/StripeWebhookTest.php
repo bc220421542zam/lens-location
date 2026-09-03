@@ -159,8 +159,8 @@ class StripeWebhookTest extends TestCase
 
     public function test_valid_completed_session_marks_the_transaction_paid(): void
     {
-        // Future shoot: the inline completion path stays out, so the payout
-        // remains held until the booking actually completes.
+        // The payout remains held from the moment payment lands until the
+        // settle pass moves the booking to `visited`.
         $transaction = $this->transaction(bookingDate: now()->addDay());
 
         $this->send($this->completedEvent())->assertOk();
@@ -232,25 +232,27 @@ class StripeWebhookTest extends TestCase
 
         $this->assertSame(BookingStatus::Completed, $transaction->booking->fresh()->status);
 
-        // Completing the booking releases the escrow: the transaction becomes
-        // eligible and the 90/10 split is recorded on the transaction.
+        // Payment completes the booking but the escrow stays held - it is
+        // released by the settle pass when the booking becomes `visited`.
         $transaction->refresh();
 
-        $this->assertSame(PayoutStatus::Eligible, $transaction->payout_status);
-        $this->assertSame('1000.00', $transaction->platform_commission);
-        $this->assertSame('9000.00', $transaction->owner_payout_amount);
+        $this->assertSame(PayoutStatus::Held, $transaction->payout_status);
+        $this->assertSame('0.00', $transaction->platform_commission);
+        $this->assertSame('0.00', $transaction->owner_payout_amount);
     }
 
-    public function test_paid_session_does_not_complete_a_future_booking(): void
+    public function test_paid_session_completes_a_future_booking(): void
     {
         $transaction = $this->transaction(bookingDate: now()->addDay());
 
         $this->send($this->completedEvent())->assertOk();
 
-        // Payment landed, but the shoot hasn't happened yet - BookingCompleter
-        // promotes it on a later page load once the end time passes.
+        // Payment completes the booking immediately, even though the shoot is
+        // still ahead - the settle pass moves it to `visited` (and releases
+        // the escrow) once the booking date arrives.
         $this->assertSame(PaymentStatus::Paid, $transaction->fresh()->status);
-        $this->assertSame(BookingStatus::Confirmed, $transaction->booking->fresh()->status);
+        $this->assertSame(BookingStatus::Completed, $transaction->booking->fresh()->status);
+        $this->assertSame(PayoutStatus::Held, $transaction->fresh()->payout_status);
     }
 
     public function test_cancelled_booking_is_not_completed_by_payment(): void

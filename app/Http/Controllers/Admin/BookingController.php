@@ -24,7 +24,7 @@ class BookingController extends Controller
         $request->user()->markSectionViewed('admin.bookings');
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
+            'status' => 'nullable|in:pending,confirmed,completed,visited,cancelled,expired',
             'search' => 'nullable|string|max:255',
         ]);
 
@@ -51,12 +51,13 @@ class BookingController extends Controller
             'COUNT(*) as total_count,
              COUNT(CASE WHEN status = ? THEN 1 END) as pending_count,
              COUNT(CASE WHEN status = ? THEN 1 END) as confirmed_count,
-             COUNT(CASE WHEN status = ? THEN 1 END) as completed_count,
+             COUNT(CASE WHEN status IN (?, ?) THEN 1 END) as completed_count,
              COUNT(CASE WHEN status = ? THEN 1 END) as cancelled_count',
             [
                 BookingStatus::Pending->value,
                 BookingStatus::Confirmed->value,
                 BookingStatus::Completed->value,
+                BookingStatus::Visited->value,
                 BookingStatus::Cancelled->value,
             ]
         )->first();

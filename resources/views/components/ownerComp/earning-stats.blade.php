@@ -23,7 +23,7 @@
 
         <div class="card chart-transition shade bg-[#EEEFF7] p-4 rounded-2xl border-l-3 border-green-600/60">
             <div class="flex justify-between items-start">
-                <p class="label text-xs md:text-sm">Paid Out</p>
+                <p class="label text-xs md:text-sm">Transferred</p>
                 <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 text-green-600 shrink-0 ml-2">
                     <i class="fa-solid fa-circle-check text-sm"></i>
                 </div>

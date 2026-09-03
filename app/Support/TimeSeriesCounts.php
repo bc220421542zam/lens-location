@@ -19,7 +19,7 @@ final class TimeSeriesCounts
     /**
      * Daily counts for the last $days days, oldest first.
      *
-     * @param  array<string, array{0: string, 1: string}>  $buckets  series name => [column, value]
+     * @param  array<string, array{0: string, 1: string|array<int, string>}>  $buckets  series name => [column, value(s)]
      * @return array{labels: array<int, string>, series: array<string, array<int, int>>}
      */
     public static function daily(Builder $query, int $days, array $buckets = [], string $column = 'created_at'): array
@@ -48,7 +48,7 @@ final class TimeSeriesCounts
     /**
      * Monthly counts for the last $months months, oldest first.
      *
-     * @param  array<string, array{0: string, 1: string}>  $buckets  series name => [column, value]
+     * @param  array<string, array{0: string, 1: string|array<int, string>}>  $buckets  series name => [column, value(s)]
      * @return array{labels: array<int, string>, series: array<string, array<int, int>>}
      */
     public static function monthly(Builder $query, int $months, array $buckets = [], string $column = 'created_at'): array
@@ -80,7 +80,7 @@ final class TimeSeriesCounts
 
     /**
      * @param  array<string, string>  $periods  period key => chart label
-     * @param  array<string, array{0: string, 1: string}>  $buckets
+     * @param  array<string, array{0: string, 1: string|array<int, string>}>  $buckets
      * @return array{labels: array<int, string>, series: array<string, array<int, int>>}
      */
     private static function run(
@@ -99,10 +99,15 @@ final class TimeSeriesCounts
             self::assertSafeIdentifier($name);
             self::assertSafeIdentifier($bucketColumn);
 
+            // A bucket may match several values (e.g. `completed` + `visited`
+            // both count as a completed booking).
+            $values       = array_values((array) $value);
+            $placeholders = implode(', ', array_fill(0, count($values), '?'));
+
             // COUNT over a CASE counts only matching rows and, unlike SUM,
             // returns 0 instead of NULL when nothing matches.
-            $selects[]  = "COUNT(CASE WHEN {$bucketColumn} = ? THEN 1 END) as bucket_{$name}";
-            $bindings[] = $value;
+            $selects[]  = "COUNT(CASE WHEN {$bucketColumn} IN ({$placeholders}) THEN 1 END) as bucket_{$name}";
+            array_push($bindings, ...$values);
         }
 
         $rows = $query->clone()

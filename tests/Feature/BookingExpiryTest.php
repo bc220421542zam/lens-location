@@ -135,7 +135,7 @@ class BookingExpiryTest extends TestCase
         $this->assertSame(0, Transaction::count());
     }
 
-    public function test_settle_command_expires_and_completes(): void
+    public function test_settle_command_expires_and_visits(): void
     {
         $unpaid = $this->booking(BookingStatus::Confirmed);
         $paid   = $this->booking(BookingStatus::Confirmed);
@@ -158,7 +158,7 @@ class BookingExpiryTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertSame(BookingStatus::Expired, $unpaid->fresh()->status);
-        $this->assertSame(BookingStatus::Completed, $paid->fresh()->status);
+        $this->assertSame(BookingStatus::Visited, $paid->fresh()->status);
     }
 
     public function test_expired_booking_cannot_be_paid(): void

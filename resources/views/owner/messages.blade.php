@@ -83,17 +83,18 @@
                                 {{-- 3-dots action menu (own messages only). The row is
                                      flex-row-reverse for own messages, so this sits
                                      between the bubble and the avatar. --}}
-                                <div class="relative shrink-0" @click.outside="menuId = null"
+                                <div class="relative shrink-0" data-message-menu
                                      @keydown.escape.window="menuId = null">
                                     <button type="button"
-                                            @click="menuId = (menuId === {{ $message->id }} ? null : {{ $message->id }})"
+                                            @click="toggleMenu({{ $message->id }})"
                                             class="w-7 h-7 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-700 hover:bg-indigo-50 transition"
                                             title="Message actions" aria-label="Message actions">
                                         <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
                                     </button>
 
-                                    <div x-show="menuId === {{ $message->id }}" x-cloak
-                                         class="absolute z-20 top-8 right-0 w-32 bg-white rounded-lg shadow-lg border border-indigo-100 py-1 text-sm">
+                                    <div id="message-menu-{{ $message->id }}"
+                                         x-show="menuId === {{ $message->id }}" x-cloak
+                                         class="absolute z-20 bottom-8 right-0 w-32 bg-white rounded-lg shadow-lg border border-indigo-100 py-1 text-sm">
                                         <button type="button"
                                                 @click="editingId = {{ $message->id }}; editText = @js($message->body); menuId = null"
                                                 class="block w-full text-left px-4 py-1.5 text-indigo-700 hover:bg-indigo-50">
@@ -253,6 +254,29 @@ function messagesPage() {
         init() {
             const list = document.getElementById('message-list');
             if (list) list.scrollTop = list.scrollHeight;
+
+            // One shared menuId serves every message's action menu, so a
+            // per-menu @click.outside would close a freshly opened menu at
+            // once: the click on one message's ⋮ button is "outside" every
+            // other message's menu. Close only when the click lands outside
+            // all of them.
+            document.addEventListener('click', (event) => {
+                if (!event.target.closest('[data-message-menu]')) {
+                    this.menuId = null;
+                }
+            });
+        },
+
+        toggleMenu(id) {
+            this.menuId = (this.menuId === id) ? null : id;
+
+            // The menu opens above the icon; for the topmost message in the
+            // scroll area that would be clipped, so nudge it into view.
+            if (this.menuId !== null) {
+                this.$nextTick(() => {
+                    document.getElementById('message-menu-' + this.menuId)?.scrollIntoView({ block: 'nearest' });
+                });
+            }
         },
 
         handleFile(event) {

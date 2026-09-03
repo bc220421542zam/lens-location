@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\PayoutBatchStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\PayoutStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\Payout;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
@@ -215,10 +213,13 @@ class LedgerController extends Controller
                 'label'      => $bucket['label'],
                 'collected'  => (float) (clone $paid)->sum('amount'),
                 'commission' => (float) (clone $paid)->sum('platform_commission'),
-                'payout'     => (float) Payout::query()
-                    ->where('status', PayoutBatchStatus::Processed)
-                    ->whereBetween('processed_at', [$bucket['start'], $bucket['end']])
-                    ->sum('total_amount'),
+                // Counted from the transfers themselves rather than batch rows,
+                // so payouts issued the moment a booking is visited (and batch
+                // transfers alike) land in the bucket they were actually made.
+                'payout'     => (float) Transaction::query()
+                    ->where('payout_status', PayoutStatus::PaidOut)
+                    ->whereBetween('transferred_at', [$bucket['start'], $bucket['end']])
+                    ->sum('owner_payout_amount'),
             ];
         })->values()->all();
     }

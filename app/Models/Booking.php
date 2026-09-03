@@ -81,9 +81,7 @@ class Booking extends Model
     }
 
     /**
-     * True once the shoot is over. Reviews stay gated on this - a customer
-     * cannot review a shoot that is still in progress, even though the booking
-     * itself is already completed (and paid out) from its start time.
+     * True once the shoot is over.
      */
     public function hasEnded(?Carbon $now = null): bool
     {

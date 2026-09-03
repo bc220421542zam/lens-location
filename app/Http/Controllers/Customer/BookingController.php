@@ -27,7 +27,7 @@ class BookingController extends Controller
             ->update(['read_at' => now()]);
 
         $request->validate([
-            'status' => 'nullable|in:pending,confirmed,completed,cancelled,expired',
+            'status' => 'nullable|in:pending,confirmed,completed,visited,cancelled,expired',
         ]);
 
         // Backstop for bookings the scheduler hasn't settled yet: expire the
@@ -55,15 +55,18 @@ class BookingController extends Controller
         });
 
         // Counted in the database rather than by hydrating every booking again.
+        // Upcoming counts both unpaid and paid future bookings (payment moves
+        // a booking straight to `completed`); completed counts every paid
+        // booking, whether the date has arrived (`visited`) or not.
         $totals = Booking::where('customer_id', auth()->id())
             ->selectRaw(
                 'COUNT(*) as total_count,
-                 COUNT(CASE WHEN status = ? AND booking_date >= ? THEN 1 END) as upcoming_count,
-                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count,
+                 COUNT(CASE WHEN status IN (?, ?) AND booking_date >= ? THEN 1 END) as upcoming_count,
+                 COUNT(CASE WHEN status IN (?, ?) THEN 1 END) as completed_count,
                  COUNT(CASE WHEN status = ? THEN 1 END) as cancelled_count',
                 [
-                    BookingStatus::Confirmed->value, now()->toDateTimeString(),
-                    BookingStatus::Completed->value,
+                    BookingStatus::Confirmed->value, BookingStatus::Completed->value, now()->toDateTimeString(),
+                    BookingStatus::Completed->value, BookingStatus::Visited->value,
                     BookingStatus::Cancelled->value,
                 ]
             )

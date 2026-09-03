@@ -17,7 +17,9 @@ Schedule::command(BookingsSettleCommand::class)
     ->hourly()
     ->withoutOverlapping();
 
-// Escrow payouts.
+// Escrow payout retry net: transfers normally happen the moment a booking is
+// visited (PayoutTransfer), this batch sweeps up anything still eligible -
+// failed transfers and owners whose Stripe onboarding wasn't done yet.
 Schedule::command(PayoutsProcessCommand::class, ['--period=weekly'])
     ->weekly()->mondays()->at('09:00')
     ->withoutOverlapping();

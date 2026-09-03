@@ -85,6 +85,15 @@ class CustomerReviewTest extends TestCase
             ->assertOk();
     }
 
+    public function test_customer_can_open_the_review_form_for_a_visited_booking(): void
+    {
+        $booking = $this->booking(BookingStatus::Visited);
+
+        $this->actingAs($this->customer)
+            ->get(route('customer.bookings.review', $booking))
+            ->assertOk();
+    }
+
     public function test_customer_can_submit_a_review(): void
     {
         $booking = $this->booking(BookingStatus::Completed);
@@ -137,7 +146,7 @@ class CustomerReviewTest extends TestCase
 
     public function test_unpaid_booking_cannot_be_reviewed(): void
     {
-        foreach ([BookingStatus::Pending, BookingStatus::Confirmed, BookingStatus::Completed, BookingStatus::Cancelled] as $status) {
+        foreach ([BookingStatus::Pending, BookingStatus::Confirmed, BookingStatus::Completed, BookingStatus::Visited, BookingStatus::Cancelled] as $status) {
             $booking = $this->booking($status, paid: false);
 
             $this->actingAs($this->customer)

@@ -5,7 +5,9 @@
             'pending'   => 'Pending',
             'confirmed' => 'Confirmed',
             'completed' => 'Completed',
+            'visited'   => 'Visited',
             'cancelled' => 'Cancelled',
+            'expired'   => 'Expired',
         ];
     @endphp
     <div class="flex flex-wrap gap-2 mb-4">

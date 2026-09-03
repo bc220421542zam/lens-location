@@ -77,6 +77,8 @@ class StripeCheckoutTest extends TestCase
         {
             public array $sessionArgs = [];
 
+            public $session = null;
+
             public function __construct() {}
 
             public function currency(): string
@@ -89,15 +91,20 @@ class StripeCheckoutTest extends TestCase
                 return 0.10;
             }
 
-            public function checkoutSession($booking, $transaction, $successUrl, $cancelUrl)
+            public function checkoutSession($booking, $transaction, $successUrl, $cancelUrl, $idempotencyKey = null)
             {
-                $this->sessionArgs[] = compact('successUrl', 'cancelUrl')
+                $this->sessionArgs[] = compact('successUrl', 'cancelUrl', 'idempotencyKey')
                     + ['transaction_id' => $transaction->id];
 
                 return (object) [
                     'id'  => 'cs_test_'.count($this->sessionArgs),
                     'url' => 'https://checkout.stripe.test/session',
                 ];
+            }
+
+            public function retrieveSession(string $sessionId)
+            {
+                return $this->session;
             }
         };
 
@@ -283,5 +290,142 @@ class StripeCheckoutTest extends TestCase
             $split['amount_minor'],
             $split['fee_minor'] + $split['owner_minor'],
         );
+    }
+
+    public function test_pay_resumes_an_open_session_instead_of_creating_a_new_one(): void
+    {
+        $gateway  = $this->fakeGateway();
+        $owner    = $this->owner();
+        $customer = $this->customer();
+        $booking  = $this->booking($customer, $owner, BookingStatus::Confirmed);
+
+        // First click creates the session and stores its id on the transaction.
+        $this->actingAs($customer)->post(route('customer.bookings.pay', $booking));
+        $this->assertCount(1, $gateway->sessionArgs);
+
+        // A later click finds the stored session still open and resumes it -
+        // no new session, so no idempotency-key collision with Stripe.
+        $gateway->session = (object) [
+            'id'             => 'cs_test_1',
+            'status'         => 'open',
+            'payment_status' => 'unpaid',
+            'url'            => 'https://checkout.stripe.test/resume',
+        ];
+
+        $this->actingAs($customer)
+            ->post(route('customer.bookings.pay', $booking))
+            ->assertRedirect('https://checkout.stripe.test/resume');
+
+        $this->assertCount(1, $gateway->sessionArgs);
+    }
+
+    public function test_pay_creates_a_new_session_when_the_stored_one_is_expired(): void
+    {
+        $gateway  = $this->fakeGateway();
+        $owner    = $this->owner();
+        $customer = $this->customer();
+        $booking  = $this->booking($customer, $owner, BookingStatus::Confirmed);
+
+        $this->actingAs($customer)->post(route('customer.bookings.pay', $booking));
+
+        $gateway->session = (object) [
+            'id'             => 'cs_test_1',
+            'status'         => 'expired',
+            'payment_status' => 'unpaid',
+            'url'            => 'https://checkout.stripe.test/expired',
+        ];
+
+        $this->actingAs($customer)
+            ->post(route('customer.bookings.pay', $booking))
+            ->assertRedirect('https://checkout.stripe.test/session');
+
+        $this->assertCount(2, $gateway->sessionArgs);
+    }
+
+    public function test_pay_recovers_from_an_idempotency_collision_with_a_fresh_key(): void
+    {
+        $owner    = $this->owner();
+        $customer = $this->customer();
+        $booking  = $this->booking($customer, $owner, BookingStatus::Confirmed);
+
+        $stub = new class extends StripeGateway
+        {
+            public int $calls = 0;
+
+            public array $keys = [];
+
+            public function __construct() {}
+
+            public function currency(): string
+            {
+                return 'pkr';
+            }
+
+            public function commissionRate(): float
+            {
+                return 0.10;
+            }
+
+            public function checkoutSession($booking, $transaction, $successUrl, $cancelUrl, $idempotencyKey = null)
+            {
+                $this->calls++;
+                $this->keys[] = $idempotencyKey;
+
+                if ($this->calls === 1) {
+                    throw new \Stripe\Exception\InvalidRequestException('Keys for idempotent requests can only be used with the same parameters they were first used with.', 400);
+                }
+
+                return (object) ['id' => 'cs_test_fresh', 'url' => 'https://checkout.stripe.test/fresh'];
+            }
+        };
+
+        $this->app->instance(StripeGateway::class, $stub);
+
+        $this->actingAs($customer)
+            ->post(route('customer.bookings.pay', $booking))
+            ->assertRedirect('https://checkout.stripe.test/fresh');
+
+        $this->assertSame(2, $stub->calls);
+        $this->assertNull($stub->keys[0]);
+        $this->assertNotNull($stub->keys[1]);
+        $this->assertStringContainsString('booking-', $stub->keys[1]);
+
+        $transaction = Transaction::where('booking_id', $booking->id)->sole();
+        $this->assertSame('cs_test_fresh', $transaction->stripe_checkout_session_id);
+    }
+
+    public function test_pay_still_errors_when_stripe_fails_for_any_other_reason(): void
+    {
+        $owner    = $this->owner();
+        $customer = $this->customer();
+        $booking  = $this->booking($customer, $owner, BookingStatus::Confirmed);
+
+        $stub = new class extends StripeGateway
+        {
+            public function __construct() {}
+
+            public function currency(): string
+            {
+                return 'pkr';
+            }
+
+            public function commissionRate(): float
+            {
+                return 0.10;
+            }
+
+            public function checkoutSession($booking, $transaction, $successUrl, $cancelUrl, $idempotencyKey = null)
+            {
+                throw new \Stripe\Exception\InvalidRequestException('Account closed', 400);
+            }
+        };
+
+        $this->app->instance(StripeGateway::class, $stub);
+
+        $this->actingAs($customer)
+            ->from(route('customer.bookings'))
+            ->post(route('customer.bookings.pay', $booking))
+            ->assertRedirect(route('customer.bookings'))
+            ->assertSessionHas('error', 'We could not start the payment. Please try again.');
     }
 }

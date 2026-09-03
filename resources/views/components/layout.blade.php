@@ -39,35 +39,31 @@
                    class="text-sm font-medium px-3 py-1.5 text-indigo-900 hover:text-indigo-700 transition-colors duration-200">
                     About
                 </a>
-                {{-- Browsing is an account feature: guests get the search
-                     preview, logged-in customers the full browse page. --}}
-                @if (auth()->check() && auth()->user()->role === \App\Enums\Role::Customer)
-                    <a href="{{ route('customer.listings') }}"
-                       @if (request()->routeIs('customer.listings*')) aria-current="page" @endif
-                       class="text-sm font-medium px-3 py-1.5 text-indigo-900 hover:text-indigo-700 transition-colors duration-200">
-                        Browse Listings
-                    </a>
-                @endif
-
                 @guest
-                    @unless (request()->routeIs('login'))
-                        <a href="{{ route('login') }}"
-                           class="text-sm px-4 py-2 rounded-lg border border-indigo-900 text-indigo-900 bg-transparent
-                                  hover:bg-indigo-50 transition-colors duration-200">
-                            Login
-                        </a>
-                    @endunless
-
-                    @unless (request()->routeIs('register'))
-                        <a href="{{ route('register') }}"
-                           class="text-sm px-4 py-2 rounded-lg bg-indigo-900 text-white shadow-sm
-                                  hover:bg-indigo-700 transition-colors duration-200">
-                            Register
-                        </a>
-                    @endunless
+                    <a href="{{ route('login') }}"
+                       @if (request()->routeIs('login')) aria-current="page" @endif
+                       class="text-sm font-medium px-3 py-1.5 text-indigo-900 hover:text-indigo-700 transition-colors duration-200">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}"
+                       @if (request()->routeIs('register')) aria-current="page" @endif
+                       class="text-sm px-4 py-2 rounded-lg bg-indigo-900 text-white shadow-sm
+                              hover:bg-indigo-700 transition-colors duration-200">
+                        Register
+                    </a>
                 @endguest
 
                 @auth
+                    {{-- Browsing is an account feature: guests get the search
+                         preview, logged-in customers the full browse page. --}}
+                    @if (auth()->user()->role === \App\Enums\Role::Customer)
+                        <a href="{{ route('customer.listings') }}"
+                           @if (request()->routeIs('customer.listings*')) aria-current="page" @endif
+                           class="text-sm font-medium px-3 py-1.5 text-indigo-900 hover:text-indigo-700 transition-colors duration-200">
+                            Browse Listings
+                        </a>
+                    @endif
+
                     <a href="{{ route(auth()->user()->role->dashboardRoute()) }}"
                        class="text-sm px-4 py-2 rounded-lg bg-indigo-900 text-white shadow-sm
                               hover:bg-indigo-700 transition-colors duration-200">
@@ -98,24 +94,20 @@
                    class="px-4 py-2.5 font-medium text-indigo-900 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">Home</a>
                 <a href="{{ route('about') }}"
                    class="px-4 py-2.5 font-medium text-indigo-900 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">About</a>
-                @if (auth()->check() && auth()->user()->role === \App\Enums\Role::Customer)
-                    <a href="{{ route('customer.listings') }}"
-                       class="px-4 py-2.5 font-medium text-indigo-900 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">Browse Listings</a>
-                @endif
 
                 @guest
-                    @unless (request()->routeIs('login'))
-                        <a href="{{ route('login') }}"
-                           class="rounded-lg border border-indigo-900 text-indigo-900 px-4 py-2.5 hover:bg-indigo-50 transition-colors duration-200">Login</a>
-                    @endunless
-
-                    @unless (request()->routeIs('register'))
-                        <a href="{{ route('register') }}"
-                           class="rounded-lg bg-indigo-900 text-white px-4 py-2.5 hover:bg-indigo-700 transition-colors duration-200">Register</a>
-                    @endunless
+                    <a href="{{ route('login') }}"
+                       class="px-4 py-2.5 font-medium text-indigo-900 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">Login</a>
+                    <a href="{{ route('register') }}"
+                       class="rounded-lg bg-indigo-900 text-white px-4 py-2.5 hover:bg-indigo-700 transition-colors duration-200">Register</a>
                 @endguest
 
                 @auth
+                    @if (auth()->user()->role === \App\Enums\Role::Customer)
+                        <a href="{{ route('customer.listings') }}"
+                           class="px-4 py-2.5 font-medium text-indigo-900 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200">Browse Listings</a>
+                    @endif
+
                     <a href="{{ route(auth()->user()->role->dashboardRoute()) }}"
                        class="rounded-lg bg-indigo-900 text-white px-4 py-2.5 hover:bg-indigo-700 transition-colors duration-200">
                         <i class="fa-solid fa-gauge mr-1.5" aria-hidden="true"></i>Dashboard

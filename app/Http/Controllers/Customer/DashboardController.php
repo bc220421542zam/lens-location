@@ -22,21 +22,24 @@ class DashboardController extends Controller
         BookingCompleter::forCustomer($customerId);
 
         // Previously every booking row was hydrated into memory just to count
-        // and sum them; the database does both in a single pass now.
+        // and sum them; the database does both in a single pass now. Upcoming
+        // counts unpaid and paid future bookings (payment moves a booking
+        // straight to `completed`); completed/spent count every paid booking,
+        // whether the date has arrived (`visited`) or not.
         $totals = Booking::where('customer_id', $customerId)
             ->selectRaw(
                 'COUNT(*) as total_count,
-                 COUNT(CASE WHEN status = ? AND booking_date >= ? THEN 1 END) as upcoming_count,
-                 COUNT(CASE WHEN status = ? THEN 1 END) as completed_count,
+                 COUNT(CASE WHEN status IN (?, ?, ?) AND booking_date >= ? THEN 1 END) as upcoming_count,
+                 COUNT(CASE WHEN status IN (?, ?) THEN 1 END) as completed_count,
                  COUNT(CASE WHEN status = ? THEN 1 END) as pending_count,
                  COUNT(CASE WHEN status = ? THEN 1 END) as cancelled_count,
-                 COALESCE(SUM(CASE WHEN status = ? THEN total_price END), 0) as completed_spend',
+                 COALESCE(SUM(CASE WHEN status IN (?, ?) THEN total_price END), 0) as completed_spend',
                 [
-                    BookingStatus::Confirmed->value, now()->toDateTimeString(),
-                    BookingStatus::Completed->value,
+                    BookingStatus::Pending->value, BookingStatus::Confirmed->value, BookingStatus::Completed->value, now()->toDateTimeString(),
+                    BookingStatus::Completed->value, BookingStatus::Visited->value,
                     BookingStatus::Pending->value,
                     BookingStatus::Cancelled->value,
-                    BookingStatus::Completed->value,
+                    BookingStatus::Completed->value, BookingStatus::Visited->value,
                 ]
             )
             ->first();
@@ -52,7 +55,7 @@ class DashboardController extends Controller
 
         $upcoming = Booking::with('location.owner')
             ->where('customer_id', $customerId)
-            ->whereIn('status', [BookingStatus::Pending, BookingStatus::Confirmed])
+            ->whereIn('status', [BookingStatus::Pending, BookingStatus::Confirmed, BookingStatus::Completed])
             ->where('booking_date', '>=', now())
             ->orderBy('booking_date')
             ->take(self::UPCOMING_LIMIT)
@@ -64,7 +67,7 @@ class DashboardController extends Controller
             self::CHART_MONTHS,
             [
                 'upcoming'  => ['status', BookingStatus::Confirmed->value],
-                'completed' => ['status', BookingStatus::Completed->value],
+                'completed' => ['status', [BookingStatus::Completed->value, BookingStatus::Visited->value]],
                 'cancelled' => ['status', BookingStatus::Cancelled->value],
             ]
         );

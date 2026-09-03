@@ -61,8 +61,12 @@
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Confirmed</span>
                 @elseif($booking->status->value === 'completed')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700">Completed</span>
+                @elseif($booking->status->value === 'visited')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-teal-100 text-teal-700">Visited</span>
                 @elseif($booking->status->value === 'cancelled')
                     <span class="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-600">Cancelled</span>
+                @elseif($booking->status->value === 'expired')
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-600">Expired</span>
                 @endif
             </div>
 

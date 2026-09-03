@@ -8,7 +8,9 @@ use Illuminate\Console\Command;
 /**
  * Periodic booking settlement, run by the scheduler:
  *
- *  - Confirmed + paid + booking date passed   -> completed ("visited"), escrow released
+ *  - Completed + paid + booking date passed   -> visited, escrow released
+ *  - Confirmed + paid + booking date passed   -> visited (payment the webhook
+ *    never saw), escrow released
  *  - Confirmed + unpaid + booking date passed -> expired, never eligible for payout
  *
  * Both moves live in BookingCompleter (the page-load backstop), so this

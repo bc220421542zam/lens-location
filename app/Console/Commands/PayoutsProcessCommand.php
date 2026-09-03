@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\Log;
  * payout batch and issues standalone Stripe Transfers to their connected
  * accounts, then marks the included transactions paid_out.
  *
+ * The happy path transfers money the moment a booking is visited
+ * (PayoutTransfer), so this batch is the retry net: anything still eligible
+ * here is a transfer that failed or an owner whose Stripe onboarding was
+ * incomplete at visit time.
+ *
  * Double-payment safety (three layers):
  *  1. Stripe idempotency key `transfer-txn-{id}` - a retry after a crash
  *     returns the existing transfer instead of moving money twice.
