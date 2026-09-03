@@ -21,7 +21,13 @@ class SocialiteController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback(): RedirectResponse
+    /**
+     * Google sign-in doubles as sign-up: an email without an account gets a
+     * customer account on first sign-in (mirroring the manual register flow,
+     * which also notifies the admins). An existing user registered manually
+     * just gets their google_id linked.
+     */
+    public function handleGoogleCallback(Request $request): RedirectResponse
     {
         try {
             $googleUser = Socialite::driver('google')->user();
@@ -33,23 +39,37 @@ class SocialiteController extends Controller
                 ->withErrors(['email' => 'Google authentication failed. Please try again.']);
         }
 
-        // Find by google_id or email
-        $user = User::where('google_id', $googleUser->id)
-                    ->orWhere('email', $googleUser->email)
+        $user = User::where('google_id', $googleUser->getId())
+                    ->orWhere('email', $googleUser->getEmail())
                     ->first();
 
-        // No account found — block access
-        if (!$user) {
+        if ($user === null) {
+            [$firstName, $lastName] = array_pad(explode(' ', trim($googleUser->getName()), 2), 2, '');
+
+            $user = User::create([
+                'role'       => Role::Customer,
+                'first_name' => $firstName !== '' ? $firstName : 'Google',
+                'last_name'  => $lastName !== '' ? $lastName : 'User',
+                'email'      => $googleUser->getEmail(),
+                'phone'      => '',
+                'password'   => Str::random(32), // hashed by the `hashed` cast
+                'google_id'  => $googleUser->getId(),
+            ]);
+
+            $this->notifyAdminsOfNewUser($user);
+        } elseif ($user->google_id === null) {
+            // Link google_id for a user who registered manually before.
+            $user->update(['google_id' => $googleUser->getId()]);
+        }
+
+        if ($user->isBlocked()) {
             return redirect()->route('login')
-                ->withErrors(['email' => 'No account found with this Google email. Please register first.']);
+                ->withErrors(['email' => 'Your account has been blocked. Please contact admin.']);
         }
 
-        // Link google_id if user registered manually before
-        if (!$user->google_id) {
-            $user->update(['google_id' => $googleUser->id]);
-        }
+        Auth::login($user, remember: true);
+        $request->session()->regenerate();
 
-        Auth::login($user);
         return RoleRedirector::to($user);
     }
 
