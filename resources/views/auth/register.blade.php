@@ -206,6 +206,9 @@
                         Sign Up
                     </button>
 
+                    {{-- Sign Up with Facebook --}}
+                    <x-facebook-login />
+
                 {{-- Login Link --}}
                     <p class="text-center text-sm text-gray-500">
                         Already have an account?

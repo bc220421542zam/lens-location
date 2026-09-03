@@ -38,6 +38,7 @@ class User extends Authenticatable
         'block_reason',
         'blocked_at',
         'google_id',
+        'facebook_id',
         'stripe_account_id',
         'stripe_transfers_status',
         'stripe_onboarded_at',

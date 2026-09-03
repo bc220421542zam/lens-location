@@ -119,6 +119,9 @@
                              {{--login with Google--}}
                             <x-google-login />
 
+                            {{-- Login with Facebook --}}
+                            <x-facebook-login />
+
                             {{-- Sign Up Link --}}
                             <p class="text-center text-sm text-gray-500">
                                 Don't have an account?

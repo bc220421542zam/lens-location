@@ -51,6 +51,9 @@ Route::middleware('guest')->group(function () {
 Route::controller(SocialiteController::class)->group(function () {
     Route::get('/auth/google', 'redirectToGoogle')->name('auth.google');
     Route::get('/auth/google-callback', 'handleGoogleCallback')->name('auth.google.callback');
+
+    Route::get('/auth/facebook', 'redirectToFacebook')->name('auth.facebook');
+    Route::get('/auth/facebook/callback', 'handleFacebookCallback')->name('auth.facebook.callback');
 });
 
 // Stripe webhook — must sit outside auth/role middleware since Stripe's servers
