@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {{-- Read by resources/js/app.js: the tab-close sign-out uses the CSRF
+         token, and "authenticated" tells it whether a forced logout applies. --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="authenticated" content="{{ auth()->check() ? '1' : '0' }}">
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
     <title>{{ $title ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -136,7 +136,8 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($user, remember: true);
+        // No "remember me": returning visitors must sign in again.
+        Auth::login($user);
         $request->session()->regenerate();
 
         return RoleRedirector::to($user);

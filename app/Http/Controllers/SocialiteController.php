@@ -67,7 +67,10 @@ class SocialiteController extends Controller
                 ->withErrors(['email' => 'Your account has been blocked. Please contact admin.']);
         }
 
-        Auth::login($user, remember: true);
+        // No "remember me": sessions end when the user leaves (browser close
+        // or the tab-close sign-out in resources/js/app.js), so returning
+        // visitors must sign in again.
+        Auth::login($user);
         $request->session()->regenerate();
 
         return RoleRedirector::to($user);
@@ -129,7 +132,10 @@ class SocialiteController extends Controller
                 ->withErrors(['email' => 'Your account has been blocked. Please contact admin.']);
         }
 
-        Auth::login($user, remember: true);
+        // No "remember me": sessions end when the user leaves (browser close
+        // or the tab-close sign-out in resources/js/app.js), so returning
+        // visitors must sign in again.
+        Auth::login($user);
         $request->session()->regenerate();
 
         return RoleRedirector::to($user);
