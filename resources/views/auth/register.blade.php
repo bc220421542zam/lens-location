@@ -110,6 +110,7 @@
                                 class="block text-sm font-medium text-indigo-900 mb-1">Phone</label>
                                 <input type="text" id="phone" name="phone"
                                 value="{{ old('phone') }}"
+                                placeholder="0300-1234567"
                                 class="field field-transition {{ $errors->has('phone') ? 'border-red-400' : 'border-indigo-300' }}">
                             @error('phone')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -206,9 +207,6 @@
                         Sign Up
                     </button>
 
-                    {{-- Sign Up with Facebook --}}
-                    <x-facebook-login />
-
                 {{-- Login Link --}}
                     <p class="text-center text-sm text-gray-500">
                         Already have an account?
@@ -258,14 +256,6 @@ function getField(field) {
     return document.getElementById(field.name);
 }
 
-function updatePhoneCode() {
-    const code = document.getElementById('phone_code').value;
-    const phone = document.getElementById('phone');
-    let num = phone.value.replace(/^\+\d+\s*/, '');
-    phone.value = code ? code + num : num;
-    validateField(phone);
-}
-
 function validateField(field) {
     const val = field.value.trim();
     if (!val && field.type !== 'hidden') {
@@ -285,10 +275,7 @@ function validateField(field) {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { showError(field, 'Please enter a valid email address.'); return false; }
             break;
         case 'phone':
-            var stripped = val.replace(/[\s\-\(\)\.]/g, '');
-            if (stripped.length > 20) { showError(field, 'Phone number is too long.'); return false; }
-            if (stripped.length < 7) { showError(field, 'Phone number is too short.'); return false; }
-            if (!/^\+?[0-9]{7,20}$/.test(stripped)) { showError(field, 'Please enter a valid phone number.'); return false; }
+            if (!/^03\d{2}-\d{7}$/.test(val)) { showError(field, 'Phone must be in the format 0300-1234567.'); return false; }
             break;
         case 'password':
             if (val.length < 8) { showError(field, 'Password must be at least 8 characters.'); return false; }
@@ -315,7 +302,6 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     var valid = true;
     var fields = this.querySelectorAll('input, select');
     for (var i = 0; i < fields.length; i++) {
-        if (fields[i].id === 'phone_code') continue;
         if (!validateField(fields[i])) valid = false;
     }
     if (!valid) e.preventDefault();

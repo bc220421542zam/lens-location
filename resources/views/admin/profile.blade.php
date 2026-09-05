@@ -83,7 +83,7 @@
                 <label class="text-xs text-gray-500 mb-1 block">Phone</label>
                 <input type="text" name="phone"
                     value="{{ old('phone', auth()->user()->phone ?? '') }}"
-                    placeholder="Your phone number"
+                    placeholder="0300-1234567"
                     class="w-full input input-field focus:outline-none focus:ring-2 focus:ring-indigo-300">
             </div>
             {{--gender--}}

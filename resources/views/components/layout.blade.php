@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {{-- Read by resources/js/app.js: the tab-close sign-out uses the CSRF
-         token, and "authenticated" tells it whether a forced logout applies. --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="authenticated" content="{{ auth()->check() ? '1' : '0' }}">
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
     <title>{{ $title ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -139,8 +136,13 @@
                     @if (auth()->check() && auth()->user()->role === \App\Enums\Role::Customer)
                         <li><a href="{{ route('customer.listings') }}" class="hover:text-indigo-600 transition-colors duration-200">Browse Listings</a></li>
                     @endif
-                    <li><a href="{{ route('login') }}" class="hover:text-indigo-600 transition-colors duration-200">Login</a></li>
-                    <li><a href="{{ route('register') }}" class="hover:text-indigo-600 transition-colors duration-200">Register</a></li>
+                    @guest
+                        <li><a href="{{ route('login') }}" class="hover:text-indigo-600 transition-colors duration-200">Login</a></li>
+                        <li><a href="{{ route('register') }}" class="hover:text-indigo-600 transition-colors duration-200">Register</a></li>
+                    @endguest
+                    @auth
+                        <li><a href="{{ route(auth()->user()->role->dashboardRoute()) }}" class="hover:text-indigo-600 transition-colors duration-200">Dashboard</a></li>
+                    @endauth
                 </ul>
             </nav>
 

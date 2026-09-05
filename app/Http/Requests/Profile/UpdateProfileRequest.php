@@ -20,8 +20,15 @@ class UpdateProfileRequest extends FormRequest
             'business_name' => ['nullable', 'string', 'max:255'],
             'country'       => ['nullable', 'string', Rule::in(config('countries.countries'))],
             'address'       => ['nullable', 'string', 'max:255'],
-            'phone'         => ['nullable', 'string', 'max:20'],
+            'phone'         => ['nullable', 'string', 'regex:/^03\d{2}-\d{7}$/'],
             'gender'        => ['nullable', 'string', 'in:male,female,non-binary,other'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.regex' => 'Your phone number is not valid. It must be in the format 0300-1234567.',
         ];
     }
 }

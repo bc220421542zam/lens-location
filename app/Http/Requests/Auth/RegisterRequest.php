@@ -14,13 +14,6 @@ class RegisterRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'phone' => preg_replace('/[\s\-\(\)\.]/', '', $this->phone),
-        ]);
-    }
-
     public function rules(): array
     {
         return [
@@ -28,7 +21,7 @@ class RegisterRequest extends FormRequest
             'first_name' => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\-]+$/'],
             'last_name'  => ['required', 'string', 'min:2', 'max:255', 'regex:/^[a-zA-Z\s\-]+$/'],
             'email'      => ['required', 'email:rfc', 'max:255', 'unique:users,email'],
-            'phone'      => ['required', 'string', 'max:20', 'regex:/^\+?[0-9]{7,20}$/'],
+            'phone'      => ['required', 'string', 'regex:/^03\d{2}-\d{7}$/'],
             'password'   => PasswordRules::strong(),
         ];
     }
@@ -39,7 +32,7 @@ class RegisterRequest extends FormRequest
             'email.email'      => 'Please enter a valid email address with a working domain.',
             'first_name.regex' => 'First name may only contain letters, spaces, and hyphens.',
             'last_name.regex'  => 'Last name may only contain letters, spaces, and hyphens.',
-            'phone.regex'      => 'Please enter a valid phone number.',
+            'phone.regex'      => 'Your phone number is not valid. It must be in the format 0300-1234567.',
             ...PasswordRules::messages(),
         ];
     }
