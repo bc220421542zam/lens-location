@@ -29,6 +29,8 @@
                             <tr class="text-[11px] uppercase tracking-wide text-indigo-900 border-b border-indigo-100 bg-indigo-50/60">
                                 <th class="py-3 px-4 font-medium">Sr. No.</th>
 
+                                <th class="px-2 font-medium">Booking ID</th>
+
                                 @php
                                     $currentSort = request('sort');
                                     $currentDirection = request('direction', 'asc');
@@ -86,6 +88,10 @@
                             <tr class="border-t border-indigo-50 {{ $loop->even ? 'bg-indigo-50/40' : 'bg-white' }} hover:bg-indigo-50 transition-colors">
                                 <td class="py-3 px-4 text-sm text-indigo-700">
                                     {{ $listings->firstItem() + $loop->index }}
+                                </td>
+                                <td class="py-3 px-2 text-sm text-indigo-700 whitespace-nowrap">
+                                    <a href="{{ route('admin.listings.show', $listing->id) }}"
+                                       class="hover:text-indigo-900 hover:underline">#{{ $listing->id }}</a>
                                 </td>
                                 <td class="px-2 py-3 text-sm font-medium text-indigo-900 max-w-[220px]">
                                     <span class="block truncate" title="{{ $listing->title }}">
@@ -222,7 +228,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="py-6 text-center text-indigo-400 text-sm">No listings found.</td>
+                                <td colspan="9" class="py-6 text-center text-indigo-400 text-sm">No listings found.</td>
                             </tr>
                             @endforelse
                         </tbody>

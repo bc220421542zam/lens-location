@@ -110,6 +110,12 @@
                 </div>
             </dl>
 
+            {{-- LOCATION ON MAP --}}
+            <x-location-map
+                :latitude="$booking->location?->latitude"
+                :longitude="$booking->location?->longitude"
+                :address="$booking->location ? $booking->location->address . ', ' . $booking->location->city : null" />
+
             {{-- PAYMENTS --}}
             <div class="mb-6">
                 <h3 class="text-sm font-semibold text-indigo-900 mb-2">Payments</h3>

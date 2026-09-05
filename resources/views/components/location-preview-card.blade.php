@@ -1,9 +1,3 @@
-{{--
-    Shallow preview card for guests: image, title and city only. Links to
-    login — full details stay behind auth.
-
-    <x-location-preview-card title="Rooftop Studio" image="..." city="Karachi" href="..." />
---}}
 @props([
     'title',
     'image' => null,
@@ -24,7 +18,7 @@
             </div>
         @endif
 
-        <span class="absolute inset-0 flex items-center justify-center bg-indigo-950/0 group-hover:bg-indigo-950/40 transition-colors duration-300" aria-hidden="true">
+        <span class="absolute inset-0 flex items-center justify-center bg-indigo-900/0 group-hover:bg-indigo-900/40 transition-colors duration-300" aria-hidden="true">
             <span class="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-indigo-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <i class="fa-solid fa-lock" aria-hidden="true"></i> Login to view
             </span>
@@ -32,7 +26,7 @@
     </a>
 
     <div class="flex flex-col flex-1 p-4">
-        <h3 class="font-semibold text-indigo-950 leading-snug">{{ $title }}</h3>
+        <h3 class="font-semibold text-indigo-900 leading-snug">{{ $title }}</h3>
         <p class="mt-1 text-sm text-gray-500">
             <i class="fa-solid fa-location-dot mr-1.5 text-indigo-400" aria-hidden="true"></i>{{ $city }}
         </p>

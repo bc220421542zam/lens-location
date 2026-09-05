@@ -13,7 +13,7 @@
     @endif
 
     <h2 @if ($id) id="{{ $id }}" @endif
-        class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-950">
+        class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-900">
         {{ $title }}
     </h2>
 

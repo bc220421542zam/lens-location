@@ -12,7 +12,7 @@
                 <div>
                     <p class="text-sm font-medium text-indigo-900">
                         {{ $review->customer->first_name ?? 'Customer' }}
-                        <span class="text-gray-500 font-normal">on</span>
+                        <span class="text-gray-500 font-normal">for</span>
                         @if($review->location)
                             <a href="{{ route('owner.locations.show', $review->location->id) }}" class="text-indigo-400 font-normal hover:underline">
                                 {{ $review->location->title }}

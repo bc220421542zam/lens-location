@@ -1,7 +1,7 @@
 <x-layouts.owner>
 
   {{-- TOP BAR --}}
-<x-topbar 
+<x-topbar
     title="My Listings"
     description="Manage your photography locations">
     <x-slot:actions>
@@ -39,20 +39,13 @@
                         </span>
                     </div>
                 @endif
-
-                {{-- STATUS BADGE --}}
-                @if($location->status->value === 'approved')
-                    <span class="badge badge-active">Approved</span>
-                @elseif($location->status->value === 'pending')
-                    <span class="badge badge-draft">Pending</span>
-                @elseif($location->status->value === 'rejected')
-                    <span class="badge badge-rejected">Rejected</span>
-                @endif
             </div>
 
             {{-- INFO --}}
             <div class="p-3 sm:p-4 flex-1">
-                <h3 class="font-semibold text-indigo-900">{{ $location->title }}</h3>
+                <h3 class="font-semibold text-indigo-900 truncate" title="{{ $location->title }}">
+                    {{ $location->title }}
+                </h3>
                     <p class="text-xs text-gray-500 mt-1">
                         <i class="fa-solid fa-location-dot mr-1"></i>{{ $location->city }}
                     </p>
@@ -61,8 +54,19 @@
                     </p>
             </div>
 
+            {{-- STATUS BADGE --}}
+            <div class="px-3 sm:px-4 mt-auto">
+                @if($location->status->value === 'approved')
+                    <span class="badge-inline badge-active">Approved</span>
+                @elseif($location->status->value === 'pending')
+                    <span class="badge-inline badge-draft">Pending</span>
+                @elseif($location->status->value === 'rejected')
+                    <span class="badge-inline badge-rejected">Rejected</span>
+                @endif
+            </div>
+
             {{-- ACTION BUTTONS --}}
-            <div class="flex gap-2 px-3 sm:px-4 pb-3 sm:pb-4 mt-auto">
+            <div class="flex gap-2 px-3 sm:px-4 py-3 sm:py-4">
 
                 {{-- View --}}
                 <a href="{{ route('owner.locations.show', $location->id) }}"

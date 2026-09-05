@@ -33,6 +33,12 @@
         </div>
     </div>
 
+    {{-- LOCATION ON MAP --}}
+    <x-location-map
+        :latitude="$location->latitude"
+        :longitude="$location->longitude"
+        :address="$location->address . ', ' . $location->city" />
+
     {{-- BOOKING FORM --}}
     <form method="POST" action="{{ route('customer.listings.book.store', $location->id) }}"
           class="card flex flex-col gap-4">

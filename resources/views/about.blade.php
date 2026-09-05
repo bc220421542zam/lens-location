@@ -1,7 +1,7 @@
 <x-layout :title="'About Us'">
 
 {{-- ========================= HERO / INTRO ========================= --}}
-<section class="relative overflow-hidden bg-linear-to-br from-indigo-950 via-indigo-900 to-indigo-800 text-white">
+<section class="relative overflow-hidden bg-linear-to-br from-indigo-900 via-indigo-900 to-indigo-800 text-white">
     <div class="absolute -top-24 -right-24 size-96 rounded-full bg-indigo-500/25 blur-3xl" aria-hidden="true"></div>
     <div class="absolute -bottom-40 -left-24 size-[28rem] rounded-full bg-fuchsia-500/20 blur-3xl" aria-hidden="true"></div>
 
@@ -52,7 +52,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
             <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-indigo-600">Our story</p>
-            <h2 id="story-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-950">
+            <h2 id="story-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-900">
                 From a customer's frustration to a two-sided marketplace
             </h2>
 
@@ -90,7 +90,7 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </span>
                 <span>
-                    <span class="block font-semibold text-indigo-950">Vetted spaces only</span>
+                    <span class="block font-semibold text-indigo-900">Vetted spaces only</span>
                     <span class="block text-xs text-gray-500">Every listing is reviewed first</span>
                 </span>
             </div>
@@ -114,7 +114,7 @@
                     </span>
                     <span class="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-700">Owners</span>
                 </div>
-                <h3 class="mt-5 text-lg font-semibold text-indigo-950">Location Owner</h3>
+                <h3 class="mt-5 text-lg font-semibold text-indigo-900">Location Owner</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">
                     Lists spaces with photos, pricing and availability, then approves every booking request.
                 </p>
@@ -132,7 +132,7 @@
                     </span>
                     <span class="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-700">Customers</span>
                 </div>
-                <h3 class="mt-5 text-lg font-semibold text-indigo-950">Customer</h3>
+                <h3 class="mt-5 text-lg font-semibold text-indigo-900">Customer</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">
                     Searches vetted spaces by city, category and budget, then books and pays securely.
                 </p>
@@ -150,7 +150,7 @@
                     </span>
                     <span class="rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-700">Admins</span>
                 </div>
-                <h3 class="mt-5 text-lg font-semibold text-indigo-950">Admin</h3>
+                <h3 class="mt-5 text-lg font-semibold text-indigo-900">Admin</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">
                     The guardian of the marketplace — keeps every listing, review and payout honest.
                 </p>
@@ -163,7 +163,7 @@
         </div>
 
         {{-- How the roles connect --}}
-        <h3 class="mt-16 text-center text-lg sm:text-xl font-semibold text-indigo-950">How they connect</h3>
+        <h3 class="mt-16 text-center text-lg sm:text-xl font-semibold text-indigo-900">How they connect</h3>
         <ol class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach ([
                 ['title' => 'Owners list spaces', 'text' => 'With real photos, hourly pricing and availability.'],
@@ -173,7 +173,7 @@
             ] as $step)
                 <li class="relative card-transition rounded-3xl border border-indigo-100 bg-[#EEEFF7]/70 p-6 pt-8 text-center">
                     <span class="inline-flex items-center rounded-full bg-indigo-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">Step {{ $loop->iteration }}</span>
-                    <h4 class="mt-4 font-semibold text-indigo-950">{{ $step['title'] }}</h4>
+                    <h4 class="mt-4 font-semibold text-indigo-900">{{ $step['title'] }}</h4>
                     <p class="mt-2 text-sm text-gray-600 leading-relaxed">{{ $step['text'] }}</p>
 
                     @unless ($loop->last)
@@ -200,7 +200,7 @@
                 <span class="mx-auto flex size-12 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-800" aria-hidden="true">
                     <i class="fa-solid fa-shield-halved"></i>
                 </span>
-                <h3 class="mt-4 font-semibold text-indigo-950">Trust &amp; safety</h3>
+                <h3 class="mt-4 font-semibold text-indigo-900">Trust &amp; safety</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">Every listing is vetted and every payment is protected.</p>
             </div>
 
@@ -208,7 +208,7 @@
                 <span class="mx-auto flex size-12 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-800" aria-hidden="true">
                     <i class="fa-solid fa-scale-balanced"></i>
                 </span>
-                <h3 class="mt-4 font-semibold text-indigo-950">Fair &amp; transparent</h3>
+                <h3 class="mt-4 font-semibold text-indigo-900">Fair &amp; transparent</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">Owners set their rates; customers always see the full price upfront.</p>
             </div>
 
@@ -216,7 +216,7 @@
                 <span class="mx-auto flex size-12 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-800" aria-hidden="true">
                     <i class="fa-solid fa-users"></i>
                 </span>
-                <h3 class="mt-4 font-semibold text-indigo-950">Community first</h3>
+                <h3 class="mt-4 font-semibold text-indigo-900">Community first</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">Real reviews from real shoots keep quality high for everyone.</p>
             </div>
 
@@ -224,7 +224,7 @@
                 <span class="mx-auto flex size-12 items-center justify-center rounded-xl bg-indigo-100 text-xl text-indigo-800" aria-hidden="true">
                     <i class="fa-solid fa-award"></i>
                 </span>
-                <h3 class="mt-4 font-semibold text-indigo-950">Quality over quantity</h3>
+                <h3 class="mt-4 font-semibold text-indigo-900">Quality over quantity</h3>
                 <p class="mt-2 text-sm text-gray-600 leading-relaxed">We'd rather feature ten great spaces than a hundred average ones.</p>
             </div>
         </div>
@@ -234,7 +234,7 @@
 {{-- ========================= CLOSING CTA ========================= --}}
 <section class="bg-[#EEEFF7] py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-[2rem] bg-linear-to-r from-indigo-950 to-indigo-700 px-6 py-14 sm:px-14 sm:py-16 text-center text-white shadow-xl">
+        <div class="relative chart-transition overflow-hidden rounded-[2rem] bg-linear-to-r from-indigo-900 to-indigo-700 px-6 py-14 sm:px-14 sm:py-16 text-center text-white shadow-xl">
             <div class="absolute -top-24 -left-24 size-72 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
             <div class="absolute -bottom-28 -right-20 size-80 rounded-full bg-fuchsia-400/20 blur-3xl" aria-hidden="true"></div>
 
@@ -248,12 +248,12 @@
                 <div class="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
                     @guest
                         <a href="{{ route('register') }}"
-                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-950 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
+                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-900 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                             Get started — it's free
                         </a>
                     @else
                         <a href="{{ auth()->user()->role === \App\Enums\Role::Customer ? route('customer.listings') : route(auth()->user()->role->dashboardRoute()) }}"
-                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-950 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
+                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-900 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                             Browse locations
                         </a>
                     @endguest

@@ -1,10 +1,11 @@
 <x-layouts.admin>
+    <div class="max-w-4xl mx-auto">
     <x-topbar
         title="Booking Details"
         description="Everything about this booking">
         <x-slot:actions>
         <a href="{{ route('admin.bookings') }}"
-           class="btn btn-transition w-full sm:w-auto px-4 text-center">
+           class="text-sm text-indigo-700 hover:underline">
             &larr; All Bookings
         </a>
         </x-slot:actions>
@@ -13,7 +14,7 @@
     <x-success class="mb-4" />
     <x-error class="mb-4" />
 
-    <div class="max-w-4xl mx-auto">
+    
 
         <div class="shade card card-transition bg-[#EEEFF7] p-6 rounded-2xl">
 

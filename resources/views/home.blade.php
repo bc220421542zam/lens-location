@@ -1,10 +1,7 @@
 <x-layout :title="'Find & book your next shoot location'">
-{{-- HomeController passes the approved listings in $locations (the nine
-     featured ones, narrowed when the hero search was submitted) and the
-     admin-managed marketing $stats. --}}
 
 {{-- ============================ HERO ============================ --}}
-<section class="relative overflow-hidden bg-linear-to-br from-indigo-950 via-indigo-900 to-indigo-800 text-white">
+<section class="relative overflow-hidden bg-linear-to-br from-indigo-900 via-indigo-900 to-indigo-800 text-white">
     <div class="absolute -top-24 -left-24 size-96 rounded-full bg-indigo-500/25 blur-3xl" aria-hidden="true"></div>
     <div class="absolute -bottom-40 -right-24 size-[28rem] rounded-full bg-fuchsia-500/20 blur-3xl" aria-hidden="true"></div>
 
@@ -24,10 +21,9 @@
                 pay securely, and shoot with confidence.
             </p>
 
-            {{-- Search: submits to this same page — results swap in for the
-                 locations section below (search, category) — no login needed --}}
+            {{-- Search --}}
             <form action="{{ route('home') }}" method="GET" role="search" class="mt-8 max-w-xl">
-                <div class="flex flex-col md:flex-row gap-2 rounded-2xl bg-white p-2 shadow-2xl shadow-indigo-950/40 ring-1 ring-white/20">
+                <div class="flex flex-col md:flex-row gap-2 rounded-2xl bg-white p-2 shadow-2xl shadow-indigo-900/40 ring-1 ring-white/20">
                     <label class="sr-only" for="hero-search">Search locations by city or title</label>
                     <div class="flex flex-1 items-center gap-2.5 rounded-xl px-3.5 transition-colors duration-200 focus-within:bg-indigo-50">
                         <i class="fa-solid fa-magnifying-glass text-indigo-500" aria-hidden="true"></i>
@@ -89,10 +85,7 @@
             <div class="absolute -inset-6 rounded-[2rem] bg-linear-to-tr from-indigo-500/20 to-fuchsia-500/10 blur-2xl" aria-hidden="true"></div>
 
             @if (file_exists(public_path('videos/hero-shoot.mp4')))
-                {{-- Looping hero video of a shoot at a listed location. The photo
-                     doubles as the poster, so the hero looks right while the
-                     video loads — and if the file is ever removed, the @else
-                     branch below renders the image instead. --}}
+                {{-- Hero image & Video--}}
                 <video autoplay muted loop playsinline
                        poster="{{ asset('images/Studio-photography-rental.jpg') }}"
                        aria-hidden="true"
@@ -110,7 +103,7 @@
                     <i class="fa-solid fa-star"></i>
                 </span>
                 <span>
-                    <span class="block font-semibold text-indigo-950">4.9 / 5</span>
+                    <span class="block font-semibold text-indigo-900">4.9 / 5</span>
                     <span class="block text-xs text-gray-500">2,300+ verified reviews</span>
                 </span>
             </div>
@@ -120,7 +113,7 @@
                     <i class="fa-solid fa-bolt"></i>
                 </span>
                 <span>
-                    <span class="block font-semibold text-indigo-950">Instant booking</span>
+                    <span class="block font-semibold text-indigo-900">Instant booking</span>
                     <span class="block text-xs text-gray-500">Owners confirm in minutes</span>
                 </span>
             </div>
@@ -142,7 +135,7 @@
                 <span class="mx-auto mt-6 flex size-16 items-center justify-center rounded-2xl bg-indigo-900 text-2xl text-white shadow-lg shadow-indigo-900/25" aria-hidden="true">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <h3 class="mt-5 text-xl font-semibold text-indigo-950">Search</h3>
+                <h3 class="mt-5 text-xl font-semibold text-indigo-900">Search</h3>
                 <p class="mt-3 text-sm text-gray-600 leading-relaxed">Filter by city, category or budget and find a space that matches your vision.</p>
             </li>
 
@@ -151,7 +144,7 @@
                 <span class="mx-auto mt-6 flex size-16 items-center justify-center rounded-2xl bg-indigo-900 text-2xl text-white shadow-lg shadow-indigo-900/25" aria-hidden="true">
                     <i class="fa-solid fa-calendar-check"></i>
                 </span>
-                <h3 class="mt-5 text-xl font-semibold text-indigo-950">Book</h3>
+                <h3 class="mt-5 text-xl font-semibold text-indigo-900">Book</h3>
                 <p class="mt-3 text-sm text-gray-600 leading-relaxed">Send a booking request, agree the time and price, and pay securely online.</p>
             </li>
 
@@ -160,7 +153,7 @@
                 <span class="mx-auto mt-6 flex size-16 items-center justify-center rounded-2xl bg-indigo-900 text-2xl text-white shadow-lg shadow-indigo-900/25" aria-hidden="true">
                     <i class="fa-solid fa-camera"></i>
                 </span>
-                <h3 class="mt-5 text-xl font-semibold text-indigo-950">Shoot</h3>
+                <h3 class="mt-5 text-xl font-semibold text-indigo-900">Shoot</h3>
                 <p class="mt-3 text-sm text-gray-600 leading-relaxed">Show up, set up, and create — with the confidence the space is yours for the day.</p>
             </li>
         </ol>
@@ -168,16 +161,13 @@
 </section>
 
 {{-- ================== LOCATIONS / SEARCH RESULTS ================== --}}
-{{-- Always visible. Without a query it shows the featured six; a search from
-     the hero swaps this section for the matching results on the same page.
-     Guest cards are shallow previews (image, title, city) pointing at login. --}}
 <section class="bg-indigo-50/60 py-16 sm:py-24" aria-labelledby="locations-heading">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 @if ($isSearch)
                     <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-indigo-600">Search results</p>
-                    <h2 id="locations-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-950">Locations matching your search</h2>
+                    <h2 id="locations-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-900">Locations matching your search</h2>
                     <p class="mt-3 text-gray-600">
                         {{ $locations->count() }} {{ Str::plural('location', $locations->count()) }}
                         @guest
@@ -186,7 +176,7 @@
                     </p>
                 @else
                     <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-indigo-600">Featured spaces</p>
-                    <h2 id="locations-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-950">Locations our customers love</h2>
+                    <h2 id="locations-heading" class="mt-3 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-indigo-900">Locations our customers love</h2>
                     <p class="mt-3 text-gray-600">Hand-picked spaces the community keeps coming back to.</p>
                 @endif
             </div>
@@ -261,7 +251,7 @@
                     <span class="flex size-12 items-center justify-center rounded-xl bg-indigo-900 text-lg text-white shadow-lg shadow-indigo-900/25" aria-hidden="true">
                         <i class="fa-solid fa-camera"></i>
                     </span>
-                    <h3 class="text-xl font-semibold text-indigo-950">For customers</h3>
+                    <h3 class="text-xl font-semibold text-indigo-900">For customers</h3>
                 </div>
                 <ul class="mt-6 space-y-4">
                     <li class="flex gap-3">
@@ -284,7 +274,7 @@
                     <span class="flex size-12 items-center justify-center rounded-xl bg-indigo-900 text-lg text-white shadow-lg shadow-indigo-900/25" aria-hidden="true">
                         <i class="fa-solid fa-store"></i>
                     </span>
-                    <h3 class="text-xl font-semibold text-indigo-950">For location owners</h3>
+                    <h3 class="text-xl font-semibold text-indigo-900">For location owners</h3>
                 </div>
                 <ul class="mt-6 space-y-4">
                     <li class="flex gap-3">
@@ -308,7 +298,7 @@
 {{-- ========================= FINAL CTA ========================= --}}
 <section class="bg-[#EEEFF7] py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-[2rem] bg-linear-to-r from-indigo-950 to-indigo-700 px-6 py-14 sm:px-14 sm:py-16 text-center text-white shadow-xl">
+        <div class="chart-transition relative overflow-hidden rounded-[2rem] bg-linear-to-r from-indigo-900 to-indigo-700 px-6 py-14 sm:px-14 sm:py-16 text-center text-white shadow-xl">
             <div class="absolute -top-24 -right-24 size-72 rounded-full bg-white/10 blur-3xl" aria-hidden="true"></div>
             <div class="absolute -bottom-28 -left-20 size-80 rounded-full bg-fuchsia-400/20 blur-3xl" aria-hidden="true"></div>
 
@@ -326,12 +316,12 @@
                 <div class="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
                     @guest
                         <a href="{{ route('register') }}"
-                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-950 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
+                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-900 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                             Create a free account
                         </a>
                     @else
                         <a href="{{ auth()->user()->role === \App\Enums\Role::Customer ? route('customer.listings') : route(auth()->user()->role->dashboardRoute()) }}"
-                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-950 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
+                           class="w-full sm:w-auto px-7 py-3 rounded-xl bg-white text-indigo-900 font-medium shadow-sm hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white transition-colors duration-200">
                             Browse locations
                         </a>
                     @endguest

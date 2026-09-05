@@ -140,7 +140,10 @@
                             <td class="py-3 px-4 text-sm text-indigo-700">
                                 {{ $bookings->firstItem() + $loop->index }}
                             </td>
-                            <td class="px-2 text-sm text-indigo-700">#{{ $booking->id }}</td>
+                            <td class="px-2 text-sm text-indigo-700">
+                                <a href="{{ route('admin.bookings.show', $booking->id) }}"
+                                   class="hover:text-indigo-900 hover:underline">#{{ $booking->id }}</a>
+                            </td>
                             <td class="px-2 text-sm text-indigo-700">
                                 @if($booking->customer)
                                     <a href="{{ route('admin.users.detail', $booking->customer->id) }}"

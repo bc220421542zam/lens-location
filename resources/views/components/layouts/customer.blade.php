@@ -7,6 +7,7 @@
     <title>Customer Dashboard</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/Lenslocation-Logo.png') }}">
+    @stack('styles')
 </head>
 <body class="bg-[#DDDEEF] flex flex-col h-screen overflow-hidden m-0 p-0"
     x-data="{ sidebarOpen: false }">
@@ -23,5 +24,6 @@
         </main>
 
     </div>
+    @stack('scripts')
 </body>
 </html>

@@ -36,14 +36,6 @@
                     </div>
                 @endif
 
-                {{-- STATUS BADGE --}}
-                @if($location->status->value === 'approved')
-                    <span class="badge badge-active">Approved</span>
-                @elseif($location->status->value === 'pending')
-                    <span class="badge badge-draft">Pending</span>
-                @elseif($location->status->value === 'rejected')
-                    <span class="badge badge-rejected">Rejected</span>
-                @endif
             </div>
 
             {{-- THUMBNAILS --}}
@@ -66,49 +58,72 @@
         </div>
 
         <div class="p-6">
-            <div class="flex items-center justify-between">
-                <h1 class="text-xl font-bold text-indigo-900">{{ $location->title }}</h1>
-                <span class="badge-inline badge-active">{{ ucfirst($location->category) }}</span>
-                
+            <div class="md:flex md:gap-6">
+                <div class="flex-1 min-w-0">
+
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-xl font-bold text-indigo-900">{{ $location->title }}</h1>
+                        <span class="badge-inline badge-active">{{ ucfirst($location->category) }}</span>
+                    </div>
+
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fa-solid fa-location-dot mr-1"></i>{{ $location->city }}
+                    </p>
+
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 mb-6">
+                        <div>
+                            <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
+                            <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $location->price_per_hour) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
+                            <dd class="font-medium text-indigo-900">{{ $location->address }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="mb-6">
+                        <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
+                        <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
+                    </div>
+
+                </div>
+
+                {{-- Small square map on the right - no title, no subtitle --}}
+                <div class="shrink-0 mx-auto md:mx-0 mt-6 md:mt-0 w-44 h-44 sm:w-48 sm:h-48">
+                    <x-location-map
+                        :latitude="$location->latitude"
+                        :longitude="$location->longitude"
+                        bare />
+                </div>
             </div>
 
-            <p class="text-sm text-gray-500 mt-1">
-                <i class="fa-solid fa-location-dot mr-1"></i>{{ $location->city }}
-            </p>
+            {{-- STATUS + ACTIONS: status at the bottom-left, buttons fill the rest --}}
+            <div class="flex flex-col sm:flex-row items-stretch gap-2 mt-6 btn-transition">
+                @if($location->status->value === 'approved')
+                    <span class="badge-inline badge-active sm:self-center shrink-0">Approved</span>
+                @elseif($location->status->value === 'pending')
+                    <span class="badge-inline badge-draft sm:self-center shrink-0">Pending</span>
+                @elseif($location->status->value === 'rejected')
+                    <span class="badge-inline badge-rejected sm:self-center shrink-0">Rejected</span>
+                @endif
 
-            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 mb-6">
-                <div>
-                    <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
-                    <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $location->price_per_hour) }}</dd>
+                <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <a href="{{ route('owner.locations.edit', $location->id) }}"
+                       class="action-btn shade text-center w-full">
+                        Edit
+                    </a>
+
+                    <form action="{{ route('owner.locations.destroy', $location->id) }}"
+                          method="POST"
+                          class="w-full"
+                          onsubmit="return confirm('Are you sure you want to delete this listing?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="action-btn btn-transition shade danger w-full">
+                            Delete
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
-                    <dd class="font-medium text-indigo-900">{{ $location->address }}</dd>
-                </div>
-            </dl>
-
-            <div class="mb-6">
-                <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
-                <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
-            </div>
-
-            {{-- ACTIONS --}}
-            <div class="flex gap-2 btn-transition">
-                <a href="{{ route('owner.locations.edit', $location->id) }}"
-                   class="action-btn shade text-center flex-1">
-                    Edit
-                </a>
-
-                <form action="{{ route('owner.locations.destroy', $location->id) }}"
-                      method="POST"
-                      class="flex-1"
-                      onsubmit="return confirm('Are you sure you want to delete this listing?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="action-btn btn-transition shade danger w-full">
-                        Delete
-                    </button>
-                </form>
             </div>
         </div>
     </div>

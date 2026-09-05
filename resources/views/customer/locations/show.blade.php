@@ -38,40 +38,55 @@
         @endif
 
         <div class="p-6">
-            <p class="text-sm text-gray-500 mb-4">
-                {{ $location->category }} &middot; {{ $location->city }}
-            </p>
+            <div class="md:flex md:gap-6">
+                <div class="flex-1 min-w-0">
 
-            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <dt class="text-xs uppercase underline text-indigo-900">Owner</dt>
-                    <dd class="font-medium text-indigo-900">{{ $location->owner->name }}</dd>
-                    <dd class="text-xs text-gray-500">{{ $location->owner->email }}</dd>
-                </div>
-                <div>
-                    <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
-                    <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $location->price_per_hour) }}</dd>
-                </div>
-                <div class="sm:col-span-2">
-                    <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
-                    <dd class="font-medium text-indigo-900">{{ $location->address }}</dd>
-                </div>
-            </dl>
+                    <p class="text-sm text-gray-500 mb-4">
+                        {{ $location->category }} &middot; {{ $location->city }}
+                    </p>
 
-            <div class="mb-6">
-                <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
-                <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <dt class="text-xs uppercase underline text-indigo-900">Owner</dt>
+                            <dd class="font-medium text-indigo-900">{{ $location->owner->name }}</dd>
+                            <dd class="text-xs text-gray-500">{{ $location->owner->email }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs uppercase underline text-indigo-900">Price / hour</dt>
+                            <dd class="font-medium text-indigo-900">PKR {{ number_format((float) $location->price_per_hour) }}</dd>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <dt class="text-xs uppercase underline text-indigo-900">Address</dt>
+                            <dd class="font-medium text-indigo-900">{{ $location->address }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="mb-6">
+                        <dt class="text-xs uppercase underline text-indigo-900 mb-1">Description</dt>
+                        <dd class="text-gray-500 whitespace-pre-line">{{ $location->description }}</dd>
+                    </div>
+
+                </div>
+
+                {{-- Small square map on the right - no title, no subtitle --}}
+                <div class="shrink-0 mx-auto md:mx-0 mt-6 md:mt-0 w-44 h-44 sm:w-48 sm:h-48">
+                    <x-location-map
+                        :latitude="$location->latitude"
+                        :longitude="$location->longitude"
+                        bare />
+                </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-3">
+            {{-- Buttons: full width of the card, side by side --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
                 <a href="{{ route('customer.listings.book', $location->id) }}"
-                   class="btn w-full sm:w-auto md:px-6 inline-block text-center">
+                   class="btn w-full inline-block text-center">
                     Book this location
                 </a>
 
-                <form action="{{ route('customer.listings.message', $location->id) }}" method="POST" class="w-full sm:w-auto">
+                <form action="{{ route('customer.listings.message', $location->id) }}" method="POST" class="w-full">
                     @csrf
-                    <button type="submit" class="action-btn shade w-full sm:w-auto md:px-6 py-3">
+                    <button type="submit" class="action-btn shade w-full py-3">
                         <i class="fa-solid fa-message mr-1"></i> Message Owner
                     </button>
                 </form>
