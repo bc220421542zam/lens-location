@@ -97,16 +97,6 @@
                 </div>
             </div>
 
-            {{-- STATUS + ACTIONS: status at the bottom-left, buttons fill the rest --}}
-            <div class="flex flex-col sm:flex-row items-stretch gap-2 mt-6 btn-transition">
-                @if($location->status->value === 'approved')
-                    <span class="badge-inline badge-active sm:self-center shrink-0">Approved</span>
-                @elseif($location->status->value === 'pending')
-                    <span class="badge-inline badge-draft sm:self-center shrink-0">Pending</span>
-                @elseif($location->status->value === 'rejected')
-                    <span class="badge-inline badge-rejected sm:self-center shrink-0">Rejected</span>
-                @endif
-
                 <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <a href="{{ route('owner.locations.edit', $location->id) }}"
                        class="action-btn shade text-center w-full">
